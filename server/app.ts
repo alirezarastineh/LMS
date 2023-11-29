@@ -1,6 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import { ErrorMiddleWare } from "./middleware/error";
 
 require("dotenv").config();
 
@@ -27,3 +28,5 @@ app.all("*", (req: Request, res: Response, next: NextFunction) => {
   err.statusCode = 400;
   next(err);
 });
+
+app.use(ErrorMiddleWare);
