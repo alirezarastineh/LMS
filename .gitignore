@@ -1,3 +1,6 @@
 node_modules/
 .vscode/
 server/.env
+server/controllers/user.controller.ts
+server/mails/activation-mail.ejs
+server/utils/sendMail.ts
