@@ -7,6 +7,7 @@ import ejs from "ejs";
 import path from "path";
 import sendMail from "../utils/sendMail";
 import { sendToken } from "../utils/jwt";
+import { redis } from "../utils/redis";
 
 require("dotenv").config();
 
@@ -23,7 +24,6 @@ export const registrationUser = CatchAsyncError(
       const { name, email, password } = req.body;
 
       const isEmailExist = await userModel.findOne({ email });
-
       if (isEmailExist) {
         return next(new ErrorHandler("Email already exist", 400));
       }
@@ -106,7 +106,6 @@ export const activateUser = CatchAsyncError(
         activation_token,
         process.env.ACTIVATION_SECRET as string
       ) as { user: IUser; activationCode: string };
-
       if (newUser.activationCode !== activation_code) {
         return next(new ErrorHandler("Invalid activation code", 400));
       }
@@ -114,7 +113,6 @@ export const activateUser = CatchAsyncError(
       const { name, email, password } = newUser.user;
 
       const existUser = await userModel.findOne({ email });
-
       if (existUser) {
         return next(new ErrorHandler("Email already exist", 400));
       }
@@ -143,7 +141,6 @@ export const loginUser = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { email, password } = req.body as ILoginRequest;
-
       if (!email || !password) {
         return next(
           new ErrorHandler("please enter your email and password", 400)
@@ -151,13 +148,11 @@ export const loginUser = CatchAsyncError(
       }
 
       const user = await userModel.findOne({ email }).select("+password");
-
       if (!user) {
         return next(new ErrorHandler("Invalid email", 400));
       }
 
       const isPasswordMatch = await user.comparePassword(password);
-
       if (!isPasswordMatch) {
         return next(new ErrorHandler("Invalid password", 400));
       }
@@ -174,6 +169,9 @@ export const logoutUser = CatchAsyncError(
     try {
       res.cookie("access_token", "", { maxAge: 1 });
       res.cookie("refresh_token", "", { maxAge: 1 });
+
+      const userId = req.user?._id || "";
+      redis.del(userId);
 
       res.status(200).json({
         success: true,
