@@ -170,7 +170,7 @@ export const logoutUser = CatchAsyncError(
       res.cookie("access_token", "", { maxAge: 1 });
       res.cookie("refresh_token", "", { maxAge: 1 });
 
-      const userId = req.user?._id || "";
+      const userId = req.user._id || "";
       redis.del(userId);
 
       res.status(200).json({
