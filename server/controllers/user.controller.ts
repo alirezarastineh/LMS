@@ -256,7 +256,6 @@ interface ISocialAuthBody {
   avatar: string;
 }
 
-// social auth
 export const socialAuth = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
