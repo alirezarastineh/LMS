@@ -21,6 +21,11 @@ export const ErrorMiddleWare = (
   }
 
   if (err.name === "JasonWebTokenError") {
+    const message = "JWT is not valid, try again";
+    err = new ErrorHandler(message, 400);
+  }
+
+  if (err.name === "TokenExpiredError") {
     const message = "JWT is expired, try again";
     err = new ErrorHandler(message, 400);
   }
