@@ -231,6 +231,11 @@ export const updateAccessToken = CatchAsyncError(
       res.cookie("access_token", accessToken, accessTokenOptions);
       res.cookie("refresh_token", refreshToken, refreshTokenOptions);
 
+      res.status(200).json({
+        status: "success",
+        accessToken,
+      });
+
       await redis.set(user._id, JSON.stringify(user), "EX", 604800);
 
       return next();
@@ -263,11 +268,11 @@ export const socialAuth = CatchAsyncError(
       const { email, name, avatar } = req.body as ISocialAuthBody;
 
       const user = await userModel.findOne({ email });
-      if (!user) {
+      if (user) {
+        sendToken(user, 200, res);
+      } else {
         const newUser = await userModel.create({ email, name, avatar });
         sendToken(newUser, 200, res);
-      } else {
-        sendToken(user, 200, res);
       }
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
