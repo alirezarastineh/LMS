@@ -8,7 +8,7 @@ import {
   socialAuth,
   updateAccessToken,
 } from "../controllers/user.controller";
-import { authorizeRoles, isAuthenticated } from "../middleware/auth";
+import { isAuthenticated } from "../middleware/auth";
 
 const userRouter = express.Router();
 
