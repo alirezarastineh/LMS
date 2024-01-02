@@ -22,6 +22,7 @@ export const accessTokenOptions: ITokenOptions = {
   maxAge: accessTokenExpire * 60 * 60 * 1000,
   httpOnly: true,
   sameSite: "lax",
+  secure: true,
 };
 
 const refreshTokenExpire = parseInt(
@@ -34,6 +35,7 @@ export const refreshTokenOptions: ITokenOptions = {
   maxAge: refreshTokenExpire * 24 * 60 * 60 * 1000,
   httpOnly: true,
   sameSite: "lax",
+  secure: true,
 };
 
 export const sendToken = (user: IUser, statusCode: number, res: Response) => {
@@ -42,10 +44,6 @@ export const sendToken = (user: IUser, statusCode: number, res: Response) => {
   const refreshToken = user.SignRefreshToken();
 
   redis.set(user._id, JSON.stringify(user) as any);
-
-  if (process.env.NODE_ENV === "production") {
-    accessTokenOptions.secure = true;
-  }
 
   res.cookie("access_token", accessToken, accessTokenOptions);
   res.cookie("refresh_token", refreshToken, refreshTokenOptions);
