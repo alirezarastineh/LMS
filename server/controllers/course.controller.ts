@@ -96,7 +96,7 @@ export const getSingleCourse = CatchAsyncError(
         });
       } else {
         const course = await CourseModel.findById(req.params.id).select(
-          "-courseData.videoUrl -courseData.suggestion courseData.question -courseData.links"
+          "-courseData.videoUrl -courseData.suggestion -courseData.question -courseData.links"
         );
 
         await redis.set(courseId, JSON.stringify(course), "EX", 604800);
@@ -128,7 +128,7 @@ export const getAllCourses = CatchAsyncError(
         });
       } else {
         const courses = await CourseModel.find().select(
-          "-courseData.videoUrl -courseData.suggestion courseData.question -courseData.links"
+          "-courseData.videoUrl -courseData.suggestion -courseData.question -courseData.links"
         );
 
         await redis.set(courseId, JSON.stringify(courses), "EX", 604800);
