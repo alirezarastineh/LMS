@@ -101,7 +101,7 @@ const courseSchema = new Schema<ICourse>(
 
     category: {
       type: String,
-      required: true,
+      // required: true,
     },
 
     price: {
@@ -117,7 +117,7 @@ const courseSchema = new Schema<ICourse>(
     thumbnail: {
       public_id: {
         type: String,
-        required: true,
+        // required: true,
       },
       url: {
         type: String,
