@@ -299,7 +299,7 @@ export const addAnswer = CatchAsyncError(
   }
 );
 
-interface IReviewData {
+interface IAddReviewData {
   review: string;
   courseId: string;
   rating: number;
@@ -314,7 +314,7 @@ export const addReview = CatchAsyncError(
       const courseId = req.params.is;
 
       const courseExists = userCourseList?.some(
-        (course: any) => course._id.toString() === courseId.toString
+        (course: any) => course._id.toString() === courseId.toString()
       );
 
       if (!courseExists) {
@@ -325,7 +325,7 @@ export const addReview = CatchAsyncError(
 
       const course = await CourseModel.findById(courseId);
 
-      const { review, rating } = req.body as IReviewData;
+      const { review, rating } = req.body as IAddReviewData;
 
       const reviewData: any = {
         user: req.user,
@@ -355,6 +355,56 @@ export const addReview = CatchAsyncError(
       };
 
       // create notification
+      res.status(200).json({
+        success: true,
+        course,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  }
+);
+
+interface IAddReplyReviewData {
+  comment: string;
+  courseId: string;
+  reviewId: string;
+}
+
+export const addReplyToReview = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { comment, courseId, reviewId } = req.body as IAddReplyReviewData;
+
+      const course = await CourseModel.findById(courseId);
+
+      if (!course) {
+        return next(new ErrorHandler("Course not found", 404));
+      }
+
+      const review = course?.reviews.find(
+        (rev: any) => rev._id.toString() === reviewId.toString()
+      );
+
+      if (!review) {
+        return next(new ErrorHandler("Review not found", 404));
+      }
+
+      const replyData: any = {
+        user: req.user,
+        comment,
+      };
+
+      if (!review.commentReplies) {
+        review.commentReplies = [];
+      }
+
+      review.commentReplies?.push(replyData);
+
+      await course?.save();
+
+      await redis.set(courseId, JSON.stringify(course), "EX", 604800);
+
       res.status(200).json({
         success: true,
         course,
