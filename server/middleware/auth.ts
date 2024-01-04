@@ -8,6 +8,7 @@ import { updateAccessToken } from "../controllers/user.controller";
 export const isAuthenticated = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     const access_token = req.cookies.access_token as string;
+
     if (!access_token) {
       return next(
         new ErrorHandler("Please login to access this resource!", 400)
@@ -15,33 +16,35 @@ export const isAuthenticated = CatchAsyncError(
     }
 
     const decoded = jwt.decode(access_token) as JwtPayload;
+
     if (!decoded) {
       return next(new ErrorHandler("Access Token is not valid!", 400));
     }
 
     if (decoded.exp && decoded.exp <= Date.now() / 1000) {
       try {
-        await updateAccessToken(req, res, next);
+        updateAccessToken(req, res, next);
       } catch (error) {
         return next(error);
       }
-    } else {
-      const user = await redis.get(decoded.id);
-      if (!user) {
-        return next(
-          new ErrorHandler("Please login to access this resource!", 400)
-        );
-      }
-
-      req.user = JSON.parse(user);
-
-      next();
+      return;
     }
+    const user = await redis.get(decoded.id);
+
+    if (!user) {
+      return next(
+        new ErrorHandler("Please login to access this resource!", 400)
+      );
+    }
+
+    req.user = JSON.parse(user);
+
+    next();
   }
 );
 
 export const authorizeRoles = (...roles: string[]) => {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: Request, _res: Response, next: NextFunction) => {
     if (!roles.includes(req.user?.role || "")) {
       return next(
         new ErrorHandler(
@@ -50,5 +53,6 @@ export const authorizeRoles = (...roles: string[]) => {
         )
       );
     }
+    next();
   };
 };
