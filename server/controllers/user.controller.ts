@@ -333,6 +333,8 @@ export const updateUserPassword = CatchAsyncError(
     try {
       const { oldPassword, newPassword } = req.body as IUpdateUserPassword;
 
+      const userId = req.user?._id;
+
       if (!oldPassword || !newPassword) {
         return next(new ErrorHandler("Please enter old and new password", 400));
       }
@@ -353,7 +355,7 @@ export const updateUserPassword = CatchAsyncError(
 
       await user.save();
 
-      await redis.set(req.user?._id, JSON.stringify(user), "EX", 604800);
+      await redis.set(userId, JSON.stringify(user), "EX", 604800);
 
       res.status(201).json({
         success: true,
