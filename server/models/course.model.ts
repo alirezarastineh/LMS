@@ -46,7 +46,7 @@ export interface ICourse extends Document {
   prerequisites: { title: string }[];
   reviews: IReview[];
   courseData: ICourseData[];
-  rating?: number;
+  ratings?: number;
   purchased: number;
 }
 
@@ -147,7 +147,7 @@ const courseSchema = new Schema<ICourse>(
 
     courseData: [courseDataSchema],
 
-    rating: {
+    ratings: {
       type: Number,
       default: 0,
     },
