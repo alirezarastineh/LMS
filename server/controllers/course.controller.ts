@@ -311,7 +311,9 @@ export const addReview = CatchAsyncError(
     try {
       const userCourseList = req.user?.courses;
 
-      const courseId = req.params.is;
+      const userId = req.user?._id;
+
+      const courseId = req.params.id;
 
       const courseExists = userCourseList?.some(
         (course: any) => course._id.toString() === courseId.toString()
@@ -324,6 +326,15 @@ export const addReview = CatchAsyncError(
       }
 
       const course = await CourseModel.findById(courseId);
+
+      const hasReviewed = course?.reviews.some(
+        (review) => review.user._id.toString() === userId.toString()
+      );
+      if (hasReviewed) {
+        return next(
+          new ErrorHandler("You have already reviewed this course", 400)
+        );
+      }
 
       const { review, rating } = req.body as IAddReviewData;
 
