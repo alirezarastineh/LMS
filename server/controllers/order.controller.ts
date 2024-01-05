@@ -6,7 +6,7 @@ import ErrorHandler from "../utils/ErrorHandler";
 import { IOrder } from "../models/order.model";
 import userModel from "../models/user.model";
 import CourseModel, { ICourse } from "../models/course.model";
-import { newOrder } from "../services/order.service";
+import { getAllOrdersService, newOrder } from "../services/order.service";
 import sendMail from "../utils/sendMail";
 import NotificationModel from "../models/notification.model";
 import { redis } from "../utils/redis";
@@ -90,6 +90,16 @@ export const createOrder = CatchAsyncError(
       newOrder(data, res, next);
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
+    }
+  }
+);
+
+export const getAllOrdersAdmin = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      getAllOrdersService(res);
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
     }
   }
 );
