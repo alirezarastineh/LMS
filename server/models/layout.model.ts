@@ -1,15 +1,15 @@
 import { Document, Schema, model } from "mongoose";
 
-interface FaqItem extends Document {
+export interface FaqItem extends Document {
   question: string;
   answer: string;
 }
 
-interface Category extends Document {
+export interface Category extends Document {
   title: string;
 }
 
-interface BannerImage extends Document {
+export interface BannerImage extends Document {
   public_id: string;
   url: string;
 }
@@ -17,11 +17,11 @@ interface BannerImage extends Document {
 interface Layout extends Document {
   type: string;
   faq: FaqItem[];
-  catagories: Category[];
+  categories: Category[];
   banner: {
     image: BannerImage;
     title: string;
-    subtitle: string;
+    subTitle: string;
   };
 }
 
@@ -54,7 +54,7 @@ const layoutSchema = new Schema<Layout>({
     type: String,
   },
   faq: [faqSchema],
-  catagories: [categorySchema],
+  categories: [categorySchema],
   banner: {
     image: bannerImageSchema,
     title: String,
