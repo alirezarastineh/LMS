@@ -4,7 +4,7 @@ import ejs from "ejs";
 import { CatchAsyncError } from "../middleware/catchAsyncErrors";
 import ErrorHandler from "../utils/ErrorHandler";
 import { IOrder } from "../models/order.model";
-import userModel from "../models/user.model";
+import UserModel from "../models/user.model";
 import CourseModel, { ICourse } from "../models/course.model";
 import { getAllOrdersService, newOrder } from "../services/order.service";
 import sendMail from "../utils/sendMail";
@@ -16,7 +16,7 @@ export const createOrder = CatchAsyncError(
     try {
       const { courseId, payment_info } = req.body as IOrder;
 
-      const user = await userModel.findById(req.user?._id);
+      const user = await UserModel.findById(req.user?._id);
 
       const courseExistInUser = user?.courses.some(
         (course: any) => course._id.toString() === courseId.toString()

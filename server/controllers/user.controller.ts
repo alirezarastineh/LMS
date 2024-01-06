@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import userModel, { IUser } from "../models/user.model";
+import UserModel, { IUser } from "../models/user.model";
 import ErrorHandler from "../utils/ErrorHandler";
 import { CatchAsyncError } from "../middleware/catchAsyncErrors";
 import jwt, { JwtPayload, Secret } from "jsonwebtoken";
@@ -33,7 +33,7 @@ export const registrationUser = CatchAsyncError(
     try {
       const { name, email, password } = req.body;
 
-      const isEmailExist = await userModel.findOne({ email });
+      const isEmailExist = await UserModel.findOne({ email });
       if (isEmailExist) {
         return next(new ErrorHandler("Email already exist", 400));
       }
@@ -122,12 +122,12 @@ export const activateUser = CatchAsyncError(
 
       const { name, email, password } = newUser.user;
 
-      const existUser = await userModel.findOne({ email });
+      const existUser = await UserModel.findOne({ email });
       if (existUser) {
         return next(new ErrorHandler("Email already exist", 400));
       }
 
-      const user = await userModel.create({
+      const user = await UserModel.create({
         name,
         email,
         password,
@@ -157,7 +157,7 @@ export const loginUser = CatchAsyncError(
         );
       }
 
-      const user = await userModel.findOne({ email }).select("+password");
+      const user = await UserModel.findOne({ email }).select("+password");
       if (!user) {
         return next(new ErrorHandler("Invalid email", 400));
       }
@@ -274,11 +274,11 @@ export const socialAuth = CatchAsyncError(
     try {
       const { email, name, avatar } = req.body as ISocialAuthBody;
 
-      const user = await userModel.findOne({ email });
+      const user = await UserModel.findOne({ email });
       if (user) {
         sendToken(user, 200, res);
       } else {
-        const newUser = await userModel.create({ email, name, avatar });
+        const newUser = await UserModel.create({ email, name, avatar });
         sendToken(newUser, 200, res);
       }
     } catch (error: any) {
@@ -299,10 +299,10 @@ export const updateUserInfo = CatchAsyncError(
 
       const userId = req.user?._id;
 
-      const user = await userModel.findById(userId);
+      const user = await UserModel.findById(userId);
 
       if (email && user) {
-        const isEmailExist = await userModel.findOne({ email });
+        const isEmailExist = await UserModel.findOne({ email });
         if (isEmailExist) {
           return next(new ErrorHandler("Email already exist", 400));
         }
@@ -343,7 +343,7 @@ export const updateUserPassword = CatchAsyncError(
         return next(new ErrorHandler("Please enter old and new password", 400));
       }
 
-      const user = await userModel.findById(req.user?._id).select("+password");
+      const user = await UserModel.findById(req.user?._id).select("+password");
 
       if (user?.password === undefined) {
         return next(new ErrorHandler("Invalid User", 400));
@@ -382,7 +382,7 @@ export const updateUserAvatar = CatchAsyncError(
 
       const userId = req.user?._id;
 
-      const user = await userModel.findById(userId).select("+password");
+      const user = await UserModel.findById(userId).select("+password");
 
       if (avatar && user) {
         if (user?.avatar?.public_id) {
@@ -451,7 +451,7 @@ export const deleteUser = CatchAsyncError(
     try {
       const { id } = req.params;
 
-      const user = await userModel.findById(id);
+      const user = await UserModel.findById(id);
 
       if (!user) {
         return next(new ErrorHandler("User not found", 404));
