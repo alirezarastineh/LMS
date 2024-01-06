@@ -45,7 +45,7 @@ export const createOrder = CatchAsyncError(
           _id: course._id.toString().slice(0, 6),
           name: course.name,
           price: course.price,
-          date: new Date().toLocaleDateString("de-DE", {
+          date: new Date().toLocaleString("default", {
             year: "numeric",
             month: "long",
             day: "numeric",
