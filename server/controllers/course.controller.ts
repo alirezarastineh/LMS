@@ -10,21 +10,22 @@ import CourseModel from "../models/course.model";
 import { redis } from "../utils/redis";
 import sendMail from "../utils/sendMail";
 import NotificationModel from "../models/notification.model";
-import { getAllUsersService } from "../services/user.service";
 
 export const uploadCourse = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.body;
+
       const thumbnail = data.thumbnail;
+
       if (thumbnail) {
-        const myCLoud = await cloudinary.v2.uploader.upload(thumbnail, {
+        const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
           folder: "Courses",
         });
 
         data.thumbnail = {
-          public_id: myCLoud.public_id,
-          url: myCLoud.secure_url,
+          public_id: myCloud.public_id,
+          url: myCloud.secure_url,
         };
       }
 
