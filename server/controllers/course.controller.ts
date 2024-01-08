@@ -60,12 +60,12 @@ export const editCourse = CatchAsyncError(
         };
       }
 
-      // if (thumbnail.startsWith("https")) {
-      //   data.thumbnail = {
-      //     public_id: courseData?.thumbnail.public_id,
-      //     url: courseData?.thumbnail.url,
-      //   };
-      // }
+      if (thumbnail.startsWith("https")) {
+        data.thumbnail = {
+          public_id: courseData?.thumbnail.public_id,
+          url: courseData?.thumbnail.url,
+        };
+      }
 
       const course = await CourseModel.findByIdAndUpdate(
         courseId,
@@ -262,7 +262,7 @@ export const addAnswer = CatchAsyncError(
         return next(new ErrorHandler("Invalid Content ID", 400));
       }
 
-      const question = courseContent.question.find((item: any) =>
+      const question = courseContent?.question?.find((item: any) =>
         item._id.equals(questionId)
       );
 
@@ -273,6 +273,8 @@ export const addAnswer = CatchAsyncError(
       const newAnswer: any = {
         user: req.user,
         answer,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
 
       question.questionReplies.push(newAnswer);
@@ -283,7 +285,7 @@ export const addAnswer = CatchAsyncError(
         await NotificationModel.create({
           user: req.user?._id,
           title: "New Question Reply Received",
-          message: `You have a new question reply in ${courseContent?.title}`,
+          message: `You have a new question reply in ${courseContent.title}`,
         });
       } else {
         const data = {
@@ -387,12 +389,12 @@ export const addReview = CatchAsyncError(
 
       await redis.set(courseId, JSON.stringify(course), "EX", 604800);
 
-      const notification = {
+      await NotificationModel.create({
+        user: req.user?._id,
         title: "New Review Received",
-        message: `${req.user?.name} has given a review on ${course?.name}`,
-      };
+        message: `${req.user?.name} has given a review in ${course?.name}`,
+      });
 
-      // create notification
       res.status(200).json({
         success: true,
         course,
@@ -420,7 +422,7 @@ export const addReplyToReview = CatchAsyncError(
         return next(new ErrorHandler("Course not found", 404));
       }
 
-      const review = course?.reviews.find(
+      const review = course?.reviews?.find(
         (rev: any) => rev._id.toString() === reviewId.toString()
       );
 
@@ -431,6 +433,8 @@ export const addReplyToReview = CatchAsyncError(
       const replyData: any = {
         user: req.user,
         comment,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
 
       if (!review.commentReplies) {
