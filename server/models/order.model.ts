@@ -12,10 +12,12 @@ const OrderSchema = new Schema<IOrder>(
       type: String,
       required: true,
     },
+
     userId: {
       type: String,
       required: true,
     },
+
     payment_info: {
       type: Object,
       // required: true,
