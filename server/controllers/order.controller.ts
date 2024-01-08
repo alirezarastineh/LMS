@@ -16,6 +16,8 @@ export const createOrder = CatchAsyncError(
     try {
       const { courseId, payment_info } = req.body as IOrder;
 
+      const isAdmin = req.user?.role === "admin";
+
       const user = await UserModel.findById(req.user?._id);
 
       const courseExistInUser = user?.courses.some(
@@ -25,6 +27,12 @@ export const createOrder = CatchAsyncError(
       if (courseExistInUser) {
         return next(
           new ErrorHandler("User have already purchased this course!", 400)
+        );
+      }
+
+      if (isAdmin) {
+        return next(
+          new ErrorHandler("You are an Admin. You cannot order", 404)
         );
       }
 
