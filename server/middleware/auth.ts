@@ -29,6 +29,7 @@ export const isAuthenticated = CatchAsyncError(
       }
       return;
     }
+
     const user = await redis.get(decoded.id);
 
     if (!user) {
