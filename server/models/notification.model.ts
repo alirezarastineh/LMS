@@ -13,10 +13,12 @@ const notificationSchema = new Schema<INotification>(
       type: String,
       required: true,
     },
+
     message: {
       type: String,
       required: true,
     },
+
     status: {
       type: String,
       required: true,
