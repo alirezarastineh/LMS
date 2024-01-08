@@ -34,6 +34,7 @@ export const registrationUser = CatchAsyncError(
       const { name, email, password } = req.body;
 
       const isEmailExist = await UserModel.findOne({ email });
+
       if (isEmailExist) {
         return next(new ErrorHandler("Email already exist", 400));
       }
@@ -116,6 +117,7 @@ export const activateUser = CatchAsyncError(
         activation_token,
         process.env.ACTIVATION_SECRET as string
       ) as { user: IUser; activationCode: string };
+
       if (newUser.activationCode !== activation_code) {
         return next(new ErrorHandler("Invalid activation code", 400));
       }
@@ -123,6 +125,7 @@ export const activateUser = CatchAsyncError(
       const { name, email, password } = newUser.user;
 
       const existUser = await UserModel.findOne({ email });
+
       if (existUser) {
         return next(new ErrorHandler("Email already exist", 400));
       }
@@ -135,6 +138,7 @@ export const activateUser = CatchAsyncError(
 
       res.status(201).json({
         success: true,
+        user,
       });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
@@ -151,6 +155,7 @@ export const loginUser = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { email, password } = req.body as ILoginRequest;
+
       if (!email || !password) {
         return next(
           new ErrorHandler("please enter your email and password", 400)
@@ -158,11 +163,13 @@ export const loginUser = CatchAsyncError(
       }
 
       const user = await UserModel.findOne({ email }).select("+password");
+
       if (!user) {
         return next(new ErrorHandler("Invalid email", 400));
       }
 
       const isPasswordMatch = await user.comparePassword(password);
+
       if (!isPasswordMatch) {
         return next(new ErrorHandler("Invalid password", 400));
       }
@@ -181,6 +188,7 @@ export const logoutUser = CatchAsyncError(
       res.cookie("refresh_token", "", { maxAge: 1 });
 
       const userId = req.user?._id || "";
+
       redis.del(userId);
 
       res.status(200).json({
@@ -220,17 +228,13 @@ export const updateAccessToken = CatchAsyncError(
       const accessToken = jwt.sign(
         { id: user._id },
         process.env.ACCESS_TOKEN as string,
-        {
-          expiresIn: "5m",
-        }
+        { expiresIn: "5m" }
       );
 
       const refreshToken = jwt.sign(
         { id: user._id },
         process.env.REFRESH_TOKEN as string,
-        {
-          expiresIn: "3d",
-        }
+        { expiresIn: "3d" }
       );
 
       req.user = user;
@@ -242,6 +246,7 @@ export const updateAccessToken = CatchAsyncError(
         status: "success",
         accessToken,
       });
+
       const redisKey = `userSession:${user.name}`;
 
       await redis.set(redisKey, JSON.stringify(user), "EX", 604800);
@@ -257,6 +262,7 @@ export const getUserInfo = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = req.user?._id;
+
       getUserById(userId, res);
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
@@ -276,10 +282,12 @@ export const socialAuth = CatchAsyncError(
       const { email, name, avatar } = req.body as ISocialAuthBody;
 
       const user = await UserModel.findOne({ email });
+
       if (user) {
         sendToken(user, 200, res);
       } else {
         const newUser = await UserModel.create({ email, name, avatar });
+
         sendToken(newUser, 200, res);
       }
     } catch (error: any) {
@@ -304,9 +312,11 @@ export const updateUserInfo = CatchAsyncError(
 
       if (email && user) {
         const isEmailExist = await UserModel.findOne({ email });
+
         if (isEmailExist) {
           return next(new ErrorHandler("Email already exist", 400));
         }
+
         user.email = email;
       }
 
@@ -390,7 +400,7 @@ export const updateUserAvatar = CatchAsyncError(
           await cloudinary.v2.uploader.destroy(user?.avatar?.public_id);
 
           const myCloud = await cloudinary.v2.uploader.upload(avatar, {
-            folder: "avatar",
+            folder: "Avatars",
             width: 150,
           });
 
@@ -400,7 +410,7 @@ export const updateUserAvatar = CatchAsyncError(
           };
         } else {
           const myCloud = await cloudinary.v2.uploader.upload(avatar, {
-            folder: "avatar",
+            folder: "Avatars",
             width: 150,
           });
 
@@ -438,9 +448,20 @@ export const getAllUsersAdmin = CatchAsyncError(
 export const updateUserRole = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { id, role } = req.body;
+      const { email, role } = req.body;
 
-      updateUserRoleService(res, id, role);
+      const isUserExist = await UserModel.findOne({ email });
+
+      if (isUserExist) {
+        const id = isUserExist._id;
+
+        updateUserRoleService(res, id, role);
+      } else {
+        res.status(400).json({
+          success: false,
+          message: "User not found",
+        });
+      }
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
     }
