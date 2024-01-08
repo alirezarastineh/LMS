@@ -165,7 +165,6 @@ export const editLayout = CatchAsyncError(
   }
 );
 
-// get layout by type
 export const getLayoutByType = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
