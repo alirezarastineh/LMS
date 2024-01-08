@@ -203,12 +203,12 @@ export const updateAccessToken = CatchAsyncError(
         process.env.REFRESH_TOKEN as string
       ) as JwtPayload;
 
-      const message = "could not refresh token";
       if (!decoded) {
-        return next(new ErrorHandler(message, 400));
+        return next(new ErrorHandler("Could not refresh token", 400));
       }
 
       const session = await redis.get(decoded.id as string);
+
       if (!session) {
         return next(
           new ErrorHandler("Please Login to access to this resource", 400)
@@ -242,8 +242,9 @@ export const updateAccessToken = CatchAsyncError(
         status: "success",
         accessToken,
       });
+      const redisKey = `userSession:${user.name}`;
 
-      await redis.set(user._id, JSON.stringify(user), "EX", 604800);
+      await redis.set(redisKey, JSON.stringify(user), "EX", 604800);
 
       return next();
     } catch (error: any) {
