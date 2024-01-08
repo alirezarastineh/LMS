@@ -33,7 +33,7 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
       type: String,
       required: [true, "Please enter your email"],
       validate: {
-        validator: function (value: string) {
+        validator(value: string) {
           return emailRegexPattern.test(value);
         },
         message: "please enter a valid email",
@@ -62,11 +62,7 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
       default: false,
     },
 
-    courses: [
-      {
-        courseId: String,
-      },
-    ],
+    courses: [{ courseId: String }],
   },
 
   { timestamps: true }
@@ -76,7 +72,9 @@ userSchema.pre<IUser>("save", async function (next) {
   if (!this.isModified("password")) {
     next();
   }
+
   this.password = await bcrypt.hash(this.password, 10);
+
   next();
 });
 
