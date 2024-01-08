@@ -8,10 +8,18 @@ import orderRouter from "./routes/order.route";
 import notificationRouter from "./routes/notification.route";
 import analyticsRouter from "./routes/analytics.route";
 import layoutRouter from "./routes/layout.route";
+import rateLimit from "express-rate-limit";
 
 require("dotenv").config();
 
 export const app = express();
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+});
 
 app.use(express.json({ limit: "50mb" }));
 
@@ -45,5 +53,7 @@ app.all("*", (req: Request, res: Response, next: NextFunction) => {
   err.statusCode = 400;
   next(err);
 });
+
+app.use(limiter);
 
 app.use(ErrorMiddleWare);
