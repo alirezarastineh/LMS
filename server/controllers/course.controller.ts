@@ -158,11 +158,13 @@ export const getCourseContentByUser = CatchAsyncError(
 
       const courseId = req.params.id;
 
+      const isAdmin = req.user?.role === "admin";
+
       const courseExists = userCourseList?.find(
         (course: any) => course._id.toString() === courseId
       );
 
-      if (!courseExists) {
+      if (!isAdmin && !courseExists) {
         return next(
           new ErrorHandler("You are not eligible to access this course", 404)
         );
@@ -332,9 +334,17 @@ export const addReview = CatchAsyncError(
 
       const courseId = req.params.id;
 
+      const isAdmin = req.user?.role === "admin";
+
       const courseExists = userCourseList?.some(
         (course: any) => course._id.toString() === courseId.toString()
       );
+
+      if (isAdmin) {
+        return next(
+          new ErrorHandler("You are an Admin. You cannot add a review", 404)
+        );
+      }
 
       if (!courseExists) {
         return next(
@@ -443,7 +453,6 @@ export const addReplyToReview = CatchAsyncError(
   }
 );
 
-// get all courses - only for admin
 export const getAllCoursesAdmin = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
