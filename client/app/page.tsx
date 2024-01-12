@@ -12,6 +12,8 @@ const Page = ({}: PageProps) => {
 
   const [activeItem, setActiveItem] = useState(0);
 
+  const [route, setRoute] = useState("Login");
+
   return (
     <div>
       <Heading
@@ -19,9 +21,14 @@ const Page = ({}: PageProps) => {
         description="E-Learning is good"
         keyword="E-Learning is future"
       />
-      <Header open={open} setOpen={setOpen} activeItem={activeItem} />
+      <Header
+        open={open}
+        setOpen={setOpen}
+        activeItem={activeItem}
+        route={route}
+        setRoute={setRoute}
+      />
       <Hero />
-
     </div>
   );
 };
