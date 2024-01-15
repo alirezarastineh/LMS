@@ -1,7 +1,6 @@
 import { styles } from "@/app/styles/styles";
-import React, { FC, useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { VscWorkspaceTrusted } from "react-icons/vsc";
-import { useSelector } from "react-redux";
 
 type VerificationProps = {
   setRoute: (route: string) => void;
@@ -15,7 +14,6 @@ type VerifyNumber = {
 };
 
 const Verification = ({ setRoute }: VerificationProps) => {
-  const { token } = useSelector((state: any) => state.auth);
   const [invalidError, setInvalidError] = useState<boolean>(false);
 
   const inputRefs = [
