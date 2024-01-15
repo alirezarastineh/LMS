@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import {
@@ -9,6 +9,8 @@ import {
 } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
 import { styles } from "@/app/styles/styles";
+import { useRegisterMutation } from "@/redux/features/auth/authApi";
+import toast from "react-hot-toast";
 
 type SignupProps = {
   setRoute: (route: string) => void;
@@ -24,6 +26,21 @@ const schema = Yup.object().shape({
 
 const Signup = ({ setRoute }: SignupProps) => {
   const [show, setShow] = useState(false);
+  const [register, { data, error, isSuccess }] = useRegisterMutation();
+
+  useEffect(() => {
+    if (isSuccess) {
+      const message = data?.message || "Registration successful";
+      toast.success(message);
+      setRoute("Verification");
+    }
+    if (error) {
+      if ("data" in error) {
+        const errorData = error as any;
+        toast.error(errorData.data.message);
+      }
+    }
+  }, [isSuccess, error, data?.message, setRoute]);
 
   const formik = useFormik({
     initialValues: { name: "", email: "", password: "" },
@@ -34,7 +51,7 @@ const Signup = ({ setRoute }: SignupProps) => {
         email,
         password,
       };
-      setRoute("Verification");
+      await register(data);
     },
   });
 
