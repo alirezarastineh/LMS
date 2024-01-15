@@ -34,6 +34,7 @@ const Signup = ({ setRoute }: SignupProps) => {
         email,
         password,
       };
+      setRoute("Verification");
     },
   });
 
@@ -41,7 +42,7 @@ const Signup = ({ setRoute }: SignupProps) => {
 
   return (
     <div className="w-full">
-      <h1 className={`${styles.title}`}>Join to ELearning</h1>
+      <h1 className={`${styles.title}`}>Join to E-Learning</h1>
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
           <label className={`${styles.label}`} htmlFor="email">
