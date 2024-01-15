@@ -1,6 +1,9 @@
 import { styles } from "@/app/styles/styles";
-import { useRef, useState } from "react";
+import { useActivationMutation } from "@/redux/features/auth/authApi";
+import { useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 import { VscWorkspaceTrusted } from "react-icons/vsc";
+import { useSelector } from "react-redux";
 
 type VerificationProps = {
   setRoute: (route: string) => void;
@@ -14,7 +17,25 @@ type VerifyNumber = {
 };
 
 const Verification = ({ setRoute }: VerificationProps) => {
+  const { token } = useSelector((state: any) => state.auth);
+  const [activation, { isSuccess, error }] = useActivationMutation();
   const [invalidError, setInvalidError] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success("Account activated successfully");
+      setRoute("Login");
+    }
+    if (error) {
+      if ("data" in error) {
+        const errorData = error as any;
+        toast.error(errorData.data.message);
+        setInvalidError(true);
+      } else {
+        console.log("An error occurred:", error);
+      }
+    }
+  }, [isSuccess, error, setRoute]);
 
   const inputRefs = [
     useRef<HTMLInputElement>(null),
@@ -36,6 +57,10 @@ const Verification = ({ setRoute }: VerificationProps) => {
       setInvalidError(true);
       return;
     }
+    await activation({
+      activation_token: token,
+      activation_code: verificationNumber,
+    });
   };
 
   const handleInputChange = (index: number, value: string) => {
