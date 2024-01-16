@@ -18,7 +18,9 @@ type VerifyNumber = {
 
 const Verification = ({ setRoute }: VerificationProps) => {
   const { token } = useSelector((state: any) => state.auth);
+
   const [activation, { isSuccess, error }] = useActivationMutation();
+
   const [invalidError, setInvalidError] = useState<boolean>(false);
 
   useEffect(() => {
@@ -53,10 +55,12 @@ const Verification = ({ setRoute }: VerificationProps) => {
 
   const verificationHandler = async () => {
     const verificationNumber = Object.values(verifyNumber).join("");
+
     if (verificationNumber.length !== 4) {
       setInvalidError(true);
       return;
     }
+
     await activation({
       activation_token: token,
       activation_code: verificationNumber,
@@ -65,7 +69,9 @@ const Verification = ({ setRoute }: VerificationProps) => {
 
   const handleInputChange = (index: number, value: string) => {
     setInvalidError(false);
+
     const newVerifyNumber = { ...verifyNumber, [index]: value };
+
     setVerifyNumber(newVerifyNumber);
 
     if (value === "" && index > 0) {

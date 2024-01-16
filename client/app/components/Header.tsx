@@ -43,35 +43,44 @@ const Header = ({
     isLoading,
     refetch,
   } = useLoadUserQuery(undefined, {});
+
   const { data } = useSession();
+
   const [socialAuth, { isSuccess, error }] = useSocialAuthMutation();
+
   const [logout, setLogout] = useState(false);
+
   const {} = useLogOutQuery(undefined, {
-    skip: !logout ? true : false,
+    skip: logout ? false : true,
   });
 
   useEffect(() => {
-    if (!isLoading) {
-      if (!userData) {
-        if (data) {
-          socialAuth({
-            email: data?.user?.email,
-            name: data?.user?.name,
-            avatar: data.user?.image,
-          });
-          refetch();
-        }
-      }
-      if (data === null) {
-        if (isSuccess) {
-          toast.success("Login Successfully");
-        }
-      }
-      if (data === null && !isLoading && !userData) {
-        setLogout(true);
-      }
+    if (isLoading) {
+      return;
     }
-  }, [data, userData, isLoading, socialAuth, refetch, isSuccess]);
+
+    if (!userData && data) {
+      socialAuth({
+        email: data?.user?.email,
+        name: data?.user?.name,
+        avatar: data.user?.image,
+      });
+      refetch();
+    }
+
+    if (data === null && isSuccess) {
+      toast.success("Login Successfully");
+    }
+
+    if (error && "data" in error) {
+      const errorData = error as any;
+      toast.error(errorData.data.message);
+    }
+
+    if (data === null && !isLoading && !userData) {
+      setLogout(true);
+    }
+  }, [error, data, userData, isLoading, socialAuth, refetch, isSuccess]);
 
   if (typeof window !== "undefined") {
     window.addEventListener("scroll", () => {
@@ -117,7 +126,6 @@ const Header = ({
               <ThemeSwitcher />
 
               {/* only for mobile */}
-
               <div className="800px:hidden">
                 <HiOutlineMenuAlt3
                   size={25}
@@ -125,6 +133,7 @@ const Header = ({
                   onClick={() => setOpenSidebar(true)}
                 />
               </div>
+
               {userData ? (
                 <Link href={"/profile"}>
                   <Image
@@ -150,6 +159,7 @@ const Header = ({
             </div>
           </div>
         </div>
+
         {openSidebar && (
           <div
             className="fixed w-full h-screen top-0 left-0 z-[99999] dark:bg-[unset] bg-[#00000024]"
@@ -158,6 +168,7 @@ const Header = ({
           >
             <div className="w-[70%] fixed z-[999999999] h-screen bg-white dark:bg-slate-900 dark:bg-opacity-90 top-0 right-0">
               <NavItems activeItem={activeItem} isMobile={true} />
+
               {userData?.user ? (
                 <Link href={"/profile"}>
                   <Image
@@ -189,6 +200,7 @@ const Header = ({
           </div>
         )}
       </div>
+
       {route === "Login" && (
         <>
           {open && (

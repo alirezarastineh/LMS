@@ -10,7 +10,6 @@ type RegistrationData = {};
 
 export const authApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    // endpoints here
     register: builder.mutation<RegistrationResponse, RegistrationData>({
       query: (data) => ({
         url: "registration",
@@ -18,7 +17,7 @@ export const authApi = apiSlice.injectEndpoints({
         body: data,
         credentials: "include" as const,
       }),
-      async onQueryStarted(arg, { queryFulfilled, dispatch }) {
+      async onQueryStarted(_arg, { queryFulfilled, dispatch }) {
         try {
           const result = await queryFulfilled;
           dispatch(
@@ -31,6 +30,7 @@ export const authApi = apiSlice.injectEndpoints({
         }
       },
     }),
+
     activation: builder.mutation({
       query: ({ activation_token, activation_code }) => ({
         url: "activate-user",
@@ -41,6 +41,7 @@ export const authApi = apiSlice.injectEndpoints({
         },
       }),
     }),
+
     login: builder.mutation({
       query: ({ email, password }) => ({
         url: "login",
@@ -51,7 +52,7 @@ export const authApi = apiSlice.injectEndpoints({
         },
         credentials: "include" as const,
       }),
-      async onQueryStarted(arg, { queryFulfilled, dispatch }) {
+      async onQueryStarted(_arg, { queryFulfilled, dispatch }) {
         try {
           const result = await queryFulfilled;
           dispatch(
@@ -65,6 +66,7 @@ export const authApi = apiSlice.injectEndpoints({
         }
       },
     }),
+
     socialAuth: builder.mutation({
       query: ({ email, name, avatar }) => ({
         url: "social-auth",
@@ -76,7 +78,7 @@ export const authApi = apiSlice.injectEndpoints({
         },
         credentials: "include" as const,
       }),
-      async onQueryStarted(arg, { queryFulfilled, dispatch }) {
+      async onQueryStarted(_arg, { queryFulfilled, dispatch }) {
         try {
           const result = await queryFulfilled;
           dispatch(
@@ -90,13 +92,14 @@ export const authApi = apiSlice.injectEndpoints({
         }
       },
     }),
+
     logOut: builder.query({
       query: () => ({
         url: "logout",
         method: "GET",
         credentials: "include" as const,
       }),
-      async onQueryStarted(arg, { queryFulfilled, dispatch }) {
+      async onQueryStarted(_arg, { queryFulfilled, dispatch }) {
         try {
           dispatch(userLoggedOut());
         } catch (error: any) {
