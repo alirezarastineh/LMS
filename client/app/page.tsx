@@ -10,7 +10,7 @@ interface PageProps {}
 const Page = ({}: PageProps) => {
   const [open, setOpen] = useState(false);
 
-  const [activeItem, setActiveItem] = useState(0);
+  const [activeItem] = useState(0);
 
   const [route, setRoute] = useState("Login");
 
