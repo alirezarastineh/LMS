@@ -32,7 +32,7 @@ const Verification = ({ setRoute }: VerificationProps) => {
         toast.error(errorData.data.message);
         setInvalidError(true);
       } else {
-        console.log("An error occurred:", error);
+        console.error("An error occurred:", error);
       }
     }
   }, [isSuccess, error, setRoute]);
