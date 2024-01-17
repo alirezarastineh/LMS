@@ -19,7 +19,7 @@ const Page = ({}: PageProps) => {
       <Heading
         title="E-Learning"
         description="E-Learning is good"
-        keyword="E-Learning is future"
+        keywords="E-Learning is future"
       />
       <Header
         open={open}

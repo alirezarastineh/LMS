@@ -3,16 +3,16 @@
 interface HeadingProps {
   title: string;
   description: string;
-  keyword: string;
+  keywords: string;
 }
 
-const Heading = ({ title, description, keyword }: HeadingProps) => {
+const Heading = ({ title, description, keywords }: HeadingProps) => {
   return (
     <div>
       <title>{title}</title>
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <meta name="description" content={description} />
-      <meta name="keywords" content={keyword} />
+      <meta name="keywords" content={keywords} />
     </div>
   );
 };
