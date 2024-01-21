@@ -1,10 +1,11 @@
 import { Request, Response, NextFunction } from "express";
-import UserModel, { IUser } from "../models/user.model";
-import ErrorHandler from "../utils/ErrorHandler";
-import { CatchAsyncError } from "../middleware/catchAsyncErrors";
 import jwt, { JwtPayload, Secret } from "jsonwebtoken";
 import ejs from "ejs";
 import path from "path";
+import cloudinary from "cloudinary";
+import UserModel, { IUser } from "../models/user.model";
+import ErrorHandler from "../utils/ErrorHandler";
+import { CatchAsyncError } from "../middleware/catchAsyncErrors";
 import sendMail from "../utils/sendMail";
 import {
   accessTokenOptions,
@@ -17,7 +18,6 @@ import {
   getUserById,
   updateUserRoleService,
 } from "../services/user.service";
-import cloudinary from "cloudinary";
 
 require("dotenv").config();
 
@@ -87,16 +87,9 @@ export const createActivationToken = (user: any): IActivationToken => {
   const activationCode = Math.floor(1000 + Math.random() * 9000).toString();
 
   const token = jwt.sign(
-    {
-      user,
-      activationCode,
-    },
-
+    { user, activationCode },
     process.env.ACTIVATION_SECRET as Secret,
-
-    {
-      expiresIn: "5m",
-    }
+    { expiresIn: "5m" }
   );
 
   return { token, activationCode };
@@ -297,8 +290,8 @@ export const socialAuth = CatchAsyncError(
 );
 
 interface IUpdateUserInfo {
-  name: string;
-  email: string;
+  name?: string;
+  email?: string;
 }
 
 export const updateUserInfo = CatchAsyncError(

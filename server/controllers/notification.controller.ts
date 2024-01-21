@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
+import cron from "node-cron";
 import { CatchAsyncError } from "../middleware/catchAsyncErrors";
 import ErrorHandler from "../utils/ErrorHandler";
 import NotificationModel from "../models/notification.model";
-import cron from "node-cron";
 
 export const getAllNotifications = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
