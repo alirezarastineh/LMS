@@ -2,9 +2,3 @@ node_modules/
 .vscode/
 server/.env
 client/.env
-client/app/components/Footer.tsx
-client/app/components/Profile/Profile.tsx
-client/app/hooks/adminProtected.tsx
-client/app/hooks/useProtected.tsx
-client/app/hooks/userAuth.tsx
-client/app/profile/page.tsx
