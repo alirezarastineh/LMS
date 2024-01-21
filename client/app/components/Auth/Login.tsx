@@ -10,9 +10,9 @@ import {
 } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
 import { signIn } from "next-auth/react";
+import toast from "react-hot-toast";
 import { styles } from "@/app/styles/styles";
 import { useLoginMutation } from "@/redux/features/auth/authApi";
-import toast from "react-hot-toast";
 
 type LoginProps = {
   setRoute: (route: string) => void;

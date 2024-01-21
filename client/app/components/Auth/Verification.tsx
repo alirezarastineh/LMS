@@ -1,9 +1,9 @@
-import { styles } from "@/app/styles/styles";
-import { useActivationMutation } from "@/redux/features/auth/authApi";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { VscWorkspaceTrusted } from "react-icons/vsc";
 import { useSelector } from "react-redux";
+import { styles } from "@/app/styles/styles";
+import { useActivationMutation } from "@/redux/features/auth/authApi";
 
 type VerificationProps = {
   setRoute: (route: string) => void;

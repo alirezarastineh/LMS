@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import { HiOutlineMenuAlt3, HiOutlineUserCircle } from "react-icons/hi";
+import toast from "react-hot-toast";
 import NavItems from "../utils/NavItems";
 import { ThemeSwitcher } from "../utils/ThemeSwitcher";
 import CustomModal from "../utils/CustomModal";
@@ -10,12 +12,10 @@ import Login from "./Auth/Login";
 import Signup from "./Auth/SignUp";
 import Verification from "./Auth/Verification";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
-import { useSession } from "next-auth/react";
 import {
   useLogOutQuery,
   useSocialAuthMutation,
 } from "@/redux/features/auth/authApi";
-import toast from "react-hot-toast";
 import Image from "next/image";
 import avatar from "../../public/assets/avatar.png";
 import Loader from "./Loader/Loader";
