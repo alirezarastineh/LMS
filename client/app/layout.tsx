@@ -3,10 +3,10 @@
 import "./globals.css";
 import { Poppins } from "next/font/google";
 import { Josefin_Sans } from "next/font/google";
-import { ThemeProvider } from "./utils/theme-provider";
 import { Toaster } from "react-hot-toast";
-import { Providers } from "./Provider";
 import { SessionProvider } from "next-auth/react";
+import { ThemeProvider } from "./utils/theme-provider";
+import { Providers } from "./Provider";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 import Loader from "./components/Loader/Loader";
 

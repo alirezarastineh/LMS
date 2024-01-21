@@ -1,7 +1,7 @@
-import { styles } from "@/app/styles/styles";
-import { useUpdatePasswordMutation } from "@/redux/features/user/userApi";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { styles } from "@/app/styles/styles";
+import { useUpdatePasswordMutation } from "@/redux/features/user/userApi";
 
 type ChangePasswordProps = {};
 
