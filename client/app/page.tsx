@@ -4,6 +4,10 @@ import { useState } from "react";
 import Header from "./components/Header";
 import Heading from "./utils/Heading";
 import Hero from "./components/Route/Hero";
+import Footer from "./components/Footer";
+import Courses from "./components/Route/Courses";
+import Reviews from "./components/Route/Reviews";
+import FAQ from "./components/FAQ/FAQ";
 
 interface PageProps {}
 
@@ -29,6 +33,10 @@ const Page = ({}: PageProps) => {
         setRoute={setRoute}
       />
       <Hero />
+      <Courses />
+      <Reviews />
+      <FAQ />
+      <Footer />
     </div>
   );
 };
