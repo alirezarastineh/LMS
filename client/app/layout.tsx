@@ -1,14 +1,19 @@
 "use client";
 
 import "./globals.css";
+import { useEffect } from "react";
 import { Poppins } from "next/font/google";
 import { Josefin_Sans } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import { SessionProvider } from "next-auth/react";
+import socketIO from "socket.io-client";
 import { ThemeProvider } from "./utils/theme-provider";
 import { Providers } from "./Provider";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 import Loader from "./components/Loader/Loader";
+
+const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_SERVER_URI || "";
+const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -39,7 +44,7 @@ export default function RootLayout({
                 <div>{children}</div>
               </Custom>
               <Toaster position="top-center" reverseOrder={false} />
-            </ThemeProvider>{" "}
+            </ThemeProvider>
           </SessionProvider>
         </Providers>
       </body>
@@ -53,6 +58,10 @@ type CustomProps = {
 
 const Custom = ({ children }: CustomProps) => {
   const { isLoading } = useLoadUserQuery({});
+
+  useEffect(() => {
+    socketId.on("connection", () => {});
+  }, []);
 
   return <div>{isLoading ? <Loader /> : <div>{children}</div>}</div>;
 };
