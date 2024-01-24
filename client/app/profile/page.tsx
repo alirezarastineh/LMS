@@ -12,8 +12,11 @@ type ProfilePageProps = {};
 
 const Page = ({}: ProfilePageProps) => {
   const [open, setOpen] = useState(false);
+
   const [activeItem] = useState(5);
+
   const [route, setRoute] = useState("Login");
+
   const { user } = useSelector((state: any) => state.auth);
 
   return (
@@ -24,6 +27,7 @@ const Page = ({}: ProfilePageProps) => {
           description="E-Learning is good"
           keywords="E-Learning is future"
         />
+
         <Header
           open={open}
           setOpen={setOpen}
@@ -31,7 +35,9 @@ const Page = ({}: ProfilePageProps) => {
           route={route}
           setRoute={setRoute}
         />
+
         <Profile user={user} />
+
         <Footer />
       </Protected>
     </div>
