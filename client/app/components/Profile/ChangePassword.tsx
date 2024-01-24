@@ -7,8 +7,11 @@ type ChangePasswordProps = {};
 
 const ChangePassword = ({}: ChangePasswordProps) => {
   const [oldPassword, setOldPassword] = useState("");
+
   const [newPassword, setNewPassword] = useState("");
+
   const [confirmPassword, setConfirmPassword] = useState("");
+
   const [updatePassword, { isSuccess, error }] = useUpdatePasswordMutation();
 
   const passwordChangeHandler = async (e: any) => {
@@ -24,6 +27,7 @@ const ChangePassword = ({}: ChangePasswordProps) => {
     if (isSuccess) {
       toast.success("Password changed successfully");
     }
+
     if (error && "data" in error) {
       const errorData = error as any;
       toast.error(errorData.data.message);
@@ -35,6 +39,7 @@ const ChangePassword = ({}: ChangePasswordProps) => {
       <h1 className="block text-[25px] 800px:text-[30px] font-Poppins text-center font-[500] text-black dark:text-[#fff] pb-2">
         Change Password
       </h1>
+
       <div className="w-full">
         <form
           onSubmit={passwordChangeHandler}
@@ -44,6 +49,7 @@ const ChangePassword = ({}: ChangePasswordProps) => {
             <label className="block pb-2 text-black dark:text-[#fff]">
               Enter your old password
             </label>
+
             <input
               aria-required="true"
               type="password"
@@ -53,10 +59,12 @@ const ChangePassword = ({}: ChangePasswordProps) => {
               onChange={(e) => setOldPassword(e.target.value)}
             />
           </div>
+
           <div className=" w-[100%] 800px:w-[60%] mt-2">
             <label className="block pb-2 text-black dark:text-[#fff]">
               Enter your new password
             </label>
+
             <input
               aria-required="true"
               type="password"
@@ -66,10 +74,12 @@ const ChangePassword = ({}: ChangePasswordProps) => {
               onChange={(e) => setNewPassword(e.target.value)}
             />
           </div>
+
           <div className=" w-[100%] 800px:w-[60%] mt-2">
             <label className="block pb-2 text-black dark:text-[#fff]">
               Enter your confirm password
             </label>
+
             <input
               aria-required="true"
               type="password"
@@ -78,6 +88,7 @@ const ChangePassword = ({}: ChangePasswordProps) => {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
+
             <input
               className={`w-[95%] h-[40px] border border-[#37a39a] text-center text-black dark:text-[#fff] rounded-[3px] mt-8 cursor-pointer`}
               required
