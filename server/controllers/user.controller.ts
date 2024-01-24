@@ -235,10 +235,10 @@ export const updateAccessToken = CatchAsyncError(
       res.cookie("access_token", accessToken, accessTokenOptions);
       res.cookie("refresh_token", refreshToken, refreshTokenOptions);
 
-      res.status(200).json({
-        status: "success",
-        accessToken,
-      });
+      // res.status(200).json({
+      //   status: "success",
+      //   accessToken,
+      // });
 
       const redisKey = `userSession:${user.name}`;
 
