@@ -1,6 +1,6 @@
 "use client";
 
-import AdminSidebar from "../../../components/Admin/sidebar/AdminSidebar";
+import AdminSidebar from "../../../components/Admin/Sidebar/AdminSidebar";
 import Heading from "../../../../app/utils/Heading";
 import DashboardHeader from "../../../../app/components/Admin/DashboardHeader";
 import EditCourse from "../../../components/Admin/Course/EditCourse";
@@ -16,7 +16,7 @@ const page = ({ params }: pageProps) => {
     <div>
       <Heading
         title="E-Learning - Admin"
-        description="ELearning is a platform for students to learn and get help from teachers"
+        description="E-Learning is a platform for students to learn and get help from teachers"
         keywords="Programming,MERN,Redux,Machine Learning"
       />
       <div className="flex">
