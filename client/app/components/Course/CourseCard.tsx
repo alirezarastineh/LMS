@@ -42,7 +42,7 @@ const CourseCard = ({ item, isProfile }: CourseCardProps) => {
               {item.price === 0 ? "Free" : `${item.price}€`}
             </h3>
             <h5 className="pl-3 text-[14px] mt-[-5px] line-through opacity-80 text-black dark:text-[#fff]">
-              {item.estimatedPrice}$
+              {item.estimatedPrice}€
             </h5>
           </div>
           <div className="flex items-center pb-3">
