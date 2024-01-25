@@ -120,7 +120,7 @@ export const createOrder = CatchAsyncError(
 export const getAllOrdersAdmin = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      getAllOrdersService(res);
+      await getAllOrdersService(res);
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
     }
