@@ -13,7 +13,7 @@ type ProfilePageProps = {};
 const Page = ({}: ProfilePageProps) => {
   const [open, setOpen] = useState(false);
 
-  const [activeItem] = useState(5);
+  const [activeItem, setActiveItem] = useState(5);
 
   const [route, setRoute] = useState("Login");
 

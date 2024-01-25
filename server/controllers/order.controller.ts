@@ -122,7 +122,7 @@ export const getAllOrdersAdmin = CatchAsyncError(
     try {
       getAllOrdersService(res);
     } catch (error: any) {
-      return next(new ErrorHandler(error.message, 400));
+      return next(new ErrorHandler(error.message, 500));
     }
   }
 );

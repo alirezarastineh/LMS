@@ -15,10 +15,10 @@ type ProfileProps = {
 
 const Profile = ({ user }: ProfileProps) => {
   const [scroll, setScroll] = useState(false);
-  const [avatar] = useState(null);
+  const [avatar, setAvatar] = useState(null);
   const [logout, setLogout] = useState(false);
   const [courses, setCourses] = useState([]);
-  const { data } = useGetUsersAllCoursesQuery(undefined, {});
+  const { data, isLoading } = useGetUsersAllCoursesQuery(undefined, {});
   const [active, setActive] = useState(1);
 
   const {} = useLogOutQuery(undefined, {

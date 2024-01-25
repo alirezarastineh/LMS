@@ -347,7 +347,7 @@ export const updateUserPassword = CatchAsyncError(
         return next(new ErrorHandler("Please enter old and new password", 400));
       }
 
-      const user = await UserModel.findById(req.user?._id).select("+password");
+      const user = await UserModel.findById(userId).select("+password");
 
       if (user?.password === undefined) {
         return next(new ErrorHandler("Invalid User", 400));
