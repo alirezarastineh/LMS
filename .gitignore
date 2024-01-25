@@ -2,9 +2,6 @@ node_modules/
 .vscode/
 server/.env
 client/.env
-client/app/about/About.tsx
-client/app/about/page.tsx
-client/app/admin/page.tsx
 client/app/admin/categories/page.tsx
 client/app/admin/courses/page.tsx
 client/app/admin/courses-analytics/page.tsx
@@ -52,6 +49,3 @@ client/app/faq/page.tsx
 client/app/policy/page.tsx
 client/app/policy/Policy.tsx
 client/app/utils/CoursePlayer.tsx
-client/redux/features/analytics/analyticsApi.ts
-client/redux/features/notifications/notificationsApi.ts
-client/redux/features/orders/ordersApi.ts
