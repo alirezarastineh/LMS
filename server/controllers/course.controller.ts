@@ -135,8 +135,8 @@ export const getAllCourses = CatchAsyncError(
           courses,
         });
       } else {
-        const courses = await CourseModel.find({}).select(
-          "-courseData.videoUrl -courseData.suggestion -courseData.question -courseData.links"
+        const courses = await CourseModel.find().select(
+          "-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links"
         );
 
         await redis.set(allCourses, JSON.stringify(courses), "EX", 604800);
@@ -216,7 +216,7 @@ export const addQuestion = CatchAsyncError(
         questionReplies: [],
       };
 
-      courseContent.question.push(newQuestion);
+      courseContent.questions.push(newQuestion);
 
       await NotificationModel.create({
         user: req.user?._id,
@@ -263,7 +263,7 @@ export const addAnswer = CatchAsyncError(
         return next(new ErrorHandler("Invalid Content ID", 400));
       }
 
-      const question = courseContent?.question?.find((item: any) =>
+      const question = courseContent?.questions?.find((item: any) =>
         item._id.equals(questionId)
       );
 

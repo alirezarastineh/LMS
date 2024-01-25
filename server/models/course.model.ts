@@ -11,7 +11,7 @@ interface IReview extends Document {
   user: IUser;
   rating?: number;
   comment: string;
-  commentReplies?: IComment[];
+  commentReplies?: IReview[];
 }
 
 interface ILink extends Document {
@@ -29,7 +29,7 @@ interface ICourseData extends Document {
   videoPlayer: string;
   links: ILink[];
   suggestion: string;
-  question: IComment[];
+  questions: IComment[];
 }
 
 export interface ICourse extends Document {
@@ -84,7 +84,7 @@ const courseDataSchema = new Schema<ICourseData>({
   videoPlayer: String,
   links: [linkSchema],
   suggestion: String,
-  question: [commentSchema],
+  questions: [commentSchema],
 });
 
 const courseSchema = new Schema<ICourse>(
@@ -109,19 +109,11 @@ const courseSchema = new Schema<ICourse>(
       required: true,
     },
 
-    estimatedPrice: {
-      type: Number,
-      required: true,
-    },
+    estimatedPrice: { type: Number },
 
     thumbnail: {
-      public_id: {
-        type: String,
-        required: true,
-      },
-      url: {
-        type: String,
-      },
+      public_id: { type: String },
+      url: { type: String },
     },
 
     tags: {

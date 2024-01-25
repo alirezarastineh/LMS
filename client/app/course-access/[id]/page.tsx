@@ -13,7 +13,7 @@ type PageProps = {
 const Page = ({ params }: PageProps) => {
   const id = params.id;
 
-  const { isLoading, error, data } = useLoadUserQuery(undefined, {});
+  const { isLoading, error, data, refetch } = useLoadUserQuery(undefined, {});
 
   useEffect(() => {
     if (data) {
