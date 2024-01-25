@@ -256,7 +256,7 @@ export const getUserInfo = CatchAsyncError(
     try {
       const userId = req.user?._id;
 
-      getUserById(userId, res);
+      await getUserById(userId, res);
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
     }
@@ -431,7 +431,7 @@ export const updateUserAvatar = CatchAsyncError(
 export const getAllUsersAdmin = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      getAllUsersService(res);
+      await getAllUsersService(res);
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
     }
