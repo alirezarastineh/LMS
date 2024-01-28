@@ -2,17 +2,6 @@ node_modules/
 .vscode/
 server/.env
 client/.env
-client/app/admin/categories/page.tsx
-client/app/admin/courses/page.tsx
-client/app/admin/courses-analytics/page.tsx
-client/app/admin/create-course/page.tsx
-client/app/admin/faq/page.tsx
-client/app/admin/hero/page.tsx
-client/app/admin/invoices/page.tsx
-client/app/admin/orders-analytics/page.tsx
-client/app/admin/team/page.tsx
-client/app/admin/users/page.tsx
-client/app/admin/users-analytics/page.tsx
 client/app/components/Admin/DashboardHeader.tsx
 client/app/components/Admin/DashboardHero.tsx
 client/app/components/Admin/Analytics/CourseAnalytics.tsx
@@ -44,8 +33,5 @@ client/app/components/Payment/CheckOutForm.tsx
 client/app/components/Review/ReviewCard.tsx
 client/app/components/Route/Courses.tsx
 client/app/components/Route/Reviews.tsx
-client/app/courses/page.tsx
-client/app/faq/page.tsx
-client/app/policy/page.tsx
 client/app/policy/Policy.tsx
 client/app/utils/CoursePlayer.tsx
