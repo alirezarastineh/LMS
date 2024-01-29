@@ -8,6 +8,7 @@ import {
   editCourse,
   generateVideoUrl,
   getAllCourses,
+  getAllCoursesAdmin,
   getCourseContentByUser,
   getSingleCourse,
   uploadCourse,
@@ -56,7 +57,7 @@ courseRouter.get(
   "/get-all-courses-admin",
   isAuthenticated,
   authorizeRoles("admin"),
-  getAllCourses
+  getAllCoursesAdmin
 );
 
 courseRouter.delete(
