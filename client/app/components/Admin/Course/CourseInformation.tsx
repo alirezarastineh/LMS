@@ -262,9 +262,11 @@ const CourseInformation = ({
               <Image
                 src={courseInfo.thumbnail}
                 alt=""
-                width={30}
-                height={30}
-                className="max-h-full w-full object-cover"
+                layout="responsive"
+                objectFit="cover"
+                width={500}
+                height={300}
+                className="max-h-full w-full"
               />
             ) : (
               <span className="text-black dark:text-white">
