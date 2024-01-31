@@ -137,7 +137,6 @@ const EditCourse = ({ id }: EditCourseProps) => {
   };
 
   const handleCourseCreate = async (e: any) => {
-    e.preventDefault();
     await editCourse({ id: editCourseData?._id, data: courseData });
   };
 
