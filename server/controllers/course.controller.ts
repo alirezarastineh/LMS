@@ -48,24 +48,24 @@ export const editCourse = CatchAsyncError(
 
       const courseData = (await CourseModel.findById(courseId)) as any;
 
-      if (thumbnail && !thumbnail.startsWith("https")) {
-        await cloudinary.v2.uploader.destroy(courseData.thumbnail.public_id);
+      if (thumbnail) {
+        if (thumbnail.startsWith("https")) {
+          data.thumbnail = {
+            public_id: courseData?.thumbnail.public_id,
+            url: courseData?.thumbnail.url,
+          };
+        } else {
+          await cloudinary.v2.uploader.destroy(courseData.thumbnail.public_id);
 
-        const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
-          folder: "Courses",
-        });
+          const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
+            folder: "Courses",
+          });
 
-        data.thumbnail = {
-          public_id: myCloud.public_id,
-          url: myCloud.secure_url,
-        };
-      }
-
-      if (thumbnail.startsWith("https")) {
-        data.thumbnail = {
-          public_id: courseData?.thumbnail.public_id,
-          url: courseData?.thumbnail.url,
-        };
+          data.thumbnail = {
+            public_id: myCloud.public_id,
+            url: myCloud.secure_url,
+          };
+        }
       }
 
       const course = await CourseModel.findByIdAndUpdate(
