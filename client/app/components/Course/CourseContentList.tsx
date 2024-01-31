@@ -96,7 +96,7 @@ const CourseContentList = ({
             {isSectionVisible && (
               <div className="w-full">
                 {sectionVideos.map((item: any, index: number) => {
-                  const videoIndex: number = sectionStartIndex + index; // Calculate the video index within the overall list
+                  const videoIndex: number = sectionStartIndex + index;
                   const contentLength: number = item.videoLength / 60;
                   return (
                     <div
