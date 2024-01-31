@@ -16,13 +16,17 @@ const Page = ({ params }: PageProps) => {
   const { isLoading, error, data, refetch } = useLoadUserQuery(undefined, {});
 
   useEffect(() => {
-    if (data) {
+    if (data && !error) {
+      const isAdmin = data.user?.role === "admin";
+
       const isPurchased = data.user.courses.find(
         (item: any) => item._id === id
       );
-      if (!isPurchased) {
+
+      if (!isPurchased && !isAdmin) {
         redirect("/");
       }
+      return;
     }
 
     if (error) {
