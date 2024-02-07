@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { AiOutlineCamera } from "react-icons/ai";
 import { toast } from "react-hot-toast";
 import { styles } from "../../../app/styles/styles";
-import avatarIcon from "../../../public/assets/avatar.png";
+import avatarIcon from "https://res.cloudinary.com/kouroshrstn/image/upload/v1707293133/Avatars/avatar_dwjgxo.png";
 import {
   useEditProfileMutation,
   useUpdateAvatarMutation,

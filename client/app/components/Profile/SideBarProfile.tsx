@@ -4,7 +4,7 @@ import { RiLockPasswordLine } from "react-icons/ri";
 import { SiCoursera } from "react-icons/si";
 import { AiOutlineLogout } from "react-icons/ai";
 import { MdOutlineAdminPanelSettings } from "react-icons/md";
-import avatarDefault from "../../../public/assets/avatar.png";
+import avatarDefault from "https://res.cloudinary.com/kouroshrstn/image/upload/v1707293133/Avatars/avatar_dwjgxo.png";
 
 type SideBarProfileProps = {
   user: any;

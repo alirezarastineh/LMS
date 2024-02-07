@@ -25,7 +25,7 @@ import {
   ManageHistoryIcon,
   ExitToAppIcon,
 } from "./Icon";
-import avatarDefault from "../../../../public/assets/avatar.png";
+import avatarDefault from "https://res.cloudinary.com/kouroshrstn/image/upload/v1707293133/Avatars/avatar_dwjgxo.png";
 
 interface ItemProps {
   title: string;
