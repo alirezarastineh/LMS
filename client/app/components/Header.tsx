@@ -17,7 +17,7 @@ import {
   useSocialAuthMutation,
 } from "@/redux/features/auth/authApi";
 import Image from "next/image";
-import avatar from "../../public/assets/avatar.png";
+import avatar from "https://res.cloudinary.com/kouroshrstn/image/upload/v1707293133/Avatars/avatar_dwjgxo.png";
 import Loader from "./Loader/Loader";
 
 type HeaderProps = {
