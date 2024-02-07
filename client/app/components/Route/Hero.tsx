@@ -76,16 +76,22 @@ const Hero = ({}: HeroProps) => {
               <Image
                 src="https://res.cloudinary.com/kouroshrstn/image/upload/v1707293133/Avatars/client-1_hgvvj9.jpg"
                 alt=""
+                width={40}
+                height={40}
                 className="rounded-full"
               />
               <Image
                 src="https://res.cloudinary.com/kouroshrstn/image/upload/v1707293133/Avatars/client-2_r5p2i1.jpg"
                 alt=""
+                width={40}
+                height={40}
                 className="rounded-full ml-[-20px]"
               />
               <Image
-                src="https://res.cloudinary.com/kouroshrstn/image/upload/v1707293133/Avatars/client-2_r5p2i1.jpg"
+                src="https://res.cloudinary.com/kouroshrstn/image/upload/v1707293133/Avatars/client-3_dqow9y.jpg"
                 alt=""
+                width={40}
+                height={40}
                 className="rounded-full ml-[-20px]"
               />
               <p className="font-Josefin dark:text-[#edfff4] text-[#000000b3] 1000px:pl-3 text-[18px] font-[600]">
