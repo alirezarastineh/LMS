@@ -132,7 +132,7 @@ const CourseContentMedia = ({
       if (user.role !== "admin") {
         socketId.emit("notification", {
           title: `New Reply Received`,
-          message: `You have a new question in ${data[activeVideo].title}`,
+          message: `You have a new reply in ${data[activeVideo].title}`,
           userId: user._id,
         });
       }
