@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useGetUsersAllCoursesQuery } from "@/redux/features/courses/coursesApi";
 import { useGetHeroDataQuery } from "@/redux/features/layout/layoutApi";
@@ -13,7 +13,7 @@ import Footer from "../components/Footer";
 
 type PageProps = {};
 
-const Page = ({}: PageProps) => {
+const CoursesContent = () => {
   const searchParams = useSearchParams();
 
   const search = searchParams?.get("title");
@@ -21,10 +21,6 @@ const Page = ({}: PageProps) => {
   const { data, isLoading } = useGetUsersAllCoursesQuery(undefined, {});
 
   const { data: categoriesData } = useGetHeroDataQuery("Categories", {});
-
-  const [route, setRoute] = useState("Login");
-
-  const [open, setOpen] = useState(false);
 
   const [courses, setCourses] = useState([]);
 
@@ -58,14 +54,6 @@ const Page = ({}: PageProps) => {
         <Loader />
       ) : (
         <>
-          <Header
-            route={route}
-            setRoute={setRoute}
-            open={open}
-            setOpen={setOpen}
-            activeItem={1}
-          />
-
           <div className="w-[95%] 800px:w-[85%] m-auto min-h-[70vh]">
             <Heading
               title={"All courses - E-Learning"}
@@ -120,6 +108,27 @@ const Page = ({}: PageProps) => {
           <Footer />
         </>
       )}
+    </div>
+  );
+};
+
+const Page = ({}: PageProps) => {
+  const [route, setRoute] = useState("Login");
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div>
+      <Suspense fallback={<Loader />}>
+        <Header
+          route={route}
+          setRoute={setRoute}
+          open={open}
+          setOpen={setOpen}
+          activeItem={1}
+        />
+        <CoursesContent />
+        <Footer />
+      </Suspense>
     </div>
   );
 };
