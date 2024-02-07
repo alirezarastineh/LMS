@@ -33,7 +33,10 @@ const Hero = ({}: HeroProps) => {
           <div className="absolute top-[100px] 1000px:top-[unset] 1500px:h-[700px] 1500px:w-[700px] 1100px:h-[600px] 1100px:w-[600px] h-[40vh] left-5 w-[40vh] hero_animation rounded-[50%] 1100px:left-8 1500px:left-14" />
           <div className="1000px:w-[40%] flex 1000px:min-h-screen items-center justify-end pt-[70px] 1000px:pt-[0] z-10">
             <Image
-              src={data?.layout?.banner?.image?.url}
+              src={
+                data?.layout?.banner?.image?.url ||
+                "https://res.cloudinary.com/kouroshrstn/image/upload/v1707293135/Avatars/banner-img-1_l7ak1q.png"
+              }
               width={400}
               height={400}
               alt=""
@@ -43,11 +46,12 @@ const Hero = ({}: HeroProps) => {
           </div>
           <div className="1000px:w-[60%] flex flex-col items-center 1000px:mt-[0px] text-center 1000px:text-left mt-[150px]">
             <h2 className="dark:text-white text-[#000000c7] text-[30px] px-3 w-full 1000px:text-[70px] font-[600] font-Josefin py-2 1000px:leading-[75px] 1500px:w-[60%] 1100px:w-[78%]">
-              {data?.layout?.banner?.title}
+              {data?.layout?.banner?.title || "E-Learning is the future"}
             </h2>
             <br />
             <p className="dark:text-[#edfff4] text-[#000000ac] font-Josefin font-[600] text-[18px] 1500px:!w-[55%] 1100px:!w-[78%]">
-              {data?.layout?.banner?.subtitle}
+              {data?.layout?.banner?.subtitle ||
+                "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."}
             </p>
             <br />
             <br />
@@ -70,17 +74,17 @@ const Hero = ({}: HeroProps) => {
             <br />
             <div className="1500px:w-[55%] 1100px:w-[78%] w-[90%] flex items-center">
               <Image
-                src={require("../../../public/assets/client-1.jpg")}
+                src="https://res.cloudinary.com/kouroshrstn/image/upload/v1707293133/Avatars/client-1_hgvvj9.jpg"
                 alt=""
                 className="rounded-full"
               />
               <Image
-                src={require("../../../public/assets/client-2.jpg")}
+                src="https://res.cloudinary.com/kouroshrstn/image/upload/v1707293133/Avatars/client-2_r5p2i1.jpg"
                 alt=""
                 className="rounded-full ml-[-20px]"
               />
               <Image
-                src={require("../../../public/assets/client-3.jpg")}
+                src="https://res.cloudinary.com/kouroshrstn/image/upload/v1707293133/Avatars/client-2_r5p2i1.jpg"
                 alt=""
                 className="rounded-full ml-[-20px]"
               />

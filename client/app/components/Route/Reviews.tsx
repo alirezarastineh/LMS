@@ -56,7 +56,7 @@ const Reviews = ({}: ReviewsProps) => {
       <div className="w-full 800px:flex items-center">
         <div className="800px:w-[50%] w-full">
           <Image
-            src={require("../../../public/assets/business-img.png")}
+            src="https://res.cloudinary.com/kouroshrstn/image/upload/v1707293134/Avatars/business-img_o2xmaa.png"
             alt="business"
             width={700}
             height={700}
