@@ -14,7 +14,7 @@ const CoursePlayer = ({ videoUrl }: CoursePlayerProps) => {
 
   useEffect(() => {
     axios
-      .post("https://lmsserver.vercel.app/api/v1/getVdoCipherOTP", {
+      .post("http://localhost:8000/api/v1/getVdoCipherOTP", {
         videoId: videoUrl,
       })
       .then((res) => {
