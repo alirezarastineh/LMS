@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { AiOutlineCamera } from "react-icons/ai";
 import { toast } from "react-hot-toast";
 import { styles } from "../../../app/styles/styles";
-import avatarIcon from "https://res.cloudinary.com/kouroshrstn/image/upload/v1707293133/Avatars/avatar_dwjgxo.png";
 import {
   useEditProfileMutation,
   useUpdateAvatarMutation,
@@ -72,7 +71,11 @@ const ProfileInfo = ({ avatar, user }: ProfileInfoProps) => {
       <div className="w-full flex justify-center">
         <div className="relative">
           <Image
-            src={user.avatar || avatar ? user.avatar.url || avatar : avatarIcon}
+            src={
+              user.avatar || avatar
+                ? user.avatar.url || avatar
+                : "https://res.cloudinary.com/kouroshrstn/image/upload/v1707293133/Avatars/avatar_dwjgxo.png"
+            }
             alt=""
             width={120}
             height={120}

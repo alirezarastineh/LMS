@@ -17,7 +17,6 @@ import {
   useSocialAuthMutation,
 } from "@/redux/features/auth/authApi";
 import Image from "next/image";
-import avatar from "https://res.cloudinary.com/kouroshrstn/image/upload/v1707293133/Avatars/avatar_dwjgxo.png";
 import Loader from "./Loader/Loader";
 
 type HeaderProps = {
@@ -145,7 +144,7 @@ const Header = ({
                         src={
                           userData?.user.avatar
                             ? userData.user.avatar.url
-                            : avatar
+                            : "https://res.cloudinary.com/kouroshrstn/image/upload/v1707293133/Avatars/avatar_dwjgxo.png"
                         }
                         alt=""
                         width={30}
@@ -183,7 +182,7 @@ const Header = ({
                         src={
                           userData?.user.avatar
                             ? userData.user.avatar.url
-                            : avatar
+                            : "https://res.cloudinary.com/kouroshrstn/image/upload/v1707293133/Avatars/avatar_dwjgxo.png"
                         }
                         alt=""
                         width={30}

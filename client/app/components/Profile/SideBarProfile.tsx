@@ -4,7 +4,6 @@ import { RiLockPasswordLine } from "react-icons/ri";
 import { SiCoursera } from "react-icons/si";
 import { AiOutlineLogout } from "react-icons/ai";
 import { MdOutlineAdminPanelSettings } from "react-icons/md";
-import avatarDefault from "https://res.cloudinary.com/kouroshrstn/image/upload/v1707293133/Avatars/avatar_dwjgxo.png";
 
 type SideBarProfileProps = {
   user: any;
@@ -31,7 +30,9 @@ const SideBarProfile = ({
       >
         <Image
           src={
-            user.avatar || avatar ? user.avatar.url || avatar : avatarDefault
+            user.avatar || avatar
+              ? user.avatar.url || avatar
+              : "https://res.cloudinary.com/kouroshrstn/image/upload/v1707293133/Avatars/avatar_dwjgxo.png"
           }
           alt=""
           width={20}
