@@ -311,7 +311,7 @@ const CourseContentMedia = ({
               src={
                 user.avatar
                   ? user.avatar.url
-                  : "https://res.cloudinary.com/dshp9jnuy/image/upload/v1665822253/avatars/nrxsg8sd9iy10bbsoenn.png"
+                  : "https://res.cloudinary.com/kouroshrstn/image/upload/v1707293133/Avatars/avatar_dwjgxo.png"
               }
               width={50}
               height={50}
@@ -370,7 +370,7 @@ const CourseContentMedia = ({
                     src={
                       user.avatar
                         ? user.avatar.url
-                        : "https://res.cloudinary.com/dshp9jnuy/image/upload/v1665822253/avatars/nrxsg8sd9iy10bbsoenn.png"
+                        : "https://res.cloudinary.com/kouroshrstn/image/upload/v1707293133/Avatars/avatar_dwjgxo.png"
                     }
                     width={50}
                     height={50}
@@ -446,7 +446,7 @@ const CourseContentMedia = ({
                             src={
                               item.user.avatar
                                 ? item.user.avatar.url
-                                : "https://res.cloudinary.com/dshp9jnuy/image/upload/v1665822253/avatars/nrxsg8sd9iy10bbsoenn.png"
+                                : "https://res.cloudinary.com/kouroshrstn/image/upload/v1707293133/Avatars/avatar_dwjgxo.png"
                             }
                             width={50}
                             height={50}
@@ -505,7 +505,7 @@ const CourseContentMedia = ({
                               src={
                                 i.user.avatar
                                   ? i.user.avatar.url
-                                  : "https://res.cloudinary.com/dshp9jnuy/image/upload/v1665822253/avatars/nrxsg8sd9iy10bbsoenn.png"
+                                  : "https://res.cloudinary.com/kouroshrstn/image/upload/v1707293133/Avatars/avatar_dwjgxo.png"
                               }
                               width={50}
                               height={50}
@@ -577,7 +577,7 @@ const CommentItem = ({
   handleAnswerSubmit,
   answerCreationLoading,
 }: any) => {
-  const [replyActive, setreplyActive] = useState(false);
+  const [replyActive, setReplyActive] = useState(false);
   return (
     <div className="my-4">
       <div className="flex mb-2">
@@ -586,7 +586,7 @@ const CommentItem = ({
             src={
               item.user.avatar
                 ? item.user.avatar.url
-                : "https://res.cloudinary.com/dshp9jnuy/image/upload/v1665822253/avatars/nrxsg8sd9iy10bbsoenn.png"
+                : "https://res.cloudinary.com/kouroshrstn/image/upload/v1707293133/Avatars/avatar_dwjgxo.png"
             }
             width={50}
             height={50}
@@ -606,14 +606,14 @@ const CommentItem = ({
         <span
           className="800px:pl-16 text-[#000000b8] dark:text-[#ffffff83] cursor-pointer mr-2"
           onClick={() => {
-            setreplyActive(!replyActive);
+            setReplyActive(!replyActive);
             setQuestionId(item._id);
           }}
         >
           {!replyActive
-            ? item.questionReplies.length !== 0
-              ? "All Replies"
-              : "Add Reply"
+            ? item.questionReplies.length === 0
+              ? "Add Reply"
+              : "All Replies"
             : "Hide Replies"}
         </span>
         <BiMessage
@@ -637,7 +637,7 @@ const CommentItem = ({
                   src={
                     item.user.avatar
                       ? item.user.avatar.url
-                      : "https://res.cloudinary.com/dshp9jnuy/image/upload/v1665822253/avatars/nrxsg8sd9iy10bbsoenn.png"
+                      : "https://res.cloudinary.com/kouroshrstn/image/upload/v1707293133/Avatars/avatar_dwjgxo.png"
                   }
                   width={50}
                   height={50}
