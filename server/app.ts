@@ -34,7 +34,7 @@ app.use(
 
 app.use(
   "/api/v1",
-  userRouter,
+  // userRouter, checking deployement
   courseRouter,
   orderRouter,
   notificationRouter,
