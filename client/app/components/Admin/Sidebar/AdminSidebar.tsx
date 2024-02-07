@@ -25,7 +25,6 @@ import {
   ManageHistoryIcon,
   ExitToAppIcon,
 } from "./Icon";
-import avatarDefault from "https://res.cloudinary.com/kouroshrstn/image/upload/v1707293133/Avatars/avatar_dwjgxo.png";
 
 interface ItemProps {
   title: string;
@@ -152,7 +151,11 @@ const Sidebar = () => {
                   alt="profile-user"
                   width={100}
                   height={100}
-                  src={user.avatar ? user.avatar.url : avatarDefault}
+                  src={
+                    user.avatar
+                      ? user.avatar.url
+                      : "https://res.cloudinary.com/kouroshrstn/image/upload/v1707293133/Avatars/avatar_dwjgxo.png"
+                  }
                   style={{
                     cursor: "pointer",
                     borderRadius: "50%",
