@@ -40,14 +40,14 @@ const FAQ = ({}: FAQProps) => {
               >
                 <dt className="text-lg">
                   <button
-                    className="flex items-start justify-between w-full text-left focus:outline-none"
+                    className="flex items-start justify-between w-full text-left focus:outline-hidden"
                     onClick={() => toggleQuestion(q._id)}
                   >
                     <span className="font-medium text-black dark:text-white">
                       {q.question}
                     </span>
 
-                    <span className="ml-6 flex-shrink-0">
+                    <span className="ml-6 shrink-0">
                       {activeQuestion === q._id ? (
                         <HiMinus className="h-6 w-6 text-black dark:text-white" />
                       ) : (

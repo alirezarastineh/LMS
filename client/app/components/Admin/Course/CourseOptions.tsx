@@ -28,7 +28,7 @@ const CourseOptions = ({ active, setActive }: CourseOptionsProps) => {
               <div
                 className={`absolute h-[30px] w-1 ${
                   active + 1 > index ? "bg-blue-500" : "bg-[#384766]"
-                } bottom-[-100%]`}
+                } -bottom-full`}
               />
             )}
           </div>

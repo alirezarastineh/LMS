@@ -232,8 +232,8 @@ const CourseContentMedia = ({
         <div
           className={`${
             styles.button
-          } text-white  !w-[unset] !min-h-[40px] !py-[unset] ${
-            activeVideo === 0 && "!cursor-no-drop opacity-[.8]"
+          } text-white  w-[unset]! min-h-[40px]! py-[unset]! ${
+            activeVideo === 0 && "cursor-no-drop! opacity-[.8]"
           }`}
           onClick={() =>
             setActiveVideo(activeVideo === 0 ? 0 : activeVideo - 1)
@@ -245,8 +245,8 @@ const CourseContentMedia = ({
         <div
           className={`${
             styles.button
-          } !w-[unset] text-white  !min-h-[40px] !py-[unset] ${
-            data.length - 1 === activeVideo && "!cursor-no-drop opacity-[.8]"
+          } w-[unset]! text-white  min-h-[40px]! py-[unset]! ${
+            data.length - 1 === activeVideo && "cursor-no-drop! opacity-[.8]"
           }`}
           onClick={() =>
             setActiveVideo(
@@ -260,11 +260,11 @@ const CourseContentMedia = ({
           <AiOutlineArrowRight className="ml-2" />
         </div>
       </div>
-      <h1 className="pt-2 text-[25px] font-[600] dark:text-white text-black ">
+      <h1 className="pt-2 text-[25px] font-semibold dark:text-white text-black ">
         {data[activeVideo].title}
       </h1>
       <br />
-      <div className="w-full p-4 flex items-center justify-between bg-slate-500 bg-opacity-20 backdrop-blur shadow-[bg-slate-700] rounded shadow-inner">
+      <div className="w-full p-4 flex items-center justify-between bg-slate-500 bg-opacity-20 backdrop-blur-sm shadow-[bg-slate-700] rounded-sm shadow-inner">
         {["Overview", "Resources", "Q&A", "Reviews"].map((text, index) => (
           <h5
             key={index}
@@ -326,14 +326,14 @@ const CourseContentMedia = ({
               cols={40}
               rows={5}
               placeholder="Write your question..."
-              className="outline-none bg-transparent ml-3 border dark:text-white text-black border-[#0000001d] dark:border-[#ffffff57] 800px:w-full p-2 rounded w-[90%] 800px:text-[18px] font-Poppins"
+              className="outline-hidden bg-transparent ml-3 border dark:text-white text-black border-[#0000001d] dark:border-[#ffffff57] 800px:w-full p-2 rounded-sm w-[90%] 800px:text-[18px] font-Poppins"
             />
           </div>
           <div className="w-full flex justify-end">
             <div
               className={`${
                 styles.button
-              } !w-[120px] !h-[40px] text-[18px] mt-5 ${
+              } w-[120px]! h-[40px]! text-[18px] mt-5 ${
                 questionCreationLoading && "cursor-not-allowed"
               }`}
               onClick={questionCreationLoading ? () => {} : handleQuestion}
@@ -343,7 +343,7 @@ const CourseContentMedia = ({
           </div>
           <br />
           <br />
-          <div className="w-full h-[1px] bg-[#ffffff3b]" />
+          <div className="w-full h-px bg-[#ffffff3b]" />
           <div>
             <CommentReply
               data={data}
@@ -378,7 +378,7 @@ const CourseContentMedia = ({
                     className="w-[50px] h-[50px] rounded-full object-cover"
                   />
                   <div className="w-full">
-                    <h5 className="pl-3 text-[20px] font-[500] dark:text-white text-black ">
+                    <h5 className="pl-3 text-[20px] font-medium dark:text-white text-black ">
                       Give a Rating <span className="text-red-500">*</span>
                     </h5>
                     <div className="flex w-full ml-2 pb-3">
@@ -410,7 +410,7 @@ const CourseContentMedia = ({
                       cols={40}
                       rows={5}
                       placeholder="Write your comment..."
-                      className="outline-none bg-transparent 800px:ml-3 dark:text-white text-black border border-[#00000027] dark:border-[#ffffff57] w-[95%] 800px:w-full p-2 rounded text-[18px] font-Poppins"
+                      className="outline-hidden bg-transparent 800px:ml-3 dark:text-white text-black border border-[#00000027] dark:border-[#ffffff57] w-[95%] 800px:w-full p-2 rounded-sm text-[18px] font-Poppins"
                     />
                   </div>
                 </div>
@@ -418,7 +418,7 @@ const CourseContentMedia = ({
                   <div
                     className={`${
                       styles.button
-                    } !w-[120px] !h-[40px] text-[18px] mt-5 800px:mr-0 mr-2 ${
+                    } w-[120px]! h-[40px]! text-[18px] mt-5 800px:mr-0 mr-2 ${
                       reviewCreationLoading && "cursor-no-drop"
                     }`}
                     onClick={
@@ -431,7 +431,7 @@ const CourseContentMedia = ({
               </>
             )}
             <br />
-            <div className="w-full h-[1px] bg-[#ffffff3b]" />
+            <div className="w-full h-px bg-[#ffffff3b]" />
             <div className="w-full">
               {(course?.reviews && [...course.reviews].reverse())?.map(
                 (item: any, index: number) => {
@@ -466,7 +466,7 @@ const CourseContentMedia = ({
                       {user.role === "admin" &&
                         item.commentReplies.length === 0 && (
                           <span
-                            className={`${styles.label} !ml-10 cursor-pointer`}
+                            className={`${styles.label} ml-10! cursor-pointer`}
                             onClick={() => {
                               setIsReviewReply(true);
                               setReviewId(item._id);
@@ -483,7 +483,7 @@ const CourseContentMedia = ({
                             placeholder="Enter your reply..."
                             value={reply}
                             onChange={(e: any) => setReply(e.target.value)}
-                            className="block 800px:ml-12 mt-2 outline-none bg-transparent border-b border-[#000] dark:border-[#fff] p-[5px] w-[95%]"
+                            className="block 800px:ml-12 mt-2 outline-hidden bg-transparent border-b border-black dark:border-white p-[5px] w-[95%]"
                           />
                           <button
                             type="submit"
@@ -666,7 +666,7 @@ const CommentItem = ({
                 placeholder="Enter your answer..."
                 value={answer}
                 onChange={(e: any) => setAnswer(e.target.value)}
-                className={`block 800px:ml-12 mt-2 outline-none bg-transparent border-b border-[#00000027] dark:text-white text-black dark:border-[#fff] p-[5px] w-[95%] ${
+                className={`block 800px:ml-12 mt-2 outline-hidden bg-transparent border-b border-[#00000027] dark:text-white text-black dark:border-white p-[5px] w-[95%] ${
                   answer === "" ||
                   (answerCreationLoading && "cursor-not-allowed")
                 }`}

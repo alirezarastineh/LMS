@@ -59,7 +59,7 @@ const CoursePreview = ({
 
         <div className="flex items-center">
           <div
-            className={`${styles.button} !w-[180px] my-3 font-Poppins !bg-[crimson] cursor-not-allowed`}
+            className={`${styles.button} w-[180px]! my-3 font-Poppins bg-[crimson]! cursor-not-allowed`}
           >
             Buy Now {courseData?.price}€
           </div>
@@ -71,11 +71,11 @@ const CoursePreview = ({
             name=""
             id=""
             placeholder="Discount code..."
-            className={`${styles.input} 1500px:!w-[50%] 1100px:w-[60%] ml-3 !mt-0`}
+            className={`${styles.input} 1500px:w-[50%]! 1100px:w-[60%] ml-3 mt-0!`}
           />
 
           <div
-            className={`${styles.button} !w-[120px] my-3 ml-4 font-Poppins cursor-pointer`}
+            className={`${styles.button} w-[120px]! my-3 ml-4 font-Poppins cursor-pointer`}
           >
             Apply
           </div>
@@ -92,7 +92,7 @@ const CoursePreview = ({
 
       <div className="w-full">
         <div className="w-full 800px:pr-5">
-          <h1 className="text-[25px] font-Poppins font-[600]">
+          <h1 className="text-[25px] font-Poppins font-semibold">
             {courseData?.name}
           </h1>
 
@@ -106,7 +106,7 @@ const CoursePreview = ({
             <h5>0 Students</h5>
           </div>
           <br />
-          <h1 className="text-[25px] font-Poppins font-[600]">
+          <h1 className="text-[25px] font-Poppins font-semibold">
             What you will learn from this course?
           </h1>
         </div>
@@ -122,7 +122,7 @@ const CoursePreview = ({
         ))}
         <br />
         <br />
-        <h1 className="text-[25px] font-Poppins font-[600]">
+        <h1 className="text-[25px] font-Poppins font-semibold">
           What are the prerequisites for starting this course?
         </h1>
 
@@ -138,7 +138,7 @@ const CoursePreview = ({
         <br />
         <br />
         <div className="w-full">
-          <h1 className="text-[25px] font-Poppins font-[600]">
+          <h1 className="text-[25px] font-Poppins font-semibold">
             Course Details
           </h1>
 
@@ -151,14 +151,14 @@ const CoursePreview = ({
       </div>
       <div className="w-full flex items-center justify-between">
         <div
-          className="w-full 800px:w-[180px] flex items-center justify-center h-[40px] bg-[#37a39a] text-center text-[#fff] rounded mt-8 cursor-pointer"
+          className="w-full 800px:w-[180px] flex items-center justify-center h-[40px] bg-[#37a39a] text-center text-white rounded-sm mt-8 cursor-pointer"
           onClick={() => prevButton()}
         >
           Prev
         </div>
 
         <div
-          className="w-full 800px:w-[180px] flex items-center justify-center h-[40px] bg-[#37a39a] text-center text-[#fff] rounded mt-8 cursor-pointer"
+          className="w-full 800px:w-[180px] flex items-center justify-center h-[40px] bg-[#37a39a] text-center text-white rounded-sm mt-8 cursor-pointer"
           onClick={() => createCourse()}
         >
           {isEdit ? "Update" : "Create"}

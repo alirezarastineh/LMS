@@ -32,7 +32,7 @@ const CourseAnalytics = ({}: CourseAnalyticsProps) => {
       ) : (
         <div className="h-screen">
           <div className="mt-[50px]">
-            <h1 className={`${styles.title} px-5 !text-start`}>
+            <h1 className={`${styles.title} px-5 text-start!`}>
               Courses Analytics
             </h1>
             <p className={`${styles.label} px-5`}>

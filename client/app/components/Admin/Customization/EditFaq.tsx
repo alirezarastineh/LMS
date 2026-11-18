@@ -103,7 +103,7 @@ const EditFaq = ({}: EditFaqProps) => {
                 >
                   <dt className="text-lg">
                     <button
-                      className="flex items-start dark:text-white text-black justify-between w-full text-left focus:outline-none"
+                      className="flex items-start dark:text-white text-black justify-between w-full text-left focus:outline-hidden"
                       onClick={() => toggleQuestion(q._id)}
                     >
                       <input
@@ -115,7 +115,7 @@ const EditFaq = ({}: EditFaqProps) => {
                         placeholder={"Add your question..."}
                       />
 
-                      <span className="ml-6 flex-shrink-0">
+                      <span className="ml-6 shrink-0">
                         {q.active ? (
                           <HiMinus className="h-6 w-6" />
                         ) : (
@@ -134,7 +134,7 @@ const EditFaq = ({}: EditFaqProps) => {
                         }
                         placeholder={"Add your answer..."}
                       />
-                      <span className="ml-6 flex-shrink-0">
+                      <span className="ml-6 shrink-0">
                         <AiOutlineDelete
                           className="dark:text-white text-black text-[18px] cursor-pointer"
                           onClick={() => {
@@ -160,12 +160,12 @@ const EditFaq = ({}: EditFaqProps) => {
           <div
             className={`${
               styles.button
-            } !w-[100px] !min-h-[40px] !h-[40px] dark:text-white text-black bg-[#cccccc34] 
+            } w-[100px]! min-h-[40px]! h-[40px]! dark:text-white text-black bg-[#cccccc34] 
               ${
                 areQuestionsUnchanged(data.layout.faq, questions) ||
                 isAnyQuestionEmpty(questions)
-                  ? "!cursor-not-allowed"
-                  : "!cursor-pointer !bg-[#42d383]"
+                  ? "cursor-not-allowed!"
+                  : "cursor-pointer! bg-[#42d383]!"
               }
               !rounded fixed bottom-12 right-12`}
             onClick={

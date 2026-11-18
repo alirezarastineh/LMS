@@ -7,7 +7,7 @@ type ReviewCard = {
 
 const ReviewCard = (props: ReviewCard) => {
   return (
-    <div className="w-full h-max pb-4  dark:bg-slate-500 dark:bg-opacity-[0.20] border border-[#00000028] dark:border-[#ffffff1d] backdrop-blur shadow-[bg-slate-700] rounded-lg p-3 shadow-inner">
+    <div className="w-full h-max pb-4  dark:bg-slate-500 dark:bg-opacity-[0.20] border border-[#00000028] dark:border-[#ffffff1d] backdrop-blur-sm shadow-[bg-slate-700] rounded-lg p-3 shadow-inner">
       <div className="flex w-full">
         <Image
           src={props.item.avatar}
@@ -23,7 +23,7 @@ const ReviewCard = (props: ReviewCard) => {
               {props.item.name}
             </h5>
 
-            <h6 className="text-[16px] text-[#000] dark:text-[#ffffffab]">
+            <h6 className="text-[16px] text-black dark:text-[#ffffffab]">
               {props.item.profession}
             </h6>
           </div>
@@ -37,7 +37,7 @@ const ReviewCard = (props: ReviewCard) => {
               {props.item.name}
             </h5>
 
-            <h6 className="text-[16px] text-[#000] dark:text-[#ffffffab]">
+            <h6 className="text-[16px] text-black dark:text-[#ffffffab]">
               {props.item.profession}
             </h6>
           </div>

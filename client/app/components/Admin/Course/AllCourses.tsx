@@ -165,19 +165,19 @@ const AllCourses = ({}: AllCoursesProps) => {
               aria-labelledby="modal-modal-title"
               aria-describedby="modal-modal-description"
             >
-              <Box className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[450px] bg-white dark:bg-slate-900 rounded-[8px] shadow p-4 outline-none">
+              <Box className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[450px] bg-white dark:bg-slate-900 rounded-[8px] shadow-sm p-4 outline-hidden">
                 <h1 className={`${styles.title}`}>
                   Are you sure you want to delete this course?
                 </h1>
                 <div className="flex w-full items-center justify-between mb-6 mt-4">
                   <div
-                    className={`${styles.button} !w-[120px] h-[30px] bg-[#47d097]`}
+                    className={`${styles.button} w-[120px]! h-[30px] bg-[#47d097]`}
                     onClick={() => setOpen(!open)}
                   >
                     Cancel
                   </div>
                   <div
-                    className={`${styles.button} !w-[120px] h-[30px] bg-[#d63f3f]`}
+                    className={`${styles.button} w-[120px]! h-[30px] bg-[#d63f3f]`}
                     onClick={handleDelete}
                   >
                     Delete

@@ -60,7 +60,7 @@ const CourseDetails = ({
       <div className="w-[90%] 800px:w-[90%] m-auto py-5">
         <div className="w-full flex flex-col-reverse 800px:flex-row">
           <div className="w-full 800px:w-[65%] 800px:pr-5">
-            <h1 className="text-[25px] font-Poppins font-[600] text-black dark:text-white">
+            <h1 className="text-[25px] font-Poppins font-semibold text-black dark:text-white">
               {data.name}
             </h1>
             <div className="flex items-center justify-between pt-3">
@@ -76,7 +76,7 @@ const CourseDetails = ({
             </div>
 
             <br />
-            <h1 className="text-[25px] font-Poppins font-[600] text-black dark:text-white">
+            <h1 className="text-[25px] font-Poppins font-semibold text-black dark:text-white">
               What you will learn from this course?
             </h1>
             <div>
@@ -99,7 +99,7 @@ const CourseDetails = ({
               <br />
               <br />
             </div>
-            <h1 className="text-[25px] font-Poppins font-[600] text-black dark:text-white">
+            <h1 className="text-[25px] font-Poppins font-semibold text-black dark:text-white">
               What are the prerequisites for starting this course?
             </h1>
             {data.prerequisites?.map((item: any, index: number) => (
@@ -116,7 +116,7 @@ const CourseDetails = ({
             <br />
             <br />
             <div>
-              <h1 className="text-[25px] font-Poppins font-[600] text-black dark:text-white">
+              <h1 className="text-[25px] font-Poppins font-semibold text-black dark:text-white">
                 Course Overview
               </h1>
               <CourseContentList data={data?.courseData} isDemo={true} />
@@ -124,7 +124,7 @@ const CourseDetails = ({
             <br />
             <br />
             <div className="w-full">
-              <h1 className="text-[25px] font-Poppins font-[600] text-black dark:text-white">
+              <h1 className="text-[25px] font-Poppins font-semibold text-black dark:text-white">
                 Course Details
               </h1>
               <p className="text-[18px] mt-[20px] whitespace-pre-line w-full overflow-hidden text-black dark:text-white">
@@ -233,14 +233,14 @@ const CourseDetails = ({
               <div className="flex items-center">
                 {isPurchased || isAdmin ? (
                   <Link
-                    className={`${styles.button} !w-[180px] my-3 font-Poppins cursor-pointer !bg-[crimson]`}
+                    className={`${styles.button} w-[180px]! my-3 font-Poppins cursor-pointer bg-[crimson]!`}
                     href={`/course-access/${data._id}`}
                   >
                     Enter to Course
                   </Link>
                 ) : (
                   <div
-                    className={`${styles.button} !w-[180px] my-3 font-Poppins cursor-pointer !bg-[crimson]`}
+                    className={`${styles.button} w-[180px]! my-3 font-Poppins cursor-pointer bg-[crimson]!`}
                     onClick={handleOrder}
                   >
                     Buy Now {data.price}€
@@ -267,7 +267,7 @@ const CourseDetails = ({
       <>
         {open && (
           <div className="w-full h-screen bg-[#00000036] fixed top-0 left-0 z-50 flex items-center justify-center">
-            <div className="w-[500px] min-h-[500px] bg-white rounded-xl shadow p-3">
+            <div className="w-[500px] min-h-[500px] bg-white rounded-xl shadow-sm p-3">
               <div className="w-full flex justify-end">
                 <IoCloseOutline
                   size={40}

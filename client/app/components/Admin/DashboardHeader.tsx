@@ -64,7 +64,7 @@ const DashboardHeader = ({ open, setOpen }: DashboardHeaderProps) => {
   };
 
   return (
-    <div className="w-full flex items-center justify-end p-6 fixed top-5 right-0 z-[9999999]">
+    <div className="w-full flex items-center justify-end p-6 fixed top-5 right-0 z-9999999">
       <ThemeSwitcher />
       <div
         className="relative cursor-pointer m-2"
@@ -76,7 +76,7 @@ const DashboardHeader = ({ open, setOpen }: DashboardHeaderProps) => {
         </span>
       </div>
       {open && (
-        <div className="w-[350px] h-[60vh] overflow-y-scroll py-3 px-2 border border-[#ffffff0c] dark:bg-[#111C43] bg-white shadow-xl absolute top-16 z-[1000000000] rounded">
+        <div className="w-[350px] h-[60vh] overflow-y-scroll py-3 px-2 border border-[#ffffff0c] dark:bg-[#111C43] bg-white shadow-xl absolute top-16 z-1000000000 rounded-sm">
           <h5 className="text-center text-[20px] font-Poppins text-black dark:text-white p-3">
             Notifications
           </h5>

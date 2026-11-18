@@ -10,7 +10,7 @@ const Policy = ({}: PolicyProps) => {
           "w-[95%] 800px:w-[92%] m-auto py-2 text-black dark:text-white px-3"
         }
       >
-        <h1 className={`${styles.title} !text-start pt-2`}>
+        <h1 className={`${styles.title} text-start! pt-2`}>
           Platform Terms and Condition
         </h1>
         <ul style={{ listStyle: "unset", marginLeft: "15px" }}>

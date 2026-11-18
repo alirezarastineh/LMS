@@ -110,7 +110,7 @@ const CourseInformation = ({
             cols={30}
             rows={8}
             placeholder="Write something amazing..."
-            className={`${styles.input} !h-min !py-2`}
+            className={`${styles.input} h-min! py-2!`}
             value={courseInfo.description}
             onChange={(e: any) =>
               setCourseInfo({ ...courseInfo, description: e.target.value })
@@ -280,7 +280,7 @@ const CourseInformation = ({
           <input
             type="submit"
             value="Next"
-            className="w-full 800px:w-[180px] h-[40px] bg-[#37a39a] text-center text-[#fff] rounded mt-8 cursor-pointer"
+            className="w-full 800px:w-[180px] h-[40px] bg-[#37a39a] text-center text-white rounded-sm mt-8 cursor-pointer"
           />
         </div>
         <br />

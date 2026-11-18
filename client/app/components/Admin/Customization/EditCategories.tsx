@@ -85,7 +85,7 @@ const EditCategories = ({}: EditCategoriesProps) => {
               <div className="p-3" key={index}>
                 <div className="flex items-center w-full justify-center">
                   <input
-                    className={`${styles.input} !w-[unset] !border-none !text-[20px]`}
+                    className={`${styles.input} w-[unset]! border-none! text-[20px]!`}
                     value={item.title}
                     onChange={(e) =>
                       handleCategoriesAdd(item._id, e.target.value)
@@ -115,12 +115,12 @@ const EditCategories = ({}: EditCategoriesProps) => {
           <div
             className={`${
               styles.button
-            } !w-[100px] !min-h-[40px] !h-[40px] dark:text-white text-black bg-[#cccccc34] 
+            } w-[100px]! min-h-[40px]! h-[40px]! dark:text-white text-black bg-[#cccccc34] 
             ${
               areCategoriesUnchanged(data.layout.categories, categories) ||
               isAnyCategoryTitleEmpty(categories)
-                ? "!cursor-not-allowed"
-                : "!cursor-pointer !bg-[#42d383]"
+                ? "cursor-not-allowed!"
+                : "cursor-pointer! bg-[#42d383]!"
             }
             !rounded absolute bottom-12 right-12`}
             onClick={

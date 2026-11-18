@@ -41,7 +41,7 @@ const Item = ({ title, to, icon, selected, setSelected }: ItemProps) => {
 
   return (
     <MenuItem active={selected === title} onClick={handleClick} icon={icon}>
-      <Typography className="!text-[16px] !font-Poppins">{title}</Typography>
+      <Typography className="text-[16px]! !font-Poppins">{title}</Typography>
 
       <Link href={to} />
     </MenuItem>
@@ -101,7 +101,7 @@ const Sidebar = () => {
           color: `${theme !== "dark" && "#000"}`,
         },
       }}
-      className="!bg-white dark:bg-[#111C43]"
+      className="bg-white! dark:bg-[#111C43]"
     >
       <ProSidebar
         collapsed={isCollapsed}
@@ -166,7 +166,7 @@ const Sidebar = () => {
               <Box textAlign="center">
                 <Typography
                   variant="h4"
-                  className="!text-[20px] text-black dark:text-[#ffffffc1]"
+                  className="text-[20px]! text-black dark:text-[#ffffffc1]"
                   sx={{ m: "10px 0 0 0" }}
                 >
                   {user?.name}
@@ -174,7 +174,7 @@ const Sidebar = () => {
                 <Typography
                   variant="h6"
                   sx={{ m: "10px 0 0 0" }}
-                  className="!text-[20px] text-black dark:text-[#ffffffc1] capitalize"
+                  className="text-[20px]! text-black dark:text-[#ffffffc1] capitalize"
                 >
                   - {user?.role}
                 </Typography>
@@ -194,7 +194,7 @@ const Sidebar = () => {
             <Typography
               variant="h5"
               sx={{ m: "15px 0 5px 25px" }}
-              className="!text-[18px] text-black dark:text-[#ffffffc1] capitalize !font-[400]"
+              className="text-[18px]! text-black dark:text-[#ffffffc1] capitalize font-normal!"
             >
               {!isCollapsed && "Data"}
             </Typography>
@@ -216,7 +216,7 @@ const Sidebar = () => {
 
             <Typography
               variant="h5"
-              className="!text-[18px] text-black dark:text-[#ffffffc1] capitalize !font-[400]"
+              className="text-[18px]! text-black dark:text-[#ffffffc1] capitalize font-normal!"
               sx={{ m: "15px 0 5px 20px" }}
             >
               {!isCollapsed && "Content"}
@@ -238,7 +238,7 @@ const Sidebar = () => {
 
             <Typography
               variant="h5"
-              className="!text-[18px] text-black dark:text-[#ffffffc1] capitalize !font-[400]"
+              className="text-[18px]! text-black dark:text-[#ffffffc1] capitalize font-normal!"
               sx={{ m: "15px 0 5px 20px" }}
             >
               {!isCollapsed && "Customization"}
@@ -267,7 +267,7 @@ const Sidebar = () => {
 
             <Typography
               variant="h5"
-              className="!text-[18px] text-black dark:text-[#ffffffc1] capitalize !font-[400]"
+              className="text-[18px]! text-black dark:text-[#ffffffc1] capitalize font-normal!"
               sx={{ m: "15px 0 5px 20px" }}
             >
               {!isCollapsed && "Controllers"}
@@ -282,7 +282,7 @@ const Sidebar = () => {
 
             <Typography
               variant="h6"
-              className="!text-[18px] text-black dark:text-[#ffffffc1] capitalize !font-[400]"
+              className="text-[18px]! text-black dark:text-[#ffffffc1] capitalize font-normal!"
               sx={{ m: "15px 0 5px 20px" }}
             >
               {!isCollapsed && "Analytics"}
@@ -312,7 +312,7 @@ const Sidebar = () => {
 
             <Typography
               variant="h6"
-              className="!text-[18px] text-black dark:text-[#ffffffc1] capitalize !font-[400]"
+              className="text-[18px]! text-black dark:text-[#ffffffc1] capitalize font-normal!"
               sx={{ m: "15px 0 5px 20px" }}
             >
               {!isCollapsed && "Extras"}

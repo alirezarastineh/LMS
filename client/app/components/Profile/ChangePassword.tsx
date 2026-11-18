@@ -36,7 +36,7 @@ const ChangePassword = ({}: ChangePasswordProps) => {
 
   return (
     <div className="w-full pl-7 px-2 800px:px-5 800px:pl-0">
-      <h1 className="block text-[25px] 800px:text-[30px] font-Poppins text-center font-[500] text-black dark:text-[#fff] pb-2">
+      <h1 className="block text-[25px] 800px:text-[30px] font-Poppins text-center font-medium text-black dark:text-white pb-2">
         Change Password
       </h1>
 
@@ -45,52 +45,52 @@ const ChangePassword = ({}: ChangePasswordProps) => {
           onSubmit={passwordChangeHandler}
           className="flex flex-col items-center"
         >
-          <div className=" w-[100%] 800px:w-[60%] mt-5">
-            <label className="block pb-2 text-black dark:text-[#fff]">
+          <div className=" w-full 800px:w-[60%] mt-5">
+            <label className="block pb-2 text-black dark:text-white">
               Enter your old password
             </label>
 
             <input
               aria-required="true"
               type="password"
-              className={`${styles.input} !w-[95%] mb-4 800px:mb-0 text-black dark:text-[#fff]`}
+              className={`${styles.input} w-[95%]! mb-4 800px:mb-0 text-black dark:text-white`}
               required
               value={oldPassword}
               onChange={(e) => setOldPassword(e.target.value)}
             />
           </div>
 
-          <div className=" w-[100%] 800px:w-[60%] mt-2">
-            <label className="block pb-2 text-black dark:text-[#fff]">
+          <div className=" w-full 800px:w-[60%] mt-2">
+            <label className="block pb-2 text-black dark:text-white">
               Enter your new password
             </label>
 
             <input
               aria-required="true"
               type="password"
-              className={`${styles.input} !w-[95%] mb-4 800px:mb-0 text-black dark:text-[#fff]`}
+              className={`${styles.input} w-[95%]! mb-4 800px:mb-0 text-black dark:text-white`}
               required
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
             />
           </div>
 
-          <div className=" w-[100%] 800px:w-[60%] mt-2">
-            <label className="block pb-2 text-black dark:text-[#fff]">
+          <div className=" w-full 800px:w-[60%] mt-2">
+            <label className="block pb-2 text-black dark:text-white">
               Enter your confirm password
             </label>
 
             <input
               aria-required="true"
               type="password"
-              className={`${styles.input} !w-[95%] mb-4 800px:mb-0 text-black dark:text-[#fff]`}
+              className={`${styles.input} w-[95%]! mb-4 800px:mb-0 text-black dark:text-white`}
               required
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
 
             <input
-              className={`w-[95%] h-[40px] border border-[#37a39a] text-center text-black dark:text-[#fff] rounded-[3px] mt-8 cursor-pointer`}
+              className={`w-[95%] h-[40px] border border-[#37a39a] text-center text-black dark:text-white rounded-[3px] mt-8 cursor-pointer`}
               required
               value="Update"
               type="submit"

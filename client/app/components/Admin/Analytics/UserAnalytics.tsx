@@ -31,15 +31,15 @@ const UserAnalytics = ({ isDashboard }: UserAnalyticsProps) => {
         <div
           className={`${
             isDashboard
-              ? "mt-[50px] dark:bg-[#111C43] shadow-sm pb-5 rounded-sm"
+              ? "mt-[50px] dark:bg-[#111C43] shadow-xs pb-5 rounded-xs"
               : "mt-[50px]"
           }`}
         >
-          <div className={`${isDashboard ? "!ml-8 mb-5" : ""}`}>
+          <div className={`${isDashboard ? "ml-8! mb-5" : ""}`}>
             <h1
               className={`${styles.title} ${
-                isDashboard && "!text-[20px]"
-              } px-5 !text-start`}
+                isDashboard && "text-[20px]!"
+              } px-5 text-start!`}
             >
               Users Analytics
             </h1>

@@ -26,7 +26,7 @@ const NavItems = ({ activeItem, isMobile }: NavItemsProps) => {
                 activeItem === index
                   ? "dark:text-[#37a39a] text-[crimson]"
                   : "dark:text-white text-black"
-              } text-[18px] px-6 font-Poppins font-[400]`}
+              } text-[18px] px-6 font-Poppins font-normal`}
             >
               {i.name}
             </span>
@@ -39,7 +39,7 @@ const NavItems = ({ activeItem, isMobile }: NavItemsProps) => {
           <div className="w-full text-center py-6">
             <Link href={"/"} passHref>
               <span
-                className={`text-[25px] font-Poppins font-[500] text-black dark:text-white`}
+                className={`text-[25px] font-Poppins font-medium text-black dark:text-white`}
               >
                 E-Learning
               </span>
@@ -53,7 +53,7 @@ const NavItems = ({ activeItem, isMobile }: NavItemsProps) => {
                   activeItem === index
                     ? "dark:text-[#37a39a] text-[crimson]"
                     : "dark:text-white text-black"
-                } block py-5 text-[18px] px-6 font-Poppins font-[400]`}
+                } block py-5 text-[18px] px-6 font-Poppins font-normal`}
               >
                 {i.name}
               </span>

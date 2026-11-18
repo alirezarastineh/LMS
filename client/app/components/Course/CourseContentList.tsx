@@ -116,7 +116,7 @@ const CourseContentList = ({
                             color="#1cdada"
                           />
                         </div>
-                        <h1 className="text-[18px] inline-block break-words text-black dark:text-white">
+                        <h1 className="text-[18px] inline-block wrap-break-word text-black dark:text-white">
                           {item.title}
                         </h1>
                       </div>

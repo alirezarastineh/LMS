@@ -153,7 +153,7 @@ const CourseContent = ({
                         item.videoSection === "Untitled Section"
                           ? "w-[170px]"
                           : "w-min"
-                      } font-Poppins cursor-pointer dark:text-white text-black bg-transparent outline-none`}
+                      } font-Poppins cursor-pointer dark:text-white text-black bg-transparent outline-hidden`}
                       value={item.videoSection}
                       onChange={(e) => {
                         const updatedData = [...courseContentData];
@@ -263,7 +263,7 @@ const CourseContent = ({
                       rows={8}
                       cols={30}
                       placeholder="Description"
-                      className={`${styles.input} !h-min py-2`}
+                      className={`${styles.input} h-min! py-2`}
                       value={item.description}
                       onChange={(e) => {
                         const updatedData = [...courseContentData];
@@ -355,13 +355,13 @@ const CourseContent = ({
       <br />
       <div className="w-full flex items-center justify-between">
         <div
-          className="w-full 800px:w-[180px] flex items-center justify-center h-[40px] bg-[#37a39a] text-center text-[#fff] rounded mt-8 cursor-pointer"
+          className="w-full 800px:w-[180px] flex items-center justify-center h-[40px] bg-[#37a39a] text-center text-white rounded-sm mt-8 cursor-pointer"
           onClick={() => prevButton()}
         >
           Prev
         </div>
         <div
-          className="w-full 800px:w-[180px] flex items-center justify-center h-[40px] bg-[#37a39a] text-center text-[#fff] rounded mt-8 cursor-pointer"
+          className="w-full 800px:w-[180px] flex items-center justify-center h-[40px] bg-[#37a39a] text-center text-white rounded-sm mt-8 cursor-pointer"
           onClick={() => handleOptions()}
         >
           Next
