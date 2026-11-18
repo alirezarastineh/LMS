@@ -119,7 +119,8 @@ const Sidebar = () => {
       >
         <Menu>
           <MenuItem
-            onClick={() => setIsCollapsed(!isCollapsed)}
+            component={<div />}
+            onClick={isCollapsed ? () => setIsCollapsed(false) : undefined}
             icon={isCollapsed ? <ArrowForwardIosIcon /> : undefined}
             style={{
               margin: "10px 0 20px 0",
@@ -140,7 +141,7 @@ const Sidebar = () => {
                   </h3>
                 </Link>
                 <IconButton
-                  onClick={() => setIsCollapsed(!isCollapsed)}
+                  onClick={() => setIsCollapsed(true)}
                   className="inline-block"
                 >
                   <ArrowBackIosIcon className="text-black dark:text-[#ffffffc1]" />
@@ -162,6 +163,7 @@ const Sidebar = () => {
                   alt="profile-user"
                   width={100}
                   height={100}
+                  loading="eager"
                   src={resolveNonEmpty(
                     user?.avatar?.url,
                     "https://res.cloudinary.com/kouroshrstn/image/upload/v1707293133/Avatars/avatar_dwjgxo.png"

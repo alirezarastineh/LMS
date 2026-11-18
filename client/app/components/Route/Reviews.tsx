@@ -56,8 +56,9 @@ const Reviews = () => {
           <Image
             src="https://res.cloudinary.com/kouroshrstn/image/upload/v1707293134/Avatars/business-img_o2xmaa.png"
             alt="business"
-            width={700}
-            height={700}
+            width={704}
+            height={469}
+            className="w-full max-w-176 h-auto"
           />
         </div>
 

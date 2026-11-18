@@ -17,10 +17,7 @@ import Signup from "./Auth/SignUp";
 import Verification from "./Auth/Verification";
 import { getApiErrorMessage, type IUser } from "@/app/types/lms";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
-import {
-  useLogOutQuery,
-  useSocialAuthMutation,
-} from "@/redux/features/auth/authApi";
+import { useSocialAuthMutation } from "@/redux/features/auth/authApi";
 import Image from "next/image";
 import Loader from "./Loader/Loader";
 
@@ -68,6 +65,7 @@ const HeaderUserAvatar = ({
         alt=""
         width={30}
         height={30}
+        loading="eager"
         className={avatarClassName}
         style={{
           border: activeItem === 5 ? "2px solid #37a39a" : "none",
@@ -104,36 +102,37 @@ const Header = ({
 
   const { data } = useSession();
 
-  const [socialAuth, { isSuccess, error }] = useSocialAuthMutation();
-
-  const shouldLogout = data === null && !isLoading && !userData;
-
-  useLogOutQuery(undefined, {
-    skip: !shouldLogout,
-  });
+  const [socialAuth, { isUninitialized: isSocialAuthUninitialized }] =
+    useSocialAuthMutation();
 
   useEffect(() => {
     if (isLoading) {
       return;
     }
 
-    if (!userData && data) {
+    if (!userData?.user && data && isSocialAuthUninitialized) {
       void socialAuth({
-        email: data?.user?.email,
-        name: data?.user?.name,
+        email: data.user?.email,
+        name: data.user?.name,
         avatar: data.user?.image,
-      });
-      void refetch();
+      })
+        .unwrap()
+        .then(() => {
+          toast.success("Login Successfully");
+          void refetch();
+        })
+        .catch((error: unknown) => {
+          toast.error(getApiErrorMessage(error));
+        });
     }
-
-    if (data === null && isSuccess) {
-      toast.success("Login Successfully");
-    }
-
-    if (error) {
-      toast.error(getApiErrorMessage(error));
-    }
-  }, [error, data, userData, isLoading, socialAuth, refetch, isSuccess]);
+  }, [
+    data,
+    userData,
+    isLoading,
+    socialAuth,
+    refetch,
+    isSocialAuthUninitialized,
+  ]);
 
   useEffect(() => {
     const handleScroll = () => {

@@ -14,11 +14,15 @@ const Page = () => {
   const { isLoading, error, data } = useLoadUserQuery(undefined, {});
 
   useEffect(() => {
-    if (data && !error) {
-      const isAdmin = data.user?.role === "admin";
+    if (isLoading) {
+      return;
+    }
+
+    if (data?.user && !error) {
+      const isAdmin = data.user.role === "admin";
 
       const isPurchased = data.user.courses.some(
-        (item: IUserCourseRef) => item._id === id
+        (item: IUserCourseRef) => item._id === id,
       );
 
       if (!isPurchased && !isAdmin) {
@@ -27,10 +31,8 @@ const Page = () => {
       return;
     }
 
-    if (error) {
-      redirect("/");
-    }
-  }, [data, error, id]);
+    redirect("/");
+  }, [isLoading, data, error, id]);
 
   if (isLoading || !data?.user) {
     return <Loader />;

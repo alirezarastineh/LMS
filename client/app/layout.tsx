@@ -1,7 +1,7 @@
 "use client";
 
 import "./globals.css";
-import { useEffect } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { Poppins, Josefin_Sans } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import { SessionProvider } from "next-auth/react";
@@ -12,8 +12,13 @@ import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 import Loader from "./components/Loader/Loader";
 
 const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_SERVER_URI ?? "";
-const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
 const handleSocketConnect = () => undefined;
+const noop = () => undefined;
+const emptySubscribe = () => noop;
+const getClientSnapshot = () => true;
+const getServerSnapshot = () => false;
+const useIsHydrated = () =>
+  useSyncExternalStore(emptySubscribe, getClientSnapshot, getServerSnapshot);
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -57,11 +62,26 @@ type CustomProps = Readonly<{
 }>;
 
 const Custom = ({ children }: CustomProps) => {
-  const { isLoading } = useLoadUserQuery({});
+  const isHydrated = useIsHydrated();
+  const { isLoading } = useLoadUserQuery(undefined, {
+    skip: !isHydrated,
+  });
 
   useEffect(() => {
-    socketId.on("connection", handleSocketConnect);
+    if (!ENDPOINT) {
+      return;
+    }
+
+    const socket = socketIO(ENDPOINT, { transports: ["websocket"] });
+    socket.on("connection", handleSocketConnect);
+
+    return () => {
+      socket.off("connection", handleSocketConnect);
+      socket.disconnect();
+    };
   }, []);
 
-  return <div>{isLoading ? <Loader /> : <div>{children}</div>}</div>;
+  return (
+    <div>{!isHydrated || isLoading ? <Loader /> : <div>{children}</div>}</div>
+  );
 };

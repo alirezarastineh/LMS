@@ -27,11 +27,53 @@ app.use(express.json({ limit: "50mb" }));
 
 app.use(cookieParser());
 
+const trimTrailingSlash = (url: string): string =>
+  url.endsWith("/") ? url.slice(0, -1) : url;
+
+const allowedOrigins = new Set(
+  [
+    process.env.ORIGIN,
+    process.env.ORIGIN_DEPLOYED,
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+  ]
+    .filter((origin): origin is string => Boolean(origin))
+    .map((origin) => trimTrailingSlash(origin)),
+);
+
+const isLocalDevOrigin = (origin: string): boolean => {
+  try {
+    const { protocol, hostname } = new URL(origin);
+    return (
+      protocol === "http:" &&
+      (hostname === "localhost" ||
+        hostname === "127.0.0.1" ||
+        hostname.startsWith("10.") ||
+        hostname.startsWith("192.168.") ||
+        hostname.startsWith("172."))
+    );
+  } catch {
+    return false;
+  }
+};
+
 app.use(
   cors({
-    origin: process.env.ORIGIN ?? process.env.ORIGIN_DEPLOYED,
+    origin: (origin, callback) => {
+      const normalizedOrigin = origin ? trimTrailingSlash(origin) : undefined;
+      if (
+        !normalizedOrigin ||
+        allowedOrigins.has(normalizedOrigin) ||
+        (process.env.NODE_ENV !== "production" &&
+          isLocalDevOrigin(normalizedOrigin))
+      ) {
+        callback(null, true);
+        return;
+      }
+      callback(null, false);
+    },
     credentials: true,
-  })
+  }),
 );
 
 app.use(
@@ -41,7 +83,7 @@ app.use(
   orderRouter,
   notificationRouter,
   analyticsRouter,
-  layoutRouter
+  layoutRouter,
 );
 
 app.get("/test", (req: Request, res: Response) => {
@@ -51,7 +93,7 @@ app.get("/test", (req: Request, res: Response) => {
   });
 });
 
-app.all("*", (req: Request, res: Response, next: NextFunction) => {
+app.use((req: Request, _res: Response, next: NextFunction) => {
   next(new ErrorHandler(`Route ${req.originalUrl} not found`, 404));
 });
 

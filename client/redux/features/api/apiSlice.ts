@@ -3,8 +3,8 @@ import type { IUser } from "@/app/types/lms";
 import { userLoggedIn } from "../auth/authSlice";
 
 interface LoadUserResponse {
-  accessToken: string;
-  user: IUser;
+  accessToken?: string;
+  user?: IUser;
 }
 
 export const apiSlice = createApi({
@@ -22,25 +22,41 @@ export const apiSlice = createApi({
       }),
     }),
 
-    loadUser: builder.query<LoadUserResponse, unknown>({
-      query: () => ({
-        url: "me",
-        method: "GET",
-        credentials: "include" as const,
-      }),
+    loadUser: builder.query<LoadUserResponse | null, unknown>({
+      async queryFn(_arg, _queryApi, _extraOptions, baseQuery) {
+        const result = await baseQuery({
+          url: "me",
+          method: "GET",
+          credentials: "include" as const,
+        });
 
-      async onQueryStarted(arg, { queryFulfilled, dispatch }) {
+        if (result.error) {
+          const status = result.error.status;
+
+          if (status !== 400 && status !== 401 && status !== "FETCH_ERROR") {
+            console.warn("Failed to load user session:", result.error);
+          }
+
+          return { data: null };
+        }
+
+        return { data: (result.data as LoadUserResponse | undefined) ?? null };
+      },
+
+      async onQueryStarted(_arg, { queryFulfilled, dispatch }) {
         try {
           const result = await queryFulfilled;
 
-          dispatch(
-            userLoggedIn({
-              accessToken: result.data.accessToken,
-              user: result.data.user,
-            })
-          );
-        } catch (error: unknown) {
-          console.error(error);
+          if (result.data?.user) {
+            dispatch(
+              userLoggedIn({
+                accessToken: result.data.accessToken ?? "",
+                user: result.data.user,
+              })
+            );
+          }
+        } catch {
+          // Errors are handled gracefully in queryFn
         }
       },
     }),
