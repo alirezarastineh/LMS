@@ -2,19 +2,34 @@ import "dotenv/config";
 import mongoose from "mongoose";
 import { getErrorMessage } from "./ErrorHandler";
 
-const dbUrl: string = process.env.DB_URL ?? "";
+let connectionPromise: Promise<typeof mongoose> | null = null;
 
-const connectDB = async () => {
-  try {
-    const data = await mongoose.connect(dbUrl);
-    console.log(`Database connected with ${data.connection.host}`);
-  } catch (error: unknown) {
-    console.log(getErrorMessage(error));
-
-    setTimeout(() => {
-      void connectDB();
-    }, 5000);
+/**
+ * Establishes and caches a MongoDB connection for both persistent and serverless runtimes.
+ */
+const connectDB = async (): Promise<typeof mongoose> => {
+  if (mongoose.connection.readyState === mongoose.ConnectionStates.connected) {
+    return mongoose;
   }
+
+  const dbUrl = process.env.DB_URL ?? "";
+  if (!dbUrl) {
+    throw new Error("DB_URL environment variable is not defined");
+  }
+
+  connectionPromise ??= mongoose
+    .connect(dbUrl, { serverSelectionTimeoutMS: 5000 })
+    .then((data) => {
+      console.log(`Database connected with ${data.connection.host}`);
+      return data;
+    })
+    .catch((error: unknown) => {
+      connectionPromise = null;
+      console.log(getErrorMessage(error));
+      throw error;
+    });
+
+  return connectionPromise;
 };
 
 export default connectDB;

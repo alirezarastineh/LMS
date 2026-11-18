@@ -2,6 +2,7 @@ import "dotenv/config";
 import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import { v2 as cloudinary } from "cloudinary";
 import { ErrorMiddleWare } from "./middleware/error";
 import userRouter from "./routes/user.route";
 import courseRouter from "./routes/course.route";
@@ -11,6 +12,13 @@ import analyticsRouter from "./routes/analytics.route";
 import layoutRouter from "./routes/layout.route";
 import rateLimit from "express-rate-limit";
 import ErrorHandler from "./utils/ErrorHandler";
+import connectDB from "./utils/db";
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_SECRET_KEY,
+});
 
 export const app = express();
 
@@ -78,6 +86,14 @@ app.use(
 
 app.use(
   "/api/v1",
+  async (_req: Request, _res: Response, next: NextFunction) => {
+    try {
+      await connectDB();
+      next();
+    } catch (error: unknown) {
+      next(error);
+    }
+  },
   userRouter,
   courseRouter,
   orderRouter,
