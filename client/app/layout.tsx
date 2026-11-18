@@ -2,8 +2,7 @@
 
 import "./globals.css";
 import { useEffect } from "react";
-import { Poppins } from "next/font/google";
-import { Josefin_Sans } from "next/font/google";
+import { Poppins, Josefin_Sans } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import { SessionProvider } from "next-auth/react";
 import socketIO from "socket.io-client";
@@ -12,8 +11,9 @@ import { Providers } from "./Provider";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 import Loader from "./components/Loader/Loader";
 
-const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_SERVER_URI || "";
+const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_SERVER_URI ?? "";
 const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
+const handleSocketConnect = () => undefined;
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -29,9 +29,9 @@ const josefin = Josefin_Sans({
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <body
@@ -52,15 +52,15 @@ export default function RootLayout({
   );
 }
 
-type CustomProps = {
+type CustomProps = Readonly<{
   children: React.ReactNode;
-};
+}>;
 
 const Custom = ({ children }: CustomProps) => {
   const { isLoading } = useLoadUserQuery({});
 
   useEffect(() => {
-    socketId.on("connection", () => {});
+    socketId.on("connection", handleSocketConnect);
   }, []);
 
   return <div>{isLoading ? <Loader /> : <div>{children}</div>}</div>;

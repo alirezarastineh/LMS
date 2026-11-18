@@ -1,16 +1,21 @@
-import { useState } from "react";
+import { type SubmitEvent, useState } from "react";
 import toast from "react-hot-toast";
 import { AiOutlineDelete, AiOutlinePlusCircle } from "react-icons/ai";
 import { BsLink45Deg, BsPencil } from "react-icons/bs";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { styles } from "@/app/styles/styles";
+import { createClientId, type ICourseDataItem } from "@/app/types/lms";
+
+const handleFormSubmit = (e: SubmitEvent<HTMLFormElement>) => {
+  e.preventDefault();
+};
 
 type CourseContentProps = {
   active: number;
   setActive: (active: number) => void;
-  courseContentData: any;
-  setCourseContentData: (courseContentData: any) => void;
-  handleSubmit: any;
+  courseContentData: ICourseDataItem[];
+  setCourseContentData: (courseContentData: ICourseDataItem[]) => void;
+  handleSubmit: () => void | Promise<void>;
 };
 
 const CourseContent = ({
@@ -20,15 +25,11 @@ const CourseContent = ({
   setActive,
   handleSubmit: handlleCourseSubmit,
 }: CourseContentProps) => {
-  const [isCollapsed, setIsCollapsed] = useState(
-    Array(courseContentData.length).fill(false)
+  const [isCollapsed, setIsCollapsed] = useState<boolean[]>(() =>
+    Array.from({ length: courseContentData.length }, () => false),
   );
 
   const [activeSection, setActiveSection] = useState(1);
-
-  const handleSubmit = (e: any) => {
-    e.preventDefault();
-  };
 
   const handleCollapseToggle = (index: number) => {
     const updatedCollasped = [...isCollapsed];
@@ -37,18 +38,33 @@ const CourseContent = ({
   };
 
   const handleRemoveLink = (index: number, linkIndex: number) => {
-    const updatedData = [...courseContentData];
-    updatedData[index].links.splice(linkIndex, 1);
+    const updatedData = courseContentData.map((content, i) =>
+      i === index
+        ? {
+            ...content,
+            links: content.links.filter((_, li) => li !== linkIndex),
+          }
+        : content,
+    );
     setCourseContentData(updatedData);
   };
 
   const handleAddLink = (index: number) => {
-    const updatedData = [...courseContentData];
-    updatedData[index].links.push({ title: "", url: "" });
+    const updatedData = courseContentData.map((content, i) =>
+      i === index
+        ? {
+            ...content,
+            links: [
+              ...content.links,
+              { clientId: createClientId("link"), title: "", url: "" },
+            ],
+          }
+        : content,
+    );
     setCourseContentData(updatedData);
   };
 
-  const newContentHandler = (item: any) => {
+  const newContentHandler = (item: ICourseDataItem) => {
     if (
       item.title === "" ||
       item.description === "" ||
@@ -61,36 +77,30 @@ const CourseContent = ({
       return;
     }
 
-    let newVideoSection = "";
+    const newVideoSection = courseContentData.at(-1)?.videoSection ?? "";
 
-    if (courseContentData.length > 0) {
-      const lastVideoSection =
-        courseContentData[courseContentData.length - 1].videoSection;
-
-      if (lastVideoSection) {
-        newVideoSection = lastVideoSection;
-      }
-    }
-
-    const newContent = {
+    const newContent: ICourseDataItem = {
+      clientId: createClientId("content"),
       videoUrl: "",
       title: "",
       description: "",
       videoSection: newVideoSection,
       videoLength: "",
-      links: [{ title: "", url: "" }],
+      links: [{ clientId: createClientId("link"), title: "", url: "" }],
     };
 
     setCourseContentData([...courseContentData, newContent]);
   };
 
   const addNewSection = () => {
+    const lastItem = courseContentData.at(-1);
     if (
-      courseContentData[courseContentData.length - 1].title === "" ||
-      courseContentData[courseContentData.length - 1].description === "" ||
-      courseContentData[courseContentData.length - 1].videoUrl === "" ||
-      courseContentData[courseContentData.length - 1].links[0].title === "" ||
-      courseContentData[courseContentData.length - 1].links[0].url === ""
+      !lastItem ||
+      lastItem.title === "" ||
+      lastItem.description === "" ||
+      lastItem.videoUrl === "" ||
+      lastItem.links[0].title === "" ||
+      lastItem.links[0].url === ""
     ) {
       toast.error("Please fill all the fields first!");
       return;
@@ -98,13 +108,14 @@ const CourseContent = ({
 
     setActiveSection(activeSection + 1);
 
-    const newContent = {
+    const newContent: ICourseDataItem = {
+      clientId: createClientId("content"),
       videoUrl: "",
       title: "",
       description: "",
       videoLength: "",
       videoSection: `Untitled Section ${activeSection}`,
-      links: [{ title: "", url: "" }],
+      links: [{ clientId: createClientId("link"), title: "", url: "" }],
     };
 
     setCourseContentData([...courseContentData, newContent]);
@@ -115,24 +126,26 @@ const CourseContent = ({
   };
 
   const handleOptions = () => {
+    const lastItem = courseContentData.at(-1);
     if (
-      courseContentData[courseContentData.length - 1].title === "" ||
-      courseContentData[courseContentData.length - 1].description === "" ||
-      courseContentData[courseContentData.length - 1].videoUrl === "" ||
-      courseContentData[courseContentData.length - 1].links[0].title === "" ||
-      courseContentData[courseContentData.length - 1].links[0].url === ""
+      !lastItem ||
+      lastItem.title === "" ||
+      lastItem.description === "" ||
+      lastItem.videoUrl === "" ||
+      lastItem.links[0].title === "" ||
+      lastItem.links[0].url === ""
     ) {
       toast.error("Section can't be empty!");
-    } else {
-      setActive(active + 1);
-      handlleCourseSubmit();
+      return;
     }
+    setActive(active + 1);
+    void handlleCourseSubmit();
   };
 
   return (
     <div className="w-[80%] m-auto mt-24 p-3">
-      <form onSubmit={handleSubmit}>
-        {courseContentData?.map((item: any, index: number) => {
+      <form onSubmit={handleFormSubmit}>
+        {courseContentData?.map((item, index) => {
           const showSectionInput =
             index === 0 ||
             item.videoSection !== courseContentData[index - 1].videoSection;
@@ -142,7 +155,7 @@ const CourseContent = ({
               className={`w-full bg-[#cdc8c817] p-4 ${
                 showSectionInput ? "mt-10" : "mb-0"
               }`}
-              key={index}
+              key={item.clientId ?? item._id ?? item.title}
             >
               {showSectionInput && (
                 <>
@@ -151,7 +164,7 @@ const CourseContent = ({
                       type="text"
                       className={`text-[20px] ${
                         item.videoSection === "Untitled Section"
-                          ? "w-[170px]"
+                          ? "w-42.5"
                           : "w-min"
                       } font-Poppins cursor-pointer dark:text-white text-black bg-transparent outline-hidden`}
                       value={item.videoSection}
@@ -168,19 +181,12 @@ const CourseContent = ({
               )}
 
               <div className="flex w-full items-center justify-between my-0">
-                {isCollapsed[index] ? (
-                  <>
-                    {item.title ? (
-                      <p className="font-Poppins dark:text-white text-black">
-                        {index + 1}. {item.title}
-                      </p>
-                    ) : (
-                      <></>
-                    )}
-                  </>
-                ) : (
-                  <div />
+                {Boolean(isCollapsed[index] && item.title) && (
+                  <p className="font-Poppins dark:text-white text-black">
+                    {index + 1}. {item.title}
+                  </p>
                 )}
+                {!isCollapsed[index] && <div />}
 
                 <div className="flex items-center">
                   <AiOutlineDelete
@@ -213,8 +219,14 @@ const CourseContent = ({
               {!isCollapsed[index] && (
                 <>
                   <div className="my-3">
-                    <label className={styles.label}>Video Title</label>
+                    <label
+                      htmlFor={`video-title-${item.clientId ?? item._id ?? index}`}
+                      className={styles.label}
+                    >
+                      Video Title
+                    </label>
                     <input
+                      id={`video-title-${item.clientId ?? item._id ?? index}`}
                       type="text"
                       placeholder="Project Plan..."
                       className={`${styles.input}`}
@@ -227,8 +239,14 @@ const CourseContent = ({
                     />
                   </div>
                   <div className="mb-3">
-                    <label className={styles.label}>Video Url</label>
+                    <label
+                      htmlFor={`video-url-${item.clientId ?? item._id ?? index}`}
+                      className={styles.label}
+                    >
+                      Video Url
+                    </label>
                     <input
+                      id={`video-url-${item.clientId ?? item._id ?? index}`}
                       type="text"
                       placeholder="URL"
                       className={`${styles.input}`}
@@ -241,10 +259,14 @@ const CourseContent = ({
                     />
                   </div>
                   <div className="mb-3">
-                    <label className={styles.label}>
+                    <label
+                      htmlFor={`video-length-${item.clientId ?? item._id ?? index}`}
+                      className={styles.label}
+                    >
                       Video Length (in minutes)
                     </label>
                     <input
+                      id={`video-length-${item.clientId ?? item._id ?? index}`}
                       type="number"
                       placeholder="20"
                       className={`${styles.input}`}
@@ -258,8 +280,14 @@ const CourseContent = ({
                   </div>
 
                   <div className="mb-3">
-                    <label className={styles.label}>Video Description</label>
+                    <label
+                      htmlFor={`video-desc-${item.clientId ?? item._id ?? index}`}
+                      className={styles.label}
+                    >
+                      Video Description
+                    </label>
                     <textarea
+                      id={`video-desc-${item.clientId ?? item._id ?? index}`}
                       rows={8}
                       cols={30}
                       placeholder="Description"
@@ -273,8 +301,8 @@ const CourseContent = ({
                     />
                     <br />
                   </div>
-                  {item?.links.map((link: any, linkIndex: number) => (
-                    <div className="mb-3 block" key={linkIndex}>
+                  {item?.links.map((link, linkIndex) => (
+                    <div className="mb-3 block" key={link.clientId ?? link.url}>
                       <div className="w-full flex items-center justify-between">
                         <label className={styles.label}>
                           Link {linkIndex + 1}
@@ -286,11 +314,11 @@ const CourseContent = ({
                               ? "cursor-no-drop"
                               : "cursor-pointer"
                           } text-black dark:text-white text-[20px]`}
-                          onClick={() =>
-                            linkIndex === 0
-                              ? null
-                              : handleRemoveLink(index, linkIndex)
-                          }
+                          onClick={() => {
+                            if (linkIndex > 0) {
+                              handleRemoveLink(index, linkIndex);
+                            }
+                          }}
                         />
                       </div>
                       <input
@@ -321,51 +349,56 @@ const CourseContent = ({
                   ))}
                   <br />
                   <div className="inline-block mb-4">
-                    <p
-                      className="flex items-center text-[18px] dark:text-white text-black cursor-pointer"
+                    <button
+                      type="button"
+                      className="flex items-center text-[18px] dark:text-white text-black cursor-pointer bg-transparent border-0 p-0"
                       onClick={() => handleAddLink(index)}
                     >
                       <BsLink45Deg className="mr-2" /> Add Link
-                    </p>
+                    </button>
                   </div>
                 </>
               )}
               <br />
               {index === courseContentData.length - 1 && (
                 <div>
-                  <p
-                    className="flex items-center text-[18px] dark:text-white text-black cursor-pointer"
-                    onClick={(e: any) => newContentHandler(item)}
+                  <button
+                    type="button"
+                    className="flex items-center text-[18px] dark:text-white text-black cursor-pointer bg-transparent border-0 p-0"
+                    onClick={() => newContentHandler(item)}
                   >
                     <AiOutlinePlusCircle className="mr-2" /> Add New Content
-                  </p>
+                  </button>
                 </div>
               )}
             </div>
           );
         })}
         <br />
-        <div
-          className="flex items-center text-[20px] dark:text-white text-black cursor-pointer"
+        <button
+          type="button"
+          className="flex items-center text-[20px] dark:text-white text-black cursor-pointer bg-transparent border-0 p-0"
           onClick={() => addNewSection()}
         >
           <AiOutlinePlusCircle className="mr-2" /> Add new Section
-        </div>
+        </button>
       </form>
       <br />
       <div className="w-full flex items-center justify-between">
-        <div
-          className="w-full 800px:w-[180px] flex items-center justify-center h-[40px] bg-[#37a39a] text-center text-white rounded-sm mt-8 cursor-pointer"
+        <button
+          type="button"
+          className="w-full 800px:w-45 flex items-center justify-center h-10 bg-[#37a39a] text-center text-white rounded-sm mt-8 cursor-pointer border-0"
           onClick={() => prevButton()}
         >
           Prev
-        </div>
-        <div
-          className="w-full 800px:w-[180px] flex items-center justify-center h-[40px] bg-[#37a39a] text-center text-white rounded-sm mt-8 cursor-pointer"
+        </button>
+        <button
+          type="button"
+          className="w-full 800px:w-45 flex items-center justify-center h-10 bg-[#37a39a] text-center text-white rounded-sm mt-8 cursor-pointer border-0"
           onClick={() => handleOptions()}
         >
           Next
-        </div>
+        </button>
       </div>
       <br />
       <br />

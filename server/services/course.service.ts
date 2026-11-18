@@ -1,10 +1,10 @@
 import { Response } from "express";
 import { CatchAsyncError } from "../middleware/catchAsyncErrors";
-import CourseModel from "../models/course.model";
+import CourseModel, { ICourse } from "../models/course.model";
 import { redis } from "../utils/redis";
 
 export const createCourse = CatchAsyncError(
-  async (data: any, res: Response) => {
+  async (data: Partial<ICourse>, res: Response) => {
     const course = await CourseModel.create(data);
 
     try {
@@ -12,7 +12,7 @@ export const createCourse = CatchAsyncError(
         course._id.toString(),
         JSON.stringify(course),
         "EX",
-        604800
+        604_800
       );
     } catch (redisError) {
       console.error("Redis Error:", redisError);

@@ -1,15 +1,15 @@
 "use client";
 
+import { useParams } from "next/navigation";
 import CourseDetailsPage from "../../components/Course/CourseDetailsPage";
 
-type PageProps = {
-  params: any;
-};
+const Page = () => {
+  const params = useParams<{ id: string }>();
+  const id = params?.id ?? "";
 
-const Page = ({ params }: PageProps) => {
   return (
     <div>
-      <CourseDetailsPage id={params.id} />
+      <CourseDetailsPage id={id} />
     </div>
   );
 };

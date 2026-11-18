@@ -12,13 +12,9 @@ import { FcGoogle } from "react-icons/fc";
 import { signIn } from "next-auth/react";
 import toast from "react-hot-toast";
 import { styles } from "@/app/styles/styles";
+import { getApiErrorMessage } from "@/app/types/lms";
+import type { CustomModalContentProps } from "@/app/utils/CustomModal";
 import { useLoginMutation } from "@/redux/features/auth/authApi";
-
-type LoginProps = {
-  setRoute: (route: string) => void;
-  setOpen: (open: boolean) => void;
-  refetch: any;
-};
 
 const schema = Yup.object().shape({
   email: Yup.string()
@@ -27,7 +23,7 @@ const schema = Yup.object().shape({
   password: Yup.string().required("Please enter your password!").min(6),
 });
 
-const Login = ({ setRoute, setOpen, refetch }: LoginProps) => {
+const Login = ({ setRoute, setOpen, refetch }: CustomModalContentProps) => {
   const [show, setShow] = useState(false);
 
   const [login, { isSuccess, error }] = useLoginMutation();
@@ -48,11 +44,10 @@ const Login = ({ setRoute, setOpen, refetch }: LoginProps) => {
     if (isSuccess) {
       toast.success("Login Successfully!");
       setOpen(false);
-      refetch();
+      refetch?.();
     }
-    if (error && "data" in error) {
-      const errorData = error as any;
-      toast.error(errorData.data.message);
+    if (error) {
+      toast.error(getApiErrorMessage(error));
     }
   }, [isSuccess, error, setOpen, refetch]);
 
@@ -131,24 +126,29 @@ const Login = ({ setRoute, setOpen, refetch }: LoginProps) => {
           <FcGoogle
             size={30}
             className="cursor-pointer mr-2"
-            onClick={() => signIn("google")}
+            onClick={() => {
+              void signIn("google");
+            }}
           />
 
           <AiFillGithub
             size={30}
             className="cursor-pointer ml-2"
-            onClick={() => signIn("github")}
+            onClick={() => {
+              void signIn("github");
+            }}
           />
         </div>
 
         <h5 className="text-center pt-4 font-Poppins text-[14px]">
           Not have any account?{" "}
-          <span
-            className="text-[#2190ff] pl-1 cursor-pointer"
-            onClick={() => setRoute("Sign-Up")}
+          <button
+            type="button"
+            className="text-[#2190ff] pl-1 cursor-pointer bg-transparent border-0 p-0"
+            onClick={() => setRoute?.("Sign-Up")}
           >
             Sign up
-          </span>
+          </button>
         </h5>
       </form>
 

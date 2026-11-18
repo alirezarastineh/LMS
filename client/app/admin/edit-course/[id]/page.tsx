@@ -1,16 +1,14 @@
 "use client";
 
+import { useParams } from "next/navigation";
 import AdminSidebar from "../../../components/Admin/Sidebar/AdminSidebar";
 import Heading from "../../../../app/utils/Heading";
 import DashboardHeader from "../../../../app/components/Admin/DashboardHeader";
 import EditCourse from "../../../components/Admin/Course/EditCourse";
 
-type pageProps = {
-  params: any;
-};
-
-const page = ({ params }: pageProps) => {
-  const id = params?.id;
+const Page = () => {
+  const params = useParams<{ id: string }>();
+  const id = params?.id ?? "";
 
   return (
     <div>
@@ -32,4 +30,4 @@ const page = ({ params }: pageProps) => {
   );
 };
 
-export default page;
+export default Page;

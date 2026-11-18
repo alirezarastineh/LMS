@@ -1,18 +1,19 @@
+import "dotenv/config";
 import mongoose from "mongoose";
+import { getErrorMessage } from "./ErrorHandler";
 
-require("dotenv").config();
-
-const dbUrl: string = process.env.DB_URL || "";
+const dbUrl: string = process.env.DB_URL ?? "";
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(dbUrl).then((data: any) => {
-      console.log(`Database connected with ${data.connection.host}`);
-    });
-  } catch (error: any) {
-    console.log(error.message);
+    const data = await mongoose.connect(dbUrl);
+    console.log(`Database connected with ${data.connection.host}`);
+  } catch (error: unknown) {
+    console.log(getErrorMessage(error));
 
-    setTimeout(connectDB, 5000);
+    setTimeout(() => {
+      void connectDB();
+    }, 5000);
   }
 };
 

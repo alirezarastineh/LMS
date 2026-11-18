@@ -5,10 +5,11 @@ import Heading from "@/app/utils/Heading";
 import CourseContentMedia from "./CourseContentMedia";
 import Header from "../Header";
 import CourseContentList from "./CourseContentList";
+import type { ICourseDataItem, IUser } from "@/app/types/lms";
 
 type CourseContentProps = {
   id: string;
-  user: any;
+  user: IUser;
 };
 
 const CourseContent = ({ id, user }: CourseContentProps) => {
@@ -22,49 +23,48 @@ const CourseContent = ({ id, user }: CourseContentProps) => {
 
   const [route, setRoute] = useState("Login");
 
-  const data = contentData?.content;
+  const data: ICourseDataItem[] =
+    (contentData as { content?: ICourseDataItem[] } | undefined)?.content ?? [];
 
   const [activeVideo, setActiveVideo] = useState(0);
 
-  return (
+  return isLoading ? (
+    <Loader />
+  ) : (
     <>
-      {isLoading ? (
-        <Loader />
-      ) : (
-        <>
-          <Header
-            activeItem={1}
-            open={open}
-            setOpen={setOpen}
-            route={route}
-            setRoute={setRoute}
+      <Header
+        activeItem={1}
+        open={open}
+        setOpen={setOpen}
+        route={route}
+        setRoute={setRoute}
+      />
+      <div className="w-full grid 800px:grid-cols-10">
+        <Heading
+          title={data[activeVideo]?.title ?? "Course Content"}
+          description="anything"
+          keywords={data[activeVideo]?.tags ?? ""}
+        />
+        <div className="col-span-7">
+          <CourseContentMedia
+            data={data}
+            id={id}
+            activeVideo={activeVideo}
+            setActiveVideo={setActiveVideo}
+            user={user}
+            refetch={() => {
+              void refetch();
+            }}
           />
-          <div className="w-full grid 800px:grid-cols-10">
-            <Heading
-              title={data[activeVideo]?.title}
-              description="anything"
-              keywords={data[activeVideo]?.tags}
-            />
-            <div className="col-span-7">
-              <CourseContentMedia
-                data={data}
-                id={id}
-                activeVideo={activeVideo}
-                setActiveVideo={setActiveVideo}
-                user={user}
-                refetch={refetch}
-              />
-            </div>
-            <div className="hidden 800px:block 800px:col-span-3">
-              <CourseContentList
-                setActiveVideo={setActiveVideo}
-                data={data}
-                activeVideo={activeVideo}
-              />
-            </div>
-          </div>
-        </>
-      )}
+        </div>
+        <div className="hidden 800px:block 800px:col-span-3">
+          <CourseContentList
+            setActiveVideo={setActiveVideo}
+            data={data}
+            activeVideo={activeVideo}
+          />
+        </div>
+      </div>
     </>
   );
 };

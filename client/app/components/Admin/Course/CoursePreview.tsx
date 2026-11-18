@@ -2,12 +2,13 @@ import { IoCheckmarkDoneOutline } from "react-icons/io5";
 import CoursePlayer from "../../../utils/CoursePlayer";
 import { styles } from "../../../../app/styles/styles";
 import Ratings from "../../../../app/utils/Ratings";
+import type { ICoursePayload, IEditCoursePayload } from "@/app/types/lms";
 
 type CoursePreviewProps = {
   active: number;
   setActive: (active: number) => void;
-  courseData: any;
-  handleCourseCreate: any;
+  courseData: ICoursePayload | IEditCoursePayload | null;
+  handleCourseCreate: () => void | Promise<void>;
   isEdit?: boolean;
 };
 
@@ -18,10 +19,10 @@ const CoursePreview = ({
   handleCourseCreate,
   isEdit,
 }: CoursePreviewProps) => {
+  const price = Number(courseData?.price ?? 0);
+  const estimatedPrice = Number(courseData?.estimatedPrice ?? 0);
   const dicountPercentenge =
-    ((courseData?.estimatedPrice - courseData?.price) /
-      courseData?.estimatedPrice) *
-    100;
+    estimatedPrice > 0 ? ((estimatedPrice - price) / estimatedPrice) * 100 : 0;
 
   const discountPercentengePrice = dicountPercentenge.toFixed(0);
 
@@ -30,7 +31,7 @@ const CoursePreview = ({
   };
 
   const createCourse = () => {
-    handleCourseCreate();
+    void handleCourseCreate();
   };
 
   return (
@@ -38,14 +39,14 @@ const CoursePreview = ({
       <div className="w-full relative">
         <div className="w-full mt-10">
           <CoursePlayer
-            videoUrl={courseData?.demoUrl}
-            title={courseData?.title}
+            videoUrl={courseData?.demoUrl ?? ""}
+            title={courseData?.name ?? ""}
           />
         </div>
 
         <div className="flex items-center">
           <h1 className="pt-5 text-[25px]">
-            {courseData?.price === 0 ? "Free" : `${courseData?.price}€`}
+            {price === 0 ? "Free" : `${courseData?.price}€`}
           </h1>
 
           <h5 className="pl-3 text-[20px] mt-2 line-through opacity-80">
@@ -59,7 +60,7 @@ const CoursePreview = ({
 
         <div className="flex items-center">
           <div
-            className={`${styles.button} w-[180px]! my-3 font-Poppins bg-[crimson]! cursor-not-allowed`}
+            className={`${styles.button} w-45! my-3 font-Poppins bg-[crimson]! cursor-not-allowed`}
           >
             Buy Now {courseData?.price}€
           </div>
@@ -75,7 +76,7 @@ const CoursePreview = ({
           />
 
           <div
-            className={`${styles.button} w-[120px]! my-3 ml-4 font-Poppins cursor-pointer`}
+            className={`${styles.button} w-30! my-3 ml-4 font-Poppins cursor-pointer`}
           >
             Apply
           </div>
@@ -111,9 +112,9 @@ const CoursePreview = ({
           </h1>
         </div>
 
-        {courseData?.benefits?.map((item: any, index: number) => (
-          <div className="w-full flex 800px:items-center py-2" key={index}>
-            <div className="w-[15px] mr-1">
+        {courseData?.benefits?.map((item) => (
+          <div className="w-full flex 800px:items-center py-2" key={item.title}>
+            <div className="w-3.75 mr-1">
               <IoCheckmarkDoneOutline size={20} />
             </div>
 
@@ -126,9 +127,9 @@ const CoursePreview = ({
           What are the prerequisites for starting this course?
         </h1>
 
-        {courseData?.prerequisites?.map((item: any, index: number) => (
-          <div className="w-full flex 800px:items-center py-2" key={index}>
-            <div className="w-[15px] mr-1">
+        {courseData?.prerequisites?.map((item) => (
+          <div className="w-full flex 800px:items-center py-2" key={item.title}>
+            <div className="w-3.75 mr-1">
               <IoCheckmarkDoneOutline size={20} />
             </div>
 
@@ -142,7 +143,7 @@ const CoursePreview = ({
             Course Details
           </h1>
 
-          <p className="text-[18px] mt-[20px] whitespace-pre-line w-full overflow-hidden">
+          <p className="text-[18px] mt-5 whitespace-pre-line w-full overflow-hidden">
             {courseData?.description}
           </p>
         </div>
@@ -150,19 +151,21 @@ const CoursePreview = ({
         <br />
       </div>
       <div className="w-full flex items-center justify-between">
-        <div
-          className="w-full 800px:w-[180px] flex items-center justify-center h-[40px] bg-[#37a39a] text-center text-white rounded-sm mt-8 cursor-pointer"
+        <button
+          type="button"
+          className="w-full 800px:w-45 flex items-center justify-center h-10 bg-[#37a39a] text-center text-white rounded-sm mt-8 cursor-pointer border-0"
           onClick={() => prevButton()}
         >
           Prev
-        </div>
+        </button>
 
-        <div
-          className="w-full 800px:w-[180px] flex items-center justify-center h-[40px] bg-[#37a39a] text-center text-white rounded-sm mt-8 cursor-pointer"
+        <button
+          type="button"
+          className="w-full 800px:w-45 flex items-center justify-center h-10 bg-[#37a39a] text-center text-white rounded-sm mt-8 cursor-pointer border-0"
           onClick={() => createCourse()}
         >
           {isEdit ? "Update" : "Create"}
-        </div>
+        </button>
       </div>
     </div>
   );

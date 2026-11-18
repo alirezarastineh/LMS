@@ -1,10 +1,10 @@
+import "dotenv/config";
+import crypto from "node:crypto";
 import { Request, Response, NextFunction } from "express";
 import jwt, { JwtPayload, Secret } from "jsonwebtoken";
-import ejs from "ejs";
-import path from "path";
 import cloudinary from "cloudinary";
 import UserModel, { IUser } from "../models/user.model";
-import ErrorHandler from "../utils/ErrorHandler";
+import ErrorHandler, { getErrorMessage } from "../utils/ErrorHandler";
 import { CatchAsyncError } from "../middleware/catchAsyncErrors";
 import sendMail from "../utils/sendMail";
 import {
@@ -19,8 +19,6 @@ import {
   updateUserRoleService,
 } from "../services/user.service";
 
-require("dotenv").config();
-
 interface IRegistrationBody {
   name: string;
   email: string;
@@ -31,7 +29,7 @@ interface IRegistrationBody {
 export const registrationUser = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { name, email, password } = req.body;
+      const { name, email, password } = req.body as IRegistrationBody;
 
       const isEmailExist = await UserModel.findOne({ email });
 
@@ -51,11 +49,6 @@ export const registrationUser = CatchAsyncError(
 
       const data = { user: { name: user.name }, activationCode };
 
-      const html = await ejs.renderFile(
-        path.join(__dirname, "../mails/activation-mail.ejs"),
-        data
-      );
-
       try {
         await sendMail({
           email: user.email,
@@ -69,11 +62,11 @@ export const registrationUser = CatchAsyncError(
           message: `Please check your email: ${user.email} to activate your account!`,
           activationToken: activationToken.token,
         });
-      } catch (error: any) {
-        return next(new ErrorHandler(error.message, 400));
+      } catch (error: unknown) {
+        return next(new ErrorHandler(getErrorMessage(error), 400));
       }
-    } catch (error: any) {
-      return next(new ErrorHandler(error.message, 400));
+    } catch (error: unknown) {
+      return next(new ErrorHandler(getErrorMessage(error), 400));
     }
   }
 );
@@ -83,8 +76,10 @@ interface IActivationToken {
   activationCode: string;
 }
 
-export const createActivationToken = (user: any): IActivationToken => {
-  const activationCode = Math.floor(1000 + Math.random() * 9000).toString();
+export const createActivationToken = (
+  user: IRegistrationBody
+): IActivationToken => {
+  const activationCode = crypto.randomInt(1000, 10_000).toString();
 
   const token = jwt.sign(
     { user, activationCode },
@@ -133,8 +128,8 @@ export const activateUser = CatchAsyncError(
         success: true,
         user,
       });
-    } catch (error: any) {
-      return next(new ErrorHandler(error.message, 400));
+    } catch (error: unknown) {
+      return next(new ErrorHandler(getErrorMessage(error), 400));
     }
   }
 );
@@ -167,9 +162,9 @@ export const loginUser = CatchAsyncError(
         return next(new ErrorHandler("Invalid password", 400));
       }
 
-      sendToken(user, 200, res);
-    } catch (error: any) {
-      return next(new ErrorHandler(error.message, 400));
+      await sendToken(user, 200, res);
+    } catch (error: unknown) {
+      return next(new ErrorHandler(getErrorMessage(error), 400));
     }
   }
 );
@@ -180,16 +175,16 @@ export const logoutUser = CatchAsyncError(
       res.cookie("access_token", "", { maxAge: 1 });
       res.cookie("refresh_token", "", { maxAge: 1 });
 
-      const userId = req.user?._id || "";
+      const userId = req.user?._id?.toString() ?? "";
 
-      redis.del(userId);
+      await redis.del(userId);
 
       res.status(200).json({
         success: true,
         message: "Logged out successfully",
       });
-    } catch (error: any) {
-      return next(new ErrorHandler(error.message, 400));
+    } catch (error: unknown) {
+      return next(new ErrorHandler(getErrorMessage(error), 400));
     }
   }
 );
@@ -216,16 +211,17 @@ export const updateAccessToken = CatchAsyncError(
         );
       }
 
-      const user = JSON.parse(session);
+      const user = JSON.parse(session) as IUser;
+      const userId = user._id.toString();
 
       const accessToken = jwt.sign(
-        { id: user._id },
+        { id: userId },
         process.env.ACCESS_TOKEN as string,
         { expiresIn: "5m" }
       );
 
       const refreshToken = jwt.sign(
-        { id: user._id },
+        { id: userId },
         process.env.REFRESH_TOKEN as string,
         { expiresIn: "3d" }
       );
@@ -242,11 +238,11 @@ export const updateAccessToken = CatchAsyncError(
 
       const redisKey = `userSession:${user.name}`;
 
-      await redis.set(redisKey, JSON.stringify(user), "EX", 604800);
+      await redis.set(redisKey, JSON.stringify(user), "EX", 604_800);
 
       return next();
-    } catch (error: any) {
-      return next(new ErrorHandler(error.message, 400));
+    } catch (error: unknown) {
+      return next(new ErrorHandler(getErrorMessage(error), 400));
     }
   }
 );
@@ -254,11 +250,11 @@ export const updateAccessToken = CatchAsyncError(
 export const getUserInfo = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userId = req.user?._id;
+      const userId = req.user?._id?.toString() ?? "";
 
       await getUserById(userId, res);
-    } catch (error: any) {
-      return next(new ErrorHandler(error.message, 400));
+    } catch (error: unknown) {
+      return next(new ErrorHandler(getErrorMessage(error), 400));
     }
   }
 );
@@ -277,14 +273,23 @@ export const socialAuth = CatchAsyncError(
       const user = await UserModel.findOne({ email });
 
       if (user) {
-        sendToken(user, 200, res);
+        await sendToken(user, 200, res);
       } else {
-        const newUser = await UserModel.create({ email, name, avatar });
+        const formattedAvatar =
+          typeof avatar === "string"
+            ? { public_id: "", url: avatar }
+            : avatar;
 
-        sendToken(newUser, 200, res);
+        const newUser = await UserModel.create({
+          email,
+          name,
+          avatar: formattedAvatar,
+        });
+
+        await sendToken(newUser, 200, res);
       }
-    } catch (error: any) {
-      return next(new ErrorHandler(error.message, 400));
+    } catch (error: unknown) {
+      return next(new ErrorHandler(getErrorMessage(error), 400));
     }
   }
 );
@@ -299,7 +304,7 @@ export const updateUserInfo = CatchAsyncError(
     try {
       const { name, email } = req.body as IUpdateUserInfo;
 
-      const userId = req.user?._id;
+      const userId = req.user?._id?.toString() ?? "";
 
       const user = await UserModel.findById(userId);
 
@@ -319,14 +324,14 @@ export const updateUserInfo = CatchAsyncError(
 
       await user?.save();
 
-      await redis.set(userId, JSON.stringify(user), "EX", 604800);
+      await redis.set(userId, JSON.stringify(user), "EX", 604_800);
 
       res.status(201).json({
         success: true,
         user,
       });
-    } catch (error: any) {
-      return next(new ErrorHandler(error.message, 400));
+    } catch (error: unknown) {
+      return next(new ErrorHandler(getErrorMessage(error), 400));
     }
   }
 );
@@ -341,7 +346,7 @@ export const updateUserPassword = CatchAsyncError(
     try {
       const { oldPassword, newPassword } = req.body as IUpdateUserPassword;
 
-      const userId = req.user?._id;
+      const userId = req.user?._id?.toString() ?? "";
 
       if (!oldPassword || !newPassword) {
         return next(new ErrorHandler("Please enter old and new password", 400));
@@ -363,14 +368,14 @@ export const updateUserPassword = CatchAsyncError(
 
       await user.save();
 
-      await redis.set(userId, JSON.stringify(user), "EX", 604800);
+      await redis.set(userId, JSON.stringify(user), "EX", 604_800);
 
       res.status(201).json({
         success: true,
         user,
       });
-    } catch (error: any) {
-      return next(new ErrorHandler(error.message, 400));
+    } catch (error: unknown) {
+      return next(new ErrorHandler(getErrorMessage(error), 400));
     }
   }
 );
@@ -384,7 +389,7 @@ export const updateUserAvatar = CatchAsyncError(
     try {
       const { avatar } = req.body as IUpdateUserAvatar;
 
-      const userId = req.user?._id;
+      const userId = req.user?._id?.toString() ?? "";
 
       const user = await UserModel.findById(userId).select("+password");
 
@@ -416,14 +421,14 @@ export const updateUserAvatar = CatchAsyncError(
 
       await user?.save();
 
-      await redis.set(userId, JSON.stringify(user), "EX", 604800);
+      await redis.set(userId, JSON.stringify(user), "EX", 604_800);
 
       res.status(200).json({
         success: true,
         user,
       });
-    } catch (error: any) {
-      return next(new ErrorHandler(error.message, 400));
+    } catch (error: unknown) {
+      return next(new ErrorHandler(getErrorMessage(error), 400));
     }
   }
 );
@@ -432,8 +437,8 @@ export const getAllUsersAdmin = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       await getAllUsersService(res);
-    } catch (error: any) {
-      return next(new ErrorHandler(error.message, 400));
+    } catch (error: unknown) {
+      return next(new ErrorHandler(getErrorMessage(error), 400));
     }
   }
 );
@@ -441,22 +446,22 @@ export const getAllUsersAdmin = CatchAsyncError(
 export const updateUserRole = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { email, role } = req.body;
+      const { email, role } = req.body as { email: string; role: string };
 
       const isUserExist = await UserModel.findOne({ email });
 
       if (isUserExist) {
-        const id = isUserExist._id;
+        const id = isUserExist._id.toString();
 
-        updateUserRoleService(res, id, role);
+        await updateUserRoleService(res, id, role);
       } else {
         res.status(400).json({
           success: false,
           message: "User not found",
         });
       }
-    } catch (error: any) {
-      return next(new ErrorHandler(error.message, 400));
+    } catch (error: unknown) {
+      return next(new ErrorHandler(getErrorMessage(error), 400));
     }
   }
 );
@@ -464,7 +469,7 @@ export const updateUserRole = CatchAsyncError(
 export const deleteUser = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
 
       const user = await UserModel.findById(id);
 
@@ -480,8 +485,8 @@ export const deleteUser = CatchAsyncError(
         success: true,
         message: "User deleted successfully",
       });
-    } catch (error: any) {
-      return next(new ErrorHandler(error.message, 400));
+    } catch (error: unknown) {
+      return next(new ErrorHandler(getErrorMessage(error), 400));
     }
   }
 );

@@ -87,15 +87,14 @@ body {
 }
 .hero_animation {
   background-image: linear-gradient(147.92deg, hsla(239, 76%, 53%, 0.456) 10.41%, hsla(0, 0%, 100%, 0) 89.25%);
-  animation: changeBackgroundColor 8s infinite alternate;
 }
 
 .text-gradient {
   background: linear-gradient(90deg, #3e7fd9 2.34%, #5c3bd6 100.78%);
   -webkit-background-clip: text;
   background-clip: text;
+  color: transparent;
   -webkit-text-fill-color: transparent;
-  text-fill-color: transparent;
 }
 
 
@@ -141,6 +140,12 @@ body {
   }
 }
 
-.shake {
-  animation: shake 0.5s ease-in-out;
+@media (prefers-reduced-motion: no-preference) {
+  .hero_animation {
+    animation: changeBackgroundColor 8s infinite alternate;
+  }
+
+  .shake {
+    animation: shake 0.5s ease-in-out;
+  }
 }

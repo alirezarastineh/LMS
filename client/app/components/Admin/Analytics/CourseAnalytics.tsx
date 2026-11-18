@@ -1,4 +1,3 @@
-import React from "react";
 import {
   BarChart,
   Bar,
@@ -11,27 +10,27 @@ import {
 import Loader from "../../Loader/Loader";
 import { useGetCoursesAnalyticsQuery } from "@/redux/features/analytics/analyticsApi";
 import { styles } from "@/app/styles/styles";
+import type { IAnalyticsPoint } from "@/app/types/lms";
 
-type CourseAnalyticsProps = {};
-
-const CourseAnalytics = ({}: CourseAnalyticsProps) => {
+const CourseAnalytics = () => {
   const { data, isLoading } = useGetCoursesAnalyticsQuery({});
 
-  const analyticsData: any = [];
-
-  data?.courses.last12Months.forEach((item: any) => {
-    analyticsData.push({ name: item.month, uv: item.count });
-  });
+  const analyticsData: { name: string; uv: number }[] = (
+    data?.courses?.last12Months ?? []
+  ).map((item: IAnalyticsPoint) => ({
+    name: item.month,
+    uv: item.count,
+  }));
 
   const minValue = 0;
 
+  if (isLoading) {
+    return <Loader />;
+  }
+
   return (
-    <>
-      {isLoading ? (
-        <Loader />
-      ) : (
-        <div className="h-screen">
-          <div className="mt-[50px]">
+    <div className="h-screen">
+          <div className="mt-12.5">
             <h1 className={`${styles.title} px-5 text-start!`}>
               Courses Analytics
             </h1>
@@ -54,8 +53,6 @@ const CourseAnalytics = ({}: CourseAnalyticsProps) => {
             </ResponsiveContainer>
           </div>
         </div>
-      )}
-    </>
   );
 };
 

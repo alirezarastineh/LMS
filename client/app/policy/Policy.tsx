@@ -1,8 +1,6 @@
 import { styles } from "../styles/styles";
 
-type PolicyProps = {};
-
-const Policy = ({}: PolicyProps) => {
+const Policy = () => {
   return (
     <div>
       <div
@@ -13,8 +11,8 @@ const Policy = ({}: PolicyProps) => {
         <h1 className={`${styles.title} text-start! pt-2`}>
           Platform Terms and Condition
         </h1>
-        <ul style={{ listStyle: "unset", marginLeft: "15px" }}>
-          <p className="py-2 ml-[-15px] text-[16px] font-Poppins leading-8 whitespace-pre-line">
+        <div className="space-y-6">
+          <p className="py-2 text-base/8 font-Poppins whitespace-pre-line">
             Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere
             blanditiis architecto quasi impedit in dicta nisi, asperiores
             voluptatum eos alias facilis assumenda ex beatae, culpa dignissimos
@@ -24,8 +22,7 @@ const Policy = ({}: PolicyProps) => {
             assumenda ex beatae, culpa dignissimos accusantium quod numquam
             dolores!
           </p>
-          <br />
-          <p className="py-2 ml-[-15px] text-[16px] font-Poppins leading-8 whitespace-pre-line">
+          <p className="py-2 text-base/8 font-Poppins whitespace-pre-line">
             Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere
             blanditiis architecto quasi impedit in dicta nisi, asperiores
             voluptatum eos alias facilis assumenda ex beatae, culpa dignissimos
@@ -35,8 +32,7 @@ const Policy = ({}: PolicyProps) => {
             assumenda ex beatae, culpa dignissimos accusantium quod numquam
             dolores!
           </p>
-          <br />
-          <p className="py-2 ml-[-15px] text-[16px] font-Poppins leading-8 whitespace-pre-line">
+          <p className="py-2 text-base/8 font-Poppins whitespace-pre-line">
             Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere
             blanditiis architecto quasi impedit in dicta nisi, asperiores
             voluptatum eos alias facilis assumenda ex beatae, culpa dignissimos
@@ -46,8 +42,7 @@ const Policy = ({}: PolicyProps) => {
             assumenda ex beatae, culpa dignissimos accusantium quod numquam
             dolores!
           </p>
-          <br />
-          <p className="py-2 ml-[-15px] text-[16px] font-Poppins leading-8 whitespace-pre-line">
+          <p className="py-2 text-base/8 font-Poppins whitespace-pre-line">
             Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere
             blanditiis architecto quasi impedit in dicta nisi, asperiores
             voluptatum eos alias facilis assumenda ex beatae, culpa dignissimos
@@ -57,8 +52,7 @@ const Policy = ({}: PolicyProps) => {
             assumenda ex beatae, culpa dignissimos accusantium quod numquam
             dolores!
           </p>
-          <br />
-          <p className="py-2 ml-[-15px] text-[16px] font-Poppins leading-8 whitespace-pre-line">
+          <p className="py-2 text-base/8 font-Poppins whitespace-pre-line">
             Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere
             blanditiis architecto quasi impedit in dicta nisi, asperiores
             voluptatum eos alias facilis assumenda ex beatae, culpa dignissimos
@@ -68,8 +62,7 @@ const Policy = ({}: PolicyProps) => {
             assumenda ex beatae, culpa dignissimos accusantium quod numquam
             dolores!
           </p>
-          <br />
-          <p className="py-2 ml-[-15px] text-[16px] font-Poppins leading-8 whitespace-pre-line">
+          <p className="py-2 text-base/8 font-Poppins whitespace-pre-line">
             Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere
             blanditiis architecto quasi impedit in dicta nisi, asperiores
             voluptatum eos alias facilis assumenda ex beatae, culpa dignissimos
@@ -79,7 +72,7 @@ const Policy = ({}: PolicyProps) => {
             assumenda ex beatae, culpa dignissimos accusantium quod numquam
             dolores!
           </p>
-        </ul>
+        </div>
       </div>
     </div>
   );

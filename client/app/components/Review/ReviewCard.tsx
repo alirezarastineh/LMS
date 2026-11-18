@@ -1,20 +1,27 @@
 import Image from "next/image";
 import Ratings from "@/app/utils/Ratings";
 
-type ReviewCard = {
-  item: any;
+interface ReviewItem {
+  name: string;
+  avatar: string;
+  profession: string;
+  comment: string;
+}
+
+type ReviewCardProps = {
+  item: ReviewItem;
 };
 
-const ReviewCard = (props: ReviewCard) => {
+const ReviewCard = (props: ReviewCardProps) => {
   return (
-    <div className="w-full h-max pb-4  dark:bg-slate-500 dark:bg-opacity-[0.20] border border-[#00000028] dark:border-[#ffffff1d] backdrop-blur-sm shadow-[bg-slate-700] rounded-lg p-3 shadow-inner">
+    <div className="w-full h-max pb-4 dark:bg-slate-500/20 border border-[#00000028] dark:border-[#ffffff1d] backdrop-blur-sm shadow-inner rounded-lg p-3">
       <div className="flex w-full">
         <Image
           src={props.item.avatar}
           alt=""
           width={50}
           height={50}
-          className="w-[50px] h-[50px] rounded-full object-cover"
+          className="size-12.5 rounded-full object-cover"
         />
 
         <div className="800px:flex justify-between w-full hidden">

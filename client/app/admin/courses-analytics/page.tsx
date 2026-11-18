@@ -5,9 +5,7 @@ import Heading from "../../../app/utils/Heading";
 import CourseAnalytics from "../../components/Admin/Analytics/CourseAnalytics";
 import DashboardHeader from "../../../app/components/Admin/DashboardHeader";
 
-type pageProps = {};
-
-const page = ({}: pageProps) => {
+const Page = () => {
   return (
     <div>
       <Heading
@@ -28,4 +26,4 @@ const page = ({}: pageProps) => {
   );
 };
 
-export default page;
+export default Page;

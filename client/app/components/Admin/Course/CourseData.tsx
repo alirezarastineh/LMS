@@ -1,12 +1,13 @@
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import toast from "react-hot-toast";
 import { styles } from "@/app/styles/styles";
+import { createClientId, type ICourseTextItem } from "@/app/types/lms";
 
 type CourseDataProps = {
-  benefits: { title: string }[];
-  setBenefits: (benefits: { title: string }[]) => void;
-  prerequisites: { title: string }[];
-  setPrerequisites: (prerequisites: { title: string }[]) => void;
+  benefits: ICourseTextItem[];
+  setBenefits: (benefits: ICourseTextItem[]) => void;
+  prerequisites: ICourseTextItem[];
+  setPrerequisites: (prerequisites: ICourseTextItem[]) => void;
   active: number;
   setActive: (active: number) => void;
 };
@@ -27,7 +28,7 @@ const CourseData = ({
   };
 
   const handleAddBenefit = () => {
-    setBenefits([...benefits, { title: "" }]);
+    setBenefits([...benefits, { clientId: createClientId("benefit"), title: "" }]);
   };
 
   const handlePrerequisitesChange = (index: number, value: string) => {
@@ -38,7 +39,10 @@ const CourseData = ({
   };
 
   const handleAddPrerequisites = () => {
-    setPrerequisites([...prerequisites, { title: "" }]);
+    setPrerequisites([
+      ...prerequisites,
+      { clientId: createClientId("prereq"), title: "" },
+    ]);
   };
 
   const prevButton = () => {
@@ -47,13 +51,13 @@ const CourseData = ({
 
   const handleOptions = () => {
     if (
-      benefits[benefits.length - 1]?.title !== "" &&
-      prerequisites[prerequisites.length - 1]?.title !== ""
+      benefits.at(-1)?.title === "" ||
+      prerequisites.at(-1)?.title === ""
     ) {
-      setActive(active + 1);
-    } else {
       toast.error("Please fill the fields for go to next!");
+      return;
     }
+    setActive(active + 1);
   };
 
   return (
@@ -63,10 +67,10 @@ const CourseData = ({
           What are the benefits for students in this course?
         </label>
         <br />
-        {benefits.map((benefit: any, index: number) => (
+        {benefits.map((benefit, index) => (
           <input
             type="text"
-            key={index}
+            key={benefit.clientId ?? benefit.title}
             name="Benefit"
             placeholder="You will be able to build a full stack LMS Platform..."
             required
@@ -86,15 +90,15 @@ const CourseData = ({
           What are the prerequisites for starting this course?
         </label>
         <br />
-        {prerequisites.map((prerequisites: any, index: number) => (
+        {prerequisites.map((prerequisite, index) => (
           <input
             type="text"
-            key={index}
+            key={prerequisite.clientId ?? prerequisite.title}
             name="prerequisites"
             placeholder="You need basic knowledge of MERN stack"
             required
             className={`${styles.input} my-2`}
-            value={prerequisites.title}
+            value={prerequisite.title}
             onChange={(e) => handlePrerequisitesChange(index, e.target.value)}
           />
         ))}
@@ -104,18 +108,20 @@ const CourseData = ({
         />
       </div>
       <div className="w-full flex items-center justify-between">
-        <div
-          className="w-full 800px:w-[180px] flex items-center justify-center h-[40px] bg-[#37a39a] text-center text-white rounded-sm mt-8 cursor-pointer"
+        <button
+          type="button"
+          className="w-full 800px:w-45 flex items-center justify-center h-10 bg-[#37a39a] text-center text-white rounded-sm mt-8 cursor-pointer border-0"
           onClick={() => prevButton()}
         >
           Prev
-        </div>
-        <div
-          className="w-full 800px:w-[180px] flex items-center justify-center h-[40px] bg-[#37a39a] text-center text-white rounded-sm mt-8 cursor-pointer"
+        </button>
+        <button
+          type="button"
+          className="w-full 800px:w-45 flex items-center justify-center h-10 bg-[#37a39a] text-center text-white rounded-sm mt-8 cursor-pointer border-0"
           onClick={() => handleOptions()}
         >
           Next
-        </div>
+        </button>
       </div>
     </div>
   );

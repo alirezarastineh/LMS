@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { CatchAsyncError } from "../middleware/catchAsyncErrors";
-import ErrorHandler from "../utils/ErrorHandler";
+import ErrorHandler, { getErrorMessage } from "../utils/ErrorHandler";
 import { generateLast12MonthsData } from "../utils/analytics.generator";
 import UserModel from "../models/user.model";
 import CourseModel from "../models/course.model";
@@ -15,8 +15,8 @@ export const getUsersAnalytics = CatchAsyncError(
         success: true,
         users,
       });
-    } catch (error: any) {
-      return next(new ErrorHandler(error.message, 500));
+    } catch (error: unknown) {
+      return next(new ErrorHandler(getErrorMessage(error), 500));
     }
   }
 );
@@ -30,8 +30,8 @@ export const getCoursesAnalytics = CatchAsyncError(
         success: true,
         courses,
       });
-    } catch (error: any) {
-      return next(new ErrorHandler(error.message, 500));
+    } catch (error: unknown) {
+      return next(new ErrorHandler(getErrorMessage(error), 500));
     }
   }
 );
@@ -45,8 +45,8 @@ export const getOrdersAnalytics = CatchAsyncError(
         success: true,
         orders,
       });
-    } catch (error: any) {
-      return next(new ErrorHandler(error.message, 500));
+    } catch (error: unknown) {
+      return next(new ErrorHandler(getErrorMessage(error), 500));
     }
   }
 );

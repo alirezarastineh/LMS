@@ -1,13 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { VscWorkspaceTrusted } from "react-icons/vsc";
 import { useSelector } from "react-redux";
 import { styles } from "@/app/styles/styles";
+import { getApiErrorMessage } from "@/app/types/lms";
+import type { CustomModalContentProps } from "@/app/utils/CustomModal";
 import { useActivationMutation } from "@/redux/features/auth/authApi";
-
-type VerificationProps = {
-  setRoute: (route: string) => void;
-};
+import type { RootState } from "@/redux/features/store";
 
 type VerifyNumber = {
   "0": string;
@@ -16,28 +15,12 @@ type VerifyNumber = {
   "3": string;
 };
 
-const Verification = ({ setRoute }: VerificationProps) => {
-  const { token } = useSelector((state: any) => state.auth);
+const Verification = ({ setRoute }: CustomModalContentProps) => {
+  const { token } = useSelector((state: RootState) => state.auth);
 
-  const [activation, { isSuccess, error }] = useActivationMutation();
+  const [activation] = useActivationMutation();
 
   const [invalidError, setInvalidError] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success("Account activated successfully");
-      setRoute("Login");
-    }
-    if (error) {
-      if ("data" in error) {
-        const errorData = error as any;
-        toast.error(errorData.data.message);
-        setInvalidError(true);
-      } else {
-        console.error("An error occurred:", error);
-      }
-    }
-  }, [isSuccess, error, setRoute]);
 
   const inputRefs = [
     useRef<HTMLInputElement>(null),
@@ -61,10 +44,17 @@ const Verification = ({ setRoute }: VerificationProps) => {
       return;
     }
 
-    await activation({
-      activation_token: token,
-      activation_code: verificationNumber,
-    });
+    try {
+      await activation({
+        activation_token: token,
+        activation_code: verificationNumber,
+      }).unwrap();
+      toast.success("Account activated successfully");
+      setRoute?.("Login");
+    } catch (error: unknown) {
+      setInvalidError(true);
+      toast.error(getApiErrorMessage(error));
+    }
   };
 
   const handleInputChange = (index: number, value: string) => {
@@ -86,7 +76,7 @@ const Verification = ({ setRoute }: VerificationProps) => {
       <h1 className={`${styles.title}`}>Verify Your Account</h1>
       <br />
       <div className="w-full flex items-center justify-center mt-2">
-        <div className="w-[80px] h-[80px] rounded-full bg-[#497DF2] flex items-center justify-center">
+        <div className="size-20 rounded-full bg-[#497DF2] flex items-center justify-center">
           <VscWorkspaceTrusted size={40} />
         </div>
       </div>
@@ -98,7 +88,7 @@ const Verification = ({ setRoute }: VerificationProps) => {
             type="number"
             key={key}
             ref={inputRefs[index]}
-            className={`w-[65px] h-[65px] bg-transparent border-[3px] rounded-[10px] flex items-center text-black dark:text-white justify-center text-[18px] font-Poppins outline-hidden text-center ${
+            className={`size-16.25 bg-transparent border-[3px] rounded-[10px] flex items-center text-black dark:text-white justify-center text-[18px] font-Poppins outline-hidden text-center ${
               invalidError
                 ? "shake border-red-500"
                 : "dark:border-white border-[#0000004a]"
@@ -113,19 +103,26 @@ const Verification = ({ setRoute }: VerificationProps) => {
       <br />
       <br />
       <div className="w-full flex justify-center">
-        <button className={`${styles.button}`} onClick={verificationHandler}>
+        <button
+          type="button"
+          className={`${styles.button}`}
+          onClick={() => {
+            void verificationHandler();
+          }}
+        >
           Verify OTP
         </button>
       </div>
       <br />
       <h5 className="text-center pt-4 font-Poppins text-[14px] text-black dark:text-white">
         Go back to sign in?{" "}
-        <span
-          className="text-[#2190ff] pl-1 cursor-pointer"
-          onClick={() => setRoute("Login")}
+        <button
+          type="button"
+          className="text-[#2190ff] pl-1 cursor-pointer bg-transparent border-0 p-0"
+          onClick={() => setRoute?.("Login")}
         >
           Sign in
-        </span>
+        </button>
       </h5>
     </div>
   );

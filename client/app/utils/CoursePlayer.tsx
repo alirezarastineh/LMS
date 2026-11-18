@@ -6,7 +6,7 @@ type CoursePlayerProps = {
   title: string;
 };
 
-const CoursePlayer = ({ videoUrl }: CoursePlayerProps) => {
+const CoursePlayer = ({ videoUrl, title }: CoursePlayerProps) => {
   const [videoData, setVideoData] = useState({
     otp: "",
     playbackInfo: "",
@@ -14,11 +14,17 @@ const CoursePlayer = ({ videoUrl }: CoursePlayerProps) => {
 
   useEffect(() => {
     axios
-      .post("http://localhost:8000/api/v1/getVdoCipherOTP", {
-        videoId: videoUrl,
-      })
+      .post<{ otp: string; playbackInfo: string }>(
+        "http://localhost:8000/api/v1/getVdoCipherOTP",
+        {
+          videoId: videoUrl,
+        }
+      )
       .then((res) => {
         setVideoData(res.data);
+      })
+      .catch((error: unknown) => {
+        console.error(error);
       });
   }, [videoUrl]);
 
@@ -28,6 +34,7 @@ const CoursePlayer = ({ videoUrl }: CoursePlayerProps) => {
     >
       {videoData.otp && videoData.playbackInfo !== "" && (
         <iframe
+          title={title || "Course video player"}
           src={`https://player.vdocipher.com/v2/?otp=${videoData?.otp}&playbackInfo=${videoData.playbackInfo}&player=q6nWRv08dU1EIIRC`}
           style={{
             position: "absolute",

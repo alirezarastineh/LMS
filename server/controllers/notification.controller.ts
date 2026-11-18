@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import cron from "node-cron";
 import { CatchAsyncError } from "../middleware/catchAsyncErrors";
-import ErrorHandler from "../utils/ErrorHandler";
+import ErrorHandler, { getErrorMessage } from "../utils/ErrorHandler";
 import NotificationModel from "../models/notification.model";
 
 export const getAllNotifications = CatchAsyncError(
@@ -15,8 +15,8 @@ export const getAllNotifications = CatchAsyncError(
         success: true,
         notifications,
       });
-    } catch (error: any) {
-      return next(new ErrorHandler(error.message, 500));
+    } catch (error: unknown) {
+      return next(new ErrorHandler(getErrorMessage(error), 500));
     }
   }
 );
@@ -46,8 +46,8 @@ export const updateNotificationStatus = CatchAsyncError(
         success: true,
         notifications,
       });
-    } catch (error: any) {
-      return next(new ErrorHandler(error.message, 500));
+    } catch (error: unknown) {
+      return next(new ErrorHandler(getErrorMessage(error), 500));
     }
   }
 );

@@ -14,7 +14,7 @@ export interface BannerImage extends Document {
   url: string;
 }
 
-interface Layout extends Document {
+export interface ILayout extends Document {
   type: string;
   faq: FaqItem[];
   categories: Category[];
@@ -39,7 +39,7 @@ const bannerImageSchema = new Schema<BannerImage>({
   url: { type: String },
 });
 
-const layoutSchema = new Schema<Layout>({
+const layoutSchema = new Schema<ILayout>({
   type: { type: String },
   faq: [faqSchema],
   categories: [categorySchema],
@@ -50,6 +50,6 @@ const layoutSchema = new Schema<Layout>({
   },
 });
 
-const LayoutModel = model<Layout>("Layout", layoutSchema);
+const LayoutModel = model<ILayout>("Layout", layoutSchema);
 
 export default LayoutModel;

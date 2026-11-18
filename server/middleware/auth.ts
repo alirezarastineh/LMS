@@ -4,6 +4,7 @@ import { CatchAsyncError } from "./catchAsyncErrors";
 import ErrorHandler from "../utils/ErrorHandler";
 import { redis } from "../utils/redis";
 import { updateAccessToken } from "../controllers/user.controller";
+import { IUser } from "../models/user.model";
 
 export const isAuthenticated = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -15,9 +16,11 @@ export const isAuthenticated = CatchAsyncError(
       );
     }
 
-    const decoded = jwt.decode(access_token) as JwtPayload;
+    const decoded = jwt.decode(access_token) as
+      | (JwtPayload & { id?: unknown })
+      | null;
 
-    if (!decoded) {
+    if (!decoded || typeof decoded.id !== "string") {
       return next(new ErrorHandler("Access Token is not valid!", 400));
     }
 
@@ -38,7 +41,7 @@ export const isAuthenticated = CatchAsyncError(
       );
     }
 
-    req.user = JSON.parse(user);
+    req.user = JSON.parse(user) as IUser;
 
     next();
   }
@@ -46,7 +49,7 @@ export const isAuthenticated = CatchAsyncError(
 
 export const authorizeRoles = (...roles: string[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
-    if (!roles.includes(req.user?.role || "")) {
+    if (!roles.includes(req.user?.role ?? "")) {
       return next(
         new ErrorHandler(
           `Roles: ${req.user?.role} is not allowed to access this resource`,

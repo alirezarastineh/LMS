@@ -1,37 +1,54 @@
 import { NextFunction, Request, Response } from "express";
 import ErrorHandler from "../utils/ErrorHandler";
 
+interface IAppError extends Error {
+  statusCode?: number;
+  code?: number;
+  keyValue?: Record<string, unknown>;
+  path?: string;
+}
+
 export const ErrorMiddleWare = (
-  err: any,
-  req: Request,
+  err: IAppError,
+  _req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
-  err.statusCode = err.statusCode || 500;
-  err.message = err.message || "Internal Server Error";
+  let statusCode = err.statusCode ?? 500;
+  let message = err.message === "" ? "Internal Server Error" : err.message;
 
   if (err.name === "CastError") {
-    const message = `Resource not found. Invalid: ${err.path}`;
-    err = new ErrorHandler(message, 400);
+    const castErr = new ErrorHandler(
+      `Resource not found. Invalid: ${err.path}`,
+      400
+    );
+    statusCode = castErr.statusCode;
+    message = castErr.message;
   }
 
-  if (err.code === 11000) {
-    const message = `Duplicate ${Object.keys(err.keyValue)} entered`;
-    err = new ErrorHandler(message, 400);
+  if (err.code === 11_000) {
+    const dupErr = new ErrorHandler(
+      `Duplicate ${Object.keys(err.keyValue ?? {}).join(", ")} entered`,
+      400
+    );
+    statusCode = dupErr.statusCode;
+    message = dupErr.message;
   }
 
   if (err.name === "JasonWebTokenError") {
-    const message = "JWT is not valid, try again";
-    err = new ErrorHandler(message, 400);
+    const jwtErr = new ErrorHandler("JWT is not valid, try again", 400);
+    statusCode = jwtErr.statusCode;
+    message = jwtErr.message;
   }
 
   if (err.name === "TokenExpiredError") {
-    const message = "JWT is expired, try again";
-    err = new ErrorHandler(message, 400);
+    const expErr = new ErrorHandler("JWT is expired, try again", 400);
+    statusCode = expErr.statusCode;
+    message = expErr.message;
   }
 
-  res.status(err.statusCode).json({
+  res.status(statusCode).json({
     success: false,
-    message: err.message,
+    message,
   });
 };

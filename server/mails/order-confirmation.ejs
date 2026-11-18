@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Confirmation of your E-Learning course order." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -33,7 +35,7 @@
       .message-sm {
         text-align: center;
         font-size: 18px;
-        margin-bottom: 20px;
+        margin-bottom: 60px;
         padding-top: 50px;
       }
       .message-sm > h1 {
@@ -97,18 +99,24 @@
         margin: auto;
         border-bottom: none;
       }
-      .first-td {
+      .order-items {
+        width: 90%;
+        margin: auto;
+      }
+      .order-items th,
+      .order-items td {
+        width: 33.33%;
+        text-align: center;
+      }
+      .order-items th {
         text-transform: uppercase;
         color: #0000006c;
         font-size: 16px;
-        padding: 5px 0px;
-        width: 1%;
+        font-weight: 600;
+        padding: 5px 10px;
       }
-      .first-td {
-        font-weight: 600 !important;
-      }
-      .second-td {
-        font-weight: 500 !important;
+      .order-items td {
+        font-weight: 500;
         color: #000000af;
         font-size: 15px;
       }
@@ -125,21 +133,48 @@
         text-align: center;
         width: 28.33%;
       }
-      td.col-2 {
-        width: 100%;
-        text-align: left;
-        padding: 0px;
-        margin: 0;
-      }
       .m-auto {
         width: 100%;
         margin: auto;
       }
-      .table-row {
+      .order-summary {
         width: 70%;
-        display: block;
-        margin: auto;
-        padding: 10px 0;
+        margin: 0 auto;
+        border-top: 1px solid #00000029;
+      }
+      .order-summary th,
+      .order-summary td {
+        width: 50%;
+        padding: 4px 0;
+      }
+      .order-summary tr:first-child th,
+      .order-summary tr:first-child td {
+        padding-top: 10px;
+      }
+      .order-summary th {
+        text-align: left;
+        font-weight: 400;
+      }
+      .order-summary td {
+        text-align: right;
+      }
+      .order-meta {
+        border-bottom: 1px solid #0000002f;
+      }
+      .order-meta th,
+      .order-meta td {
+        width: 50%;
+        text-align: center;
+      }
+      .order-meta th {
+        padding: 10px 10px 4px;
+        font-weight: 600;
+        color: #0000006c;
+        text-transform: uppercase;
+        font-size: 13px;
+      }
+      .order-meta td {
+        padding: 4px 10px 10px;
       }
     </style>
   </head>
@@ -149,43 +184,50 @@
         <h1>Your E-Learning order is confirmed!</h1>
         <p>And we're just as excited as you are.</p>
       </div>
-      <br />
-      <br />
       <div class="course-info">
         <h4>Here's what you ordered:</h4>
-        <table style="border-bottom: 1px solid #0000002f">
-          <tr>
-            <td>Order #: <%= order._id %></td>
-            <td>Order Date: <%= order.date %></td>
-          </tr>
+        <table class="order-meta">
+          <thead>
+            <tr>
+              <th scope="col">Order #</th>
+              <th scope="col">Order Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><%= order._id %></td>
+              <td><%= order.date %></td>
+            </tr>
+          </tbody>
         </table>
-        <table style="width: 90%; margin: auto; display: block">
-          <tr>
-            <td class="first-td">Item</td>
-            <td class="first-td">Qty</td>
-            <td class="first-td">cost</td>
-          </tr>
+        <table class="order-items">
+          <thead>
+            <tr>
+              <th scope="col">Item</th>
+              <th scope="col">Qty</th>
+              <th scope="col">cost</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><%= order.name %></td>
+              <td>1</td>
+              <td>€<%= order.price %></td>
+            </tr>
+          </tbody>
         </table>
 
-        <table style="width: 90%; margin: auto; display: block">
-          <tr>
-            <td class="second-td"><%= order.name %></td>
-            <td class="second-td">1</td>
-            <td class="second-td">€<%= order.price %></td>
-          </tr>
-        </table>
-
-        <table class="table-row" style="border-top: 1px solid #00000029">
-          <tr>
-            <td class="col-2">Subtotal:</td>
-            <td class="col-2">€<%= order.price %></td>
-          </tr>
-        </table>
-        <table class="table-row" style="margin-top: -20px">
-          <tr>
-            <td class="col-2">Total:</td>
-            <td class="col-2">€<%= order.price %></td>
-          </tr>
+        <table class="order-summary">
+          <tbody>
+            <tr>
+              <th scope="row">Subtotal:</th>
+              <td>€<%= order.price %></td>
+            </tr>
+            <tr>
+              <th scope="row">Total:</th>
+              <td>€<%= order.price %></td>
+            </tr>
+          </tbody>
         </table>
       </div>
       <div class="footer">
@@ -195,7 +237,7 @@
             >alirezarastineh95@gmail.com</a
           >
         </p>
-        <p>&copy; 2024 E-Learning. All rights reserved.</p>
+        <p>© 2024 E-Learning. All rights reserved.</p>
       </div>
     </div>
   </body>

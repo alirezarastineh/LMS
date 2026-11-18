@@ -4,14 +4,18 @@ import { RiLockPasswordLine } from "react-icons/ri";
 import { SiCoursera } from "react-icons/si";
 import { AiOutlineLogout } from "react-icons/ai";
 import { MdOutlineAdminPanelSettings } from "react-icons/md";
+import { resolveNonEmpty, type IUser } from "@/app/types/lms";
 
 type SideBarProfileProps = {
-  user: any;
+  user: IUser;
   active: number;
   avatar: string | null;
   setActive: (active: number) => void;
-  logOutHandler: any;
+  logOutHandler: () => void | Promise<void>;
 };
+
+const DEFAULT_AVATAR =
+  "https://res.cloudinary.com/kouroshrstn/image/upload/v1707293133/Avatars/avatar_dwjgxo.png";
 
 const SideBarProfile = ({
   user,
@@ -22,31 +26,32 @@ const SideBarProfile = ({
 }: SideBarProfileProps) => {
   return (
     <div className="w-full">
-      <div
-        className={`w-full flex items-center px-3 py-4 cursor-pointer ${
+      <button
+        type="button"
+        className={`w-full text-left border-0 flex items-center px-3 py-4 cursor-pointer ${
           active === 1 ? "dark:bg-slate-800 bg-white" : "bg-transparent"
         }`}
         onClick={() => setActive(1)}
       >
         <Image
-          src={
-            user.avatar || avatar
-              ? user.avatar.url || avatar
-              : "https://res.cloudinary.com/kouroshrstn/image/upload/v1707293133/Avatars/avatar_dwjgxo.png"
-          }
+          src={resolveNonEmpty(
+            user?.avatar?.url,
+            resolveNonEmpty(avatar, DEFAULT_AVATAR)
+          )}
           alt=""
           width={20}
           height={20}
-          className="w-[20px] h-[20px] 800px:w-[30px] 800px:h-[30px] cursor-pointer rounded-full"
+          className="size-5 800px:size-7.5 cursor-pointer rounded-full"
         />
 
         <h5 className="pl-2 800px:block hidden font-Poppins dark:text-white text-black">
           My Account
         </h5>
-      </div>
+      </button>
 
-      <div
-        className={`w-full flex items-center px-3 py-4 cursor-pointer ${
+      <button
+        type="button"
+        className={`w-full text-left border-0 flex items-center px-3 py-4 cursor-pointer ${
           active === 2 ? "dark:bg-slate-800 bg-white" : "bg-transparent"
         }`}
         onClick={() => setActive(2)}
@@ -56,10 +61,11 @@ const SideBarProfile = ({
         <h5 className="pl-2 800px:block hidden font-Poppins dark:text-white text-black">
           Change Password
         </h5>
-      </div>
+      </button>
 
-      <div
-        className={`w-full flex items-center px-3 py-4 cursor-pointer ${
+      <button
+        type="button"
+        className={`w-full text-left border-0 flex items-center px-3 py-4 cursor-pointer ${
           active === 3 ? "dark:bg-slate-800 bg-white" : "bg-transparent"
         }`}
         onClick={() => setActive(3)}
@@ -69,7 +75,7 @@ const SideBarProfile = ({
         <h5 className="pl-2 800px:block hidden font-Poppins dark:text-white text-black">
           Enrolled Courses
         </h5>
-      </div>
+      </button>
 
       {user.role === "admin" && (
         <Link
@@ -89,18 +95,21 @@ const SideBarProfile = ({
         </Link>
       )}
 
-      <div
-        className={`w-full flex items-center px-3 py-4 cursor-pointer ${
+      <button
+        type="button"
+        className={`w-full text-left border-0 flex items-center px-3 py-4 cursor-pointer ${
           active === 4 ? "dark:bg-slate-800 bg-white" : "bg-transparent"
         }`}
-        onClick={() => logOutHandler()}
+        onClick={() => {
+          void logOutHandler();
+        }}
       >
         <AiOutlineLogout size={20} className="dark:text-white text-black" />
 
         <h5 className="pl-2 800px:block hidden font-Poppins dark:text-white text-black">
           Log Out
         </h5>
-      </div>
+      </button>
     </div>
   );
 };

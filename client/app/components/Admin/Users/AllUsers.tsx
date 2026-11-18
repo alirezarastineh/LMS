@@ -1,24 +1,39 @@
-import { useEffect, useState } from "react";
-import { DataGrid } from "@mui/x-data-grid";
+import { useState } from "react";
+import {
+  DataGrid,
+  type GridColDef,
+  type GridRenderCellParams,
+} from "@mui/x-data-grid";
 import { Box, Button, Modal } from "@mui/material";
 import { AiOutlineDelete, AiOutlineMail } from "react-icons/ai";
 import { useTheme } from "next-themes";
 import { format } from "timeago.js";
 import toast from "react-hot-toast";
 import Loader from "../../Loader/Loader";
+import { getDataGridContainerSx } from "@/app/utils/dataGridStyles";
 import {
   useDeleteUserMutation,
   useGetAllUsersQuery,
   useUpdateUserRoleMutation,
 } from "@/redux/features/user/userApi";
+import { getApiErrorMessage, type IUser } from "@/app/types/lms";
 import { styles } from "@/app/styles/styles";
 
-type AllCoursesProps = {
+type AllUsersProps = {
   isTeam?: boolean;
 };
 
-const AllCourses = ({ isTeam }: AllCoursesProps) => {
-  const { theme, setTheme } = useTheme();
+interface UserRow {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  courses: number;
+  created_at: string;
+}
+
+const AllCourses = ({ isTeam }: AllUsersProps) => {
+  const { theme } = useTheme();
 
   const [active, setActive] = useState(false);
 
@@ -30,42 +45,16 @@ const AllCourses = ({ isTeam }: AllCoursesProps) => {
 
   const [userId, setUserId] = useState("");
 
-  const [updateUserRole, { error: updateError, isSuccess }] =
-    useUpdateUserRoleMutation();
+  const [updateUserRole] = useUpdateUserRoleMutation();
 
   const { isLoading, data, refetch } = useGetAllUsersQuery(
     {},
     { refetchOnMountOrArgChange: true }
   );
 
-  const [deleteUser, { isSuccess: deleteSuccess, error: deleteError }] =
-    useDeleteUserMutation({});
+  const [deleteUser] = useDeleteUserMutation({});
 
-  useEffect(() => {
-    if (updateError && "data" in updateError) {
-      const errorMessage = updateError as any;
-      toast.error(errorMessage.data.message);
-    }
-
-    if (isSuccess) {
-      refetch();
-      toast.success("User role updated successfully");
-      setActive(false);
-    }
-
-    if (deleteSuccess) {
-      refetch();
-      toast.success("Delete user successfully!");
-      setOpen(false);
-    }
-
-    if (deleteError && "data" in deleteError) {
-      const errorMessage = deleteError as any;
-      toast.error(errorMessage.data.message);
-    }
-  }, [updateError, isSuccess, deleteSuccess, deleteError, refetch]);
-
-  const columns = [
+  const columns: GridColDef<UserRow>[] = [
     { field: "id", headerName: "ID", flex: 0.3 },
     { field: "name", headerName: "Name", flex: 0.5 },
     { field: "email", headerName: "Email", flex: 0.5 },
@@ -76,7 +65,7 @@ const AllCourses = ({ isTeam }: AllCoursesProps) => {
       field: " ",
       headerName: "Delete",
       flex: 0.2,
-      renderCell: (params: any) => {
+      renderCell: (params: GridRenderCellParams<UserRow>) => {
         return (
           <Button
             onClick={() => {
@@ -93,7 +82,7 @@ const AllCourses = ({ isTeam }: AllCoursesProps) => {
       field: "  ",
       headerName: "Email",
       flex: 0.2,
-      renderCell: (params: any) => {
+      renderCell: (params: GridRenderCellParams<UserRow>) => {
         return (
           <a href={`mailto:${params.row.email}`}>
             <AiOutlineMail className="dark:text-white text-black" size={20} />
@@ -103,110 +92,60 @@ const AllCourses = ({ isTeam }: AllCoursesProps) => {
     },
   ];
 
-  const rows: any = [];
+  const allUsers: IUser[] = data?.users ?? [];
+  const filteredUsers = isTeam
+    ? allUsers.filter((item) => item.role === "admin")
+    : allUsers;
 
-  if (isTeam) {
-    const newData = data?.users.filter((item: any) => item.role === "admin");
-
-    newData?.forEach((item: any) => {
-      rows.push({
-        id: item._id,
-        name: item.name,
-        email: item.email,
-        role: item.role,
-        courses: item.courses.length,
-        created_at: format(item.createdAt),
-      });
-    });
-  } else {
-    data?.users.forEach((item: any) => {
-      rows.push({
-        id: item._id,
-        name: item.name,
-        email: item.email,
-        role: item.role,
-        courses: item.courses.length,
-        created_at: format(item.createdAt),
-      });
-    });
-  }
+  const rows: UserRow[] = filteredUsers.map((item) => ({
+    id: item._id,
+    name: item.name,
+    email: item.email,
+    role: item.role,
+    courses: item.courses?.length ?? 0,
+    created_at: item.createdAt ? format(item.createdAt) : "",
+  }));
 
   const handleSubmit = async () => {
-    await updateUserRole({ email, role });
+    try {
+      await updateUserRole({ email, role }).unwrap();
+      void refetch();
+      toast.success("User role updated successfully");
+      setActive(false);
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error));
+    }
   };
 
   const handleDelete = async () => {
-    await deleteUser(userId);
+    try {
+      await deleteUser(userId).unwrap();
+      void refetch();
+      toast.success("Delete user successfully!");
+      setOpen(false);
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error));
+    }
   };
 
   return (
-    <div className="mt-[120px]">
+    <div className="mt-30">
       {isLoading ? (
         <Loader />
       ) : (
-        <Box m="20px">
+        <Box sx={{ m: "20px" }}>
           {isTeam && (
             <div className="w-full flex justify-end">
-              <div
-                className={`${styles.button} w-[200px]! rounded-[10px]! dark:bg-[#57c7a3] h-[35px]! dark:border dark:border-[#ffffff6c]`}
+              <button
+                type="button"
+                className={`${styles.button} w-50! rounded-[10px]! dark:bg-[#57c7a3] h-8.75! dark:border dark:border-[#ffffff6c] border-0`}
                 onClick={() => setActive(!active)}
               >
                 Add New Member
-              </div>
+              </button>
             </div>
           )}
-          <Box
-            m="40px 0 0 0"
-            height="80vh"
-            sx={{
-              "& .MuiDataGrid-root": {
-                border: "none",
-                outline: "none",
-              },
-              "& .css-pqjvzy-MuiSvgIcon-root-MuiSelect-icon": {
-                color: theme === "dark" ? "#fff" : "#000",
-              },
-              "& .MuiDataGrid-sortIcon": {
-                color: theme === "dark" ? "#fff" : "#000",
-              },
-              "& .MuiDataGrid-row": {
-                color: theme === "dark" ? "#fff" : "#000",
-                borderBottom:
-                  theme === "dark"
-                    ? "1px solid #ffffff30!important"
-                    : "1px solid #ccc!important",
-              },
-              "& .MuiTablePagination-root": {
-                color: theme === "dark" ? "#fff" : "#000",
-              },
-              "& .MuiDataGrid-cell": {
-                borderBottom: "none!important",
-              },
-              "& .name-column--cell": {
-                color: theme === "dark" ? "#fff" : "#000",
-              },
-              "& .MuiDataGrid-columnHeaders": {
-                backgroundColor: theme === "dark" ? "#3e4396" : "#A4A9FC",
-                borderBottom: "none",
-                color: theme === "dark" ? "#fff" : "#000",
-              },
-              "& .MuiDataGrid-virtualScroller": {
-                backgroundColor: theme === "dark" ? "#1F2A40" : "#F2F0F0",
-              },
-              "& .MuiDataGrid-footerContainer": {
-                color: theme === "dark" ? "#fff" : "#000",
-                borderTop: "none",
-                backgroundColor: theme === "dark" ? "#3e4396" : "#A4A9FC",
-              },
-              "& .MuiCheckbox-root": {
-                color:
-                  theme === "dark" ? `#b7ebde !important` : `#000 !important`,
-              },
-              "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
-                color: `#fff !important`,
-              },
-            }}
-          >
+          <Box sx={getDataGridContainerSx(theme)}>
             <DataGrid checkboxSelection rows={rows} columns={columns} />
           </Box>
           {active && (
@@ -216,7 +155,7 @@ const AllCourses = ({ isTeam }: AllCoursesProps) => {
               aria-labelledby="modal-modal-title"
               aria-describedby="modal-modal-description"
             >
-              <Box className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[450px] bg-white dark:bg-slate-900 rounded-[8px] shadow-sm p-4 outline-hidden">
+              <Box className="absolute top-[50%] left-[50%] -translate-1/2 w-112.5 bg-white dark:bg-slate-900 rounded-lg shadow-sm p-4 outline-hidden">
                 <h1 className={`${styles.title}`}>Add New Member</h1>
                 <div className="mt-4">
                   <input
@@ -230,18 +169,21 @@ const AllCourses = ({ isTeam }: AllCoursesProps) => {
                     name=""
                     id=""
                     className={`${styles.input} mt-6!`}
-                    onChange={(e: any) => setRole(e.target.value)}
+                    onChange={(e) => setRole(e.target.value)}
                   >
                     <option value="admin">Admin</option>
                     <option value="user">User</option>
                   </select>
                   <br />
-                  <div
-                    className={`${styles.button} my-6 h-[30px]!`}
-                    onClick={handleSubmit}
+                  <button
+                    type="button"
+                    className={`${styles.button} my-6 h-7.5! border-0`}
+                    onClick={() => {
+                      void handleSubmit();
+                    }}
                   >
                     Submit
-                  </div>
+                  </button>
                 </div>
               </Box>
             </Modal>
@@ -254,23 +196,27 @@ const AllCourses = ({ isTeam }: AllCoursesProps) => {
               aria-labelledby="modal-modal-title"
               aria-describedby="modal-modal-description"
             >
-              <Box className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[450px] bg-white dark:bg-slate-900 rounded-[8px] shadow-sm p-4 outline-hidden">
+              <Box className="absolute top-[50%] left-[50%] -translate-1/2 w-112.5 bg-white dark:bg-slate-900 rounded-lg shadow-sm p-4 outline-hidden">
                 <h1 className={`${styles.title}`}>
                   Are you sure you want to delete this user?
                 </h1>
                 <div className="flex w-full items-center justify-between mb-6 mt-4">
-                  <div
-                    className={`${styles.button} w-[120px]! h-[30px] bg-[#57c7a3]`}
+                  <button
+                    type="button"
+                    className={`${styles.button} w-30! h-7.5 bg-[#57c7a3] border-0`}
                     onClick={() => setOpen(!open)}
                   >
                     Cancel
-                  </div>
-                  <div
-                    className={`${styles.button} w-[120px]! h-[30px] bg-[#d63f3f]`}
-                    onClick={handleDelete}
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.button} w-30! h-7.5 bg-[#d63f3f] border-0`}
+                    onClick={() => {
+                      void handleDelete();
+                    }}
                   >
                     Delete
-                  </div>
+                  </button>
                 </div>
               </Box>
             </Modal>

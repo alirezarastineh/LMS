@@ -3,8 +3,6 @@ import Image from "next/image";
 import React from "react";
 import ReviewCard from "../Review/ReviewCard";
 
-type ReviewsProps = {};
-
 export const reviews = [
   {
     name: "Gene Bates",
@@ -50,7 +48,7 @@ export const reviews = [
   },
 ];
 
-const Reviews = ({}: ReviewsProps) => {
+const Reviews = () => {
   return (
     <div className="w-[90%] 800px:w-[85%] m-auto">
       <div className="w-full 800px:flex items-center">
@@ -80,9 +78,9 @@ const Reviews = ({}: ReviewsProps) => {
         <br />
       </div>
 
-      <div className="grid grid-cols-1 gap-[25px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-2 lg:gap-[25px] xl:grid-cols-2 xl:gap-[35px] mb-12 border-0 md:[&>*:nth-child(3)]:mt-[-60px]! md:[&>*:nth-child(6)]:mt-[-20px]!">
-        {reviews?.map((i, index) => (
-          <ReviewCard item={i} key={index} />
+      <div className="grid grid-cols-1 gap-6.25 md:grid-cols-2 md:gap-6.25 lg:grid-cols-2 lg:gap-6.25 xl:grid-cols-2 xl:gap-8.75 mb-12 border-0 md:[&>*:nth-child(3)]:-mt-15! md:[&>*:nth-child(6)]:-mt-5!">
+        {reviews?.map((i) => (
+          <ReviewCard item={i} key={i.name} />
         ))}
       </div>
     </div>

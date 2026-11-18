@@ -5,9 +5,7 @@ import AdminSidebar from "../components/Admin/Sidebar/AdminSidebar";
 import AdminProtected from "../hooks/adminProtected";
 import DashboardHero from "../components/Admin/DashboardHero";
 
-type pageProps = {};
-
-const page = (props: pageProps) => {
+const Page = () => {
   return (
     <div>
       <AdminProtected>
@@ -29,4 +27,4 @@ const page = (props: pageProps) => {
   );
 };
 
-export default page;
+export default Page;

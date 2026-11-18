@@ -1,8 +1,14 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import type { IUser } from "@/app/types/lms";
 
-const initialState = {
+interface AuthState {
+  token: string;
+  user: IUser | null;
+}
+
+const initialState: AuthState = {
   token: "",
-  user: "",
+  user: null,
 };
 
 const authSlice = createSlice({
@@ -15,7 +21,7 @@ const authSlice = createSlice({
 
     userLoggedIn: (
       state,
-      action: PayloadAction<{ accessToken: string; user: string }>
+      action: PayloadAction<{ accessToken: string; user: IUser }>
     ) => {
       state.token = action.payload.accessToken;
       state.user = action.payload.user;
@@ -23,7 +29,7 @@ const authSlice = createSlice({
 
     userLoggedOut: (state) => {
       state.token = "";
-      state.user = "";
+      state.user = null;
     },
   },
 });

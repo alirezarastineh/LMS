@@ -1,25 +1,36 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
 import { IUser } from "./user.model";
 
-export interface IComment extends Document {
-  user: IUser;
-  question: string;
-  questionReplies: IComment[];
+export interface ICommentReply {
+  user?: IUser;
+  answer?: string;
+  comment?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
-interface IReview extends Document {
-  user: IUser;
+export interface IComment {
+  _id?: mongoose.Types.ObjectId;
+  user?: IUser;
+  question: string;
+  questionReplies: ICommentReply[];
+}
+
+export interface IReview {
+  _id?: mongoose.Types.ObjectId;
+  user?: IUser;
   rating?: number;
   comment: string;
-  commentReplies?: IReview[];
+  commentReplies?: ICommentReply[];
 }
 
-interface ILink extends Document {
+export interface ILink {
   title: string;
   url: string;
 }
 
-interface ICourseData extends Document {
+export interface ICourseData {
+  _id?: mongoose.Types.ObjectId;
   title: string;
   description: string;
   videoUrl: string;
@@ -38,7 +49,10 @@ export interface ICourse extends Document {
   categories: string;
   price: number;
   estimatedPrice?: number;
-  thumbnail: object;
+  thumbnail: {
+    public_id?: string;
+    url?: string;
+  };
   tags: string;
   level: string;
   demoUrl: string;

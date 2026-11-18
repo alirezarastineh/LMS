@@ -1,10 +1,14 @@
+import "dotenv/config";
 import mongoose, { Document, Model, Schema } from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-require("dotenv").config();
+const emailRegexPattern = /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/;
 
-const emailRegexPattern: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+export interface IUserCourseRef {
+  _id?: mongoose.Types.ObjectId | string;
+  courseId?: string;
+}
 
 export interface IUser extends Document {
   name: string;
@@ -16,7 +20,7 @@ export interface IUser extends Document {
   };
   role: string;
   isVerified: boolean;
-  courses: Array<{ courseId: string }>;
+  courses: IUserCourseRef[];
   comparePassword: (password: string) => Promise<boolean>;
   SignAccessToken: () => string;
   SignRefreshToken: () => string;
@@ -68,32 +72,31 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
   { timestamps: true }
 );
 
-userSchema.pre<IUser>("save", async function (next) {
-  if (!this.isModified("password")) {
-    next();
+userSchema.pre<IUser>("save", async function () {
+  if (!this.isModified("password") || !this.password) {
+    return;
   }
 
   this.password = await bcrypt.hash(this.password, 10);
-
-  next();
 });
 
-userSchema.methods.SignAccessToken = function () {
-  return jwt.sign({ id: this._id }, process.env.ACCESS_TOKEN || "", {
+userSchema.methods.SignAccessToken = function (this: IUser) {
+  return jwt.sign({ id: this._id.toString() }, process.env.ACCESS_TOKEN ?? "", {
     expiresIn: "5m",
   });
 };
 
-userSchema.methods.SignRefreshToken = function () {
-  return jwt.sign({ id: this._id }, process.env.REFRESH_TOKEN || "", {
+userSchema.methods.SignRefreshToken = function (this: IUser) {
+  return jwt.sign({ id: this._id.toString() }, process.env.REFRESH_TOKEN ?? "", {
     expiresIn: "3d",
   });
 };
 
-userSchema.methods.comparePassword = async function (
+userSchema.methods.comparePassword = function (
+  this: IUser,
   enteredPassword: string
 ): Promise<boolean> {
-  return await bcrypt.compare(enteredPassword, this.password);
+  return bcrypt.compare(enteredPassword, this.password);
 };
 
 const UserModel: Model<IUser> = mongoose.model("User", userSchema);

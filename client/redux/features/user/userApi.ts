@@ -1,8 +1,9 @@
+import type { IUser } from "@/app/types/lms";
 import { apiSlice } from "../api/apiSlice";
 
 export const userApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    updateAvatar: builder.mutation({
+    updateAvatar: builder.mutation<unknown, string>({
       query: (avatar) => ({
         url: "update-user-avatar",
         method: "PUT",
@@ -11,7 +12,7 @@ export const userApi = apiSlice.injectEndpoints({
       }),
     }),
 
-    editProfile: builder.mutation({
+    editProfile: builder.mutation<unknown, { name: string }>({
       query: ({ name }) => ({
         url: "update-user-info",
         method: "PUT",
@@ -22,7 +23,10 @@ export const userApi = apiSlice.injectEndpoints({
       }),
     }),
 
-    updatePassword: builder.mutation({
+    updatePassword: builder.mutation<
+      unknown,
+      { oldPassword: string; newPassword: string }
+    >({
       query: ({ oldPassword, newPassword }) => ({
         url: "update-user-password",
         method: "PUT",
@@ -34,7 +38,7 @@ export const userApi = apiSlice.injectEndpoints({
       }),
     }),
 
-    getAllUsers: builder.query({
+    getAllUsers: builder.query<{ success: boolean; users: IUser[] }, unknown>({
       query: () => ({
         url: "get-all-users-admin",
         method: "GET",
@@ -42,7 +46,7 @@ export const userApi = apiSlice.injectEndpoints({
       }),
     }),
 
-    updateUserRole: builder.mutation({
+    updateUserRole: builder.mutation<unknown, { email: string; role: string }>({
       query: ({ email, role }) => ({
         url: "update-user-role-admin",
         method: "PUT",
@@ -51,7 +55,7 @@ export const userApi = apiSlice.injectEndpoints({
       }),
     }),
 
-    deleteUser: builder.mutation({
+    deleteUser: builder.mutation<unknown, string>({
       query: (id) => ({
         url: `delete-user/${id}`,
         method: "DELETE",

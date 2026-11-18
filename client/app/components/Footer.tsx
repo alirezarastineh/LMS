@@ -1,8 +1,6 @@
 import Link from "next/link";
 
-type FooterProps = {};
-
-const Footer = ({}: FooterProps) => {
+const Footer = () => {
   return (
     <footer>
       <div className="border border-[#0000000e] dark:border-[#ffffff1e]" />
@@ -114,7 +112,7 @@ const Footer = ({}: FooterProps) => {
               Address: Berlin, Germany
             </p>
 
-            <p className="text-base text-black dark:text-gray-300 dark:hover:text-white  pb-2">
+            <p className="text-base text-black dark:text-gray-300 dark:hover:text-white pb-2">
               Mail Us: alirezarastineh95@gmail.com
             </p>
           </div>

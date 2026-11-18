@@ -1,6 +1,8 @@
 import { styles } from "@/app/styles/styles";
+import type { ICourse } from "@/app/types/lms";
+import type { Stripe } from "@stripe/stripe-js";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { IoCheckmarkDoneOutline, IoCloseOutline } from "react-icons/io5";
 import { format } from "timeago.js";
 import CoursePlayer from "@/app/utils/CoursePlayer";
@@ -13,11 +15,11 @@ import CheckOutForm from "../Payment/CheckOutForm";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 
 type CourseDetailsProps = {
-  data: any;
-  stripePromise: any;
+  data: ICourse;
+  stripePromise: Promise<Stripe | null> | null;
   clientSecret: string;
-  setRoute: any;
-  setOpen: any;
+  setRoute: (route: string) => void;
+  setOpen: (open: boolean) => void;
 };
 
 const CourseDetails = ({
@@ -28,25 +30,23 @@ const CourseDetails = ({
   setOpen: openAuthModal,
 }: CourseDetailsProps) => {
   const { data: userData, refetch } = useLoadUserQuery(undefined, {});
-
-  const [user, setUser] = useState<any>();
+  const user = userData?.user;
 
   const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    setUser(userData?.user);
-  }, [userData]);
-
+  const estimatedPrice = data.estimatedPrice ?? 0;
   const dicountPercentenge =
-    ((data?.estimatedPrice - data.price) / data?.estimatedPrice) * 100;
+    estimatedPrice > 0
+      ? ((estimatedPrice - data.price) / estimatedPrice) * 100
+      : 0;
 
   const discountPercentengePrice = dicountPercentenge.toFixed(0);
 
-  const isPurchased = user?.courses?.find((item: any) => item._id === data._id);
+  const isPurchased = user?.courses?.find((item) => item._id === data._id);
 
   const isAdmin = user?.role === "admin";
 
-  const handleOrder = (e: any) => {
+  const handleOrder = () => {
     if (user) {
       setOpen(true);
     } else {
@@ -65,7 +65,7 @@ const CourseDetails = ({
             </h1>
             <div className="flex items-center justify-between pt-3">
               <div className="flex items-center">
-                <Ratings rating={data.ratings} />
+                <Ratings rating={data.ratings ?? 0} />
                 <h5 className="text-black dark:text-white">
                   {data.reviews?.length} Reviews
                 </h5>
@@ -80,12 +80,12 @@ const CourseDetails = ({
               What you will learn from this course?
             </h1>
             <div>
-              {data.benefits?.map((item: any, index: number) => (
+              {data.benefits?.map((item) => (
                 <div
                   className="w-full flex 800px:items-center py-2"
-                  key={index}
+                  key={item.title}
                 >
-                  <div className="w-[15px] mr-1">
+                  <div className="w-3.75 mr-1">
                     <IoCheckmarkDoneOutline
                       size={20}
                       className="text-black dark:text-white"
@@ -102,9 +102,12 @@ const CourseDetails = ({
             <h1 className="text-[25px] font-Poppins font-semibold text-black dark:text-white">
               What are the prerequisites for starting this course?
             </h1>
-            {data.prerequisites?.map((item: any, index: number) => (
-              <div className="w-full flex 800px:items-center py-2" key={index}>
-                <div className="w-[15px] mr-1">
+            {data.prerequisites?.map((item) => (
+              <div
+                className="w-full flex 800px:items-center py-2"
+                key={item.title}
+              >
+                <div className="w-3.75 mr-1">
                   <IoCheckmarkDoneOutline
                     size={20}
                     className="text-black dark:text-white"
@@ -127,7 +130,7 @@ const CourseDetails = ({
               <h1 className="text-[25px] font-Poppins font-semibold text-black dark:text-white">
                 Course Details
               </h1>
-              <p className="text-[18px] mt-[20px] whitespace-pre-line w-full overflow-hidden text-black dark:text-white">
+              <p className="text-[18px] mt-5 whitespace-pre-line w-full overflow-hidden text-black dark:text-white">
                 {data.description}
               </p>
             </div>
@@ -135,89 +138,93 @@ const CourseDetails = ({
             <br />
             <div className="w-full">
               <div className="800px:flex items-center">
-                <Ratings rating={data?.ratings} />
+                <Ratings rating={data.ratings ?? 0} />
                 <div className="mb-2 800px:mb-[unset]" />
                 <h5 className="text-[25px] font-Poppins text-black dark:text-white">
-                  {Number.isInteger(data?.ratings)
-                    ? data?.ratings.toFixed(1)
-                    : data?.ratings.toFixed(2)}{" "}
+                  {Number.isInteger(data.ratings ?? 0)
+                    ? (data.ratings ?? 0).toFixed(1)
+                    : (data.ratings ?? 0).toFixed(2)}{" "}
                   Course Rating • {data?.reviews?.length} Reviews
                 </h5>
               </div>
               <br />
-              {(data?.reviews && [...data.reviews].reverse()).map(
-                (item: any, index: number) => (
-                  <div className="w-full pb-4" key={index}>
-                    <div className="flex">
-                      <div className="w-[50px] h-[50px]">
+              {[...(data?.reviews ?? [])].reverse().map((item) => (
+                <div className="w-full pb-4" key={item._id}>
+                  <div className="flex">
+                    <div className="size-12.5">
+                      <Image
+                        src={
+                          item.user?.avatar
+                            ? item.user.avatar.url
+                            : "https://res.cloudinary.com/kouroshrstn/image/upload/v1707293133/Avatars/avatar_dwjgxo.png"
+                        }
+                        width={50}
+                        height={50}
+                        alt=""
+                        className="size-12.5 rounded-full object-cover"
+                      />
+                    </div>
+                    <div className="hidden 800px:block pl-2">
+                      <div className="flex items-center">
+                        <h5 className="text-[18px] pr-2 text-black dark:text-white">
+                          {item.user?.name}
+                        </h5>
+                        <Ratings rating={item.rating} />
+                      </div>
+                      <p className="text-black dark:text-white">
+                        {item.comment}
+                      </p>
+                      <small className="text-[#000000d1] dark:text-[#ffffff83]">
+                        {item.createdAt ? format(item.createdAt) : ""} •
+                      </small>
+                    </div>
+                    <div className="pl-2 flex 800px:hidden items-center">
+                      <h5 className="text-[18px] pr-2 text-black dark:text-white">
+                        {item.user?.name}
+                      </h5>
+                      <Ratings rating={item.rating} />
+                    </div>
+                  </div>
+                  {item.commentReplies?.map((i) => (
+                    <div
+                      className="w-full flex 800px:ml-16 my-5"
+                      key={
+                        i._id ??
+                        `${i.user?._id ?? "user"}-${i.createdAt ?? i.comment ?? ""}`
+                      }
+                    >
+                      <div className="size-12.5">
                         <Image
                           src={
-                            item.user.avatar
-                              ? item.user.avatar.url
+                            i.user?.avatar
+                              ? i.user.avatar.url
                               : "https://res.cloudinary.com/kouroshrstn/image/upload/v1707293133/Avatars/avatar_dwjgxo.png"
                           }
                           width={50}
                           height={50}
                           alt=""
-                          className="w-[50px] h-[50px] rounded-full object-cover"
+                          className="size-12.5 rounded-full object-cover"
                         />
                       </div>
-                      <div className="hidden 800px:block pl-2">
+                      <div className="pl-2">
                         <div className="flex items-center">
-                          <h5 className="text-[18px] pr-2 text-black dark:text-white">
-                            {item.user.name}
-                          </h5>
-                          <Ratings rating={item.rating} />
+                          <h5 className="text-[20px]">{i.user?.name}</h5>{" "}
+                          <VscVerifiedFilled className="text-[#0095F6] ml-2 text-[20px]" />
                         </div>
-                        <p className="text-black dark:text-white">
-                          {item.comment}
-                        </p>
-                        <small className="text-[#000000d1] dark:text-[#ffffff83]">
-                          {format(item.createdAt)} •
+                        <p>{i.comment}</p>
+                        <small className="text-[#ffffff83]">
+                          {i.createdAt ? format(i.createdAt) : ""} •
                         </small>
                       </div>
-                      <div className="pl-2 flex 800px:hidden items-center">
-                        <h5 className="text-[18px] pr-2 text-black dark:text-white">
-                          {item.user.name}
-                        </h5>
-                        <Ratings rating={item.rating} />
-                      </div>
                     </div>
-                    {item.commentReplies.map((i: any, index: number) => (
-                      <div className="w-full flex 800px:ml-16 my-5" key={index}>
-                        <div className="w-[50px] h-[50px]">
-                          <Image
-                            src={
-                              i.user.avatar
-                                ? i.user.avatar.url
-                                : "https://res.cloudinary.com/kouroshrstn/image/upload/v1707293133/Avatars/avatar_dwjgxo.png"
-                            }
-                            width={50}
-                            height={50}
-                            alt=""
-                            className="w-[50px] h-[50px] rounded-full object-cover"
-                          />
-                        </div>
-                        <div className="pl-2">
-                          <div className="flex items-center">
-                            <h5 className="text-[20px]">{i.user.name}</h5>{" "}
-                            <VscVerifiedFilled className="text-[#0095F6] ml-2 text-[20px]" />
-                          </div>
-                          <p>{i.comment}</p>
-                          <small className="text-[#ffffff83]">
-                            {format(i.createdAt)} •
-                          </small>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )
-              )}
+                  ))}
+                </div>
+              ))}
             </div>
           </div>
           <div className="w-full 800px:w-[35%] relative">
-            <div className="sticky top-[100px] left-0 z-50 w-full">
-              <CoursePlayer videoUrl={data?.demoUrl} title={data?.title} />
+            <div className="sticky top-25 left-0 z-50 w-full">
+              <CoursePlayer videoUrl={data?.demoUrl} title={data?.name} />
               <div className="flex items-center">
                 <h1 className="pt-5 text-[25px] text-black dark:text-white">
                   {data.price === 0 ? "Free" : `${data.price}€`}
@@ -233,18 +240,19 @@ const CourseDetails = ({
               <div className="flex items-center">
                 {isPurchased || isAdmin ? (
                   <Link
-                    className={`${styles.button} w-[180px]! my-3 font-Poppins cursor-pointer bg-[crimson]!`}
+                    className={`${styles.button} w-45! my-3 font-Poppins cursor-pointer bg-[crimson]!`}
                     href={`/course-access/${data._id}`}
                   >
                     Enter to Course
                   </Link>
                 ) : (
-                  <div
-                    className={`${styles.button} w-[180px]! my-3 font-Poppins cursor-pointer bg-[crimson]!`}
+                  <button
+                    type="button"
+                    className={`${styles.button} w-45! my-3 font-Poppins cursor-pointer bg-[crimson]! border-0`}
                     onClick={handleOrder}
                   >
                     Buy Now {data.price}€
-                  </div>
+                  </button>
                 )}
               </div>
               <br />
@@ -264,33 +272,32 @@ const CourseDetails = ({
           </div>
         </div>
       </div>
-      <>
-        {open && (
-          <div className="w-full h-screen bg-[#00000036] fixed top-0 left-0 z-50 flex items-center justify-center">
-            <div className="w-[500px] min-h-[500px] bg-white rounded-xl shadow-sm p-3">
-              <div className="w-full flex justify-end">
-                <IoCloseOutline
-                  size={40}
-                  className="text-black cursor-pointer"
-                  onClick={() => setOpen(false)}
-                />
-              </div>
-              <div className="w-full">
-                {stripePromise && clientSecret && (
-                  <Elements stripe={stripePromise} options={{ clientSecret }}>
-                    <CheckOutForm
-                      setOpen={setOpen}
-                      data={data}
-                      user={user}
-                      refetch={refetch}
-                    />
-                  </Elements>
-                )}
-              </div>
+      {open && (
+        <div className="w-full h-screen bg-[#00000036] fixed top-0 left-0 z-50 flex items-center justify-center">
+          <div className="w-125 min-h-125 bg-white rounded-xl shadow-sm p-3">
+            <div className="w-full flex justify-end">
+              <IoCloseOutline
+                size={40}
+                className="text-black cursor-pointer"
+                onClick={() => setOpen(false)}
+              />
+            </div>
+            <div className="w-full">
+              {stripePromise && clientSecret && (
+                <Elements stripe={stripePromise} options={{ clientSecret }}>
+                  <CheckOutForm
+                    data={data}
+                    user={user}
+                    refetch={() => {
+                      void refetch();
+                    }}
+                  />
+                </Elements>
+              )}
             </div>
           </div>
-        )}
-      </>
+        </div>
+      )}
     </div>
   );
 };

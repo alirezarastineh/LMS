@@ -1,8 +1,21 @@
+import type { ICategoryItem, IFaqItem, ILayout } from "@/app/types/lms";
 import { apiSlice } from "../api/apiSlice";
+
+type EditLayoutPayload = {
+  type: string;
+  image?: string;
+  title?: string;
+  subtitle?: string;
+  faq?: IFaqItem[];
+  categories?: ICategoryItem[];
+};
 
 export const layoutApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getHeroData: builder.query({
+    getHeroData: builder.query<
+      { success: boolean; layout: ILayout | null },
+      string
+    >({
       query: (type) => ({
         url: `get-layout-admin/${type}`,
         method: "GET",
@@ -10,7 +23,7 @@ export const layoutApi = apiSlice.injectEndpoints({
       }),
     }),
 
-    editLayout: builder.mutation({
+    editLayout: builder.mutation<unknown, EditLayoutPayload>({
       query: ({ type, image, title, subtitle, faq, categories }) => ({
         url: `edit-layout-admin`,
         body: {

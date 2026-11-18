@@ -1,28 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { signOut } from "next-auth/react";
 import SideBarProfile from "./SideBarProfile";
 import { useLogOutQuery } from "../../../redux/features/auth/authApi";
 import ProfileInfo from "./ProfileInfo";
 import ChangePassword from "./ChangePassword";
 import { useGetUsersAllCoursesQuery } from "@/redux/features/courses/coursesApi";
+import type { ICourse, IUser } from "@/app/types/lms";
 import CourseCard from "../Course/CourseCard";
 
 type ProfileProps = {
-  user: any;
+  user: IUser;
 };
 
 const Profile = ({ user }: ProfileProps) => {
   const [scroll, setScroll] = useState(false);
-  const [avatar, setAvatar] = useState(null);
+  const avatar: string | null = null;
   const [logout, setLogout] = useState(false);
-  const [courses, setCourses] = useState([]);
-  const { data, isLoading } = useGetUsersAllCoursesQuery(undefined, {});
+  const { data } = useGetUsersAllCoursesQuery(undefined, {});
   const [active, setActive] = useState(1);
 
-  const {} = useLogOutQuery(undefined, {
-    skip: logout ? false : true,
+  useLogOutQuery(undefined, {
+    skip: !logout,
   });
 
   const logOutHandler = async () => {
@@ -30,33 +30,34 @@ const Profile = ({ user }: ProfileProps) => {
     await signOut();
   };
 
-  if (typeof window !== "undefined") {
-    window.addEventListener("scroll", () => {
-      if (window.scrollY > 85) {
-        setScroll(true);
-      } else {
-        setScroll(false);
-      }
-    });
-  }
-
   useEffect(() => {
-    if (data) {
-      const filteredCourses = user.courses
-        .map((userCourse: any) =>
-          data.courses.find((course: any) => course._id === userCourse._id)
-        )
-        .filter((course: any) => course !== undefined);
-      setCourses(filteredCourses);
+    const handleScroll = () => {
+      setScroll(window.scrollY > 85);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const allCourses = (data as { courses?: ICourse[] } | undefined)?.courses;
+  const userCourses = user?.courses;
+
+  const courses = useMemo<ICourse[]>(() => {
+    if (!allCourses || !userCourses) {
+      return [];
     }
-  }, [data, user.courses]);
+    return userCourses
+      .map((userCourse) =>
+        allCourses.find((course) => course._id === userCourse._id),
+      )
+      .filter((course): course is ICourse => course !== undefined);
+  }, [allCourses, userCourses]);
 
   return (
     <div className="w-[85%] flex mx-auto">
       <div
-        className={`w-[60px] 800px:w-[310px] h-[450px] dark:bg-slate-900 bg-opacity-90 border bg-white dark:border-[#ffffff1d] border-[#00000014] rounded-[5px] shadow-xs dark:shadow-xs mt-[80px] mb-[80px] sticky ${
-          scroll ? "top-[120px]" : "top-[30px]"
-        } left-[30px]`}
+        className={`w-15 800px:w-77.5 h-112.5 bg-white/90 dark:bg-slate-900/90 border dark:border-[#ffffff1d] border-[#00000014] rounded-[5px] shadow-xs dark:shadow-xs my-20 sticky ${
+          scroll ? "top-30" : "top-7.5"
+        } left-7.5`}
       >
         <SideBarProfile
           user={user}
@@ -68,22 +69,22 @@ const Profile = ({ user }: ProfileProps) => {
       </div>
 
       {active === 1 && (
-        <div className="w-full h-full bg-transparent mt-[80px]">
+        <div className="size-full bg-transparent mt-20">
           <ProfileInfo avatar={avatar} user={user} />
         </div>
       )}
 
       {active === 2 && (
-        <div className="w-full h-full bg-transparent mt-[80px]">
+        <div className="size-full bg-transparent mt-20">
           <ChangePassword />
         </div>
       )}
 
       {active === 3 && (
-        <div className="w-full pl-7 px-2 800px:px-10 800px:pl-8 mt-[80px]">
-          <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-3 lg:gap-[25px] 1500px:grid-cols-4 1500px:gap-[35px] mb-12 border-0">
-            {courses?.map((item: any, index: number) => (
-              <CourseCard item={item} key={index} isProfile={true} />
+        <div className="w-full pl-7 px-2 800px:px-10 800px:pl-8 mt-20">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6.25 lg:grid-cols-3 lg:gap-6.25 1500px:grid-cols-4 1500px:gap-8.75 mb-12 border-0">
+            {courses.map((item) => (
+              <CourseCard item={item} key={item._id} isProfile={true} />
             ))}
           </div>
 

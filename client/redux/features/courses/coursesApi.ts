@@ -1,8 +1,14 @@
+import type {
+  ICourse,
+  ICourseDataItem,
+  ICoursePayload,
+  IEditCoursePayload,
+} from "@/app/types/lms";
 import { apiSlice } from "../api/apiSlice";
 
 export const coursesApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    createCourse: builder.mutation({
+    createCourse: builder.mutation<unknown, ICoursePayload>({
       query: (data) => ({
         url: "upload-course",
         method: "POST",
@@ -11,7 +17,10 @@ export const coursesApi = apiSlice.injectEndpoints({
       }),
     }),
 
-    getAllCourses: builder.query({
+    getAllCourses: builder.query<
+      { success: boolean; courses: ICourse[] },
+      unknown
+    >({
       query: () => ({
         url: "get-all-courses-admin",
         method: "GET",
@@ -19,7 +28,7 @@ export const coursesApi = apiSlice.injectEndpoints({
       }),
     }),
 
-    deleteCourse: builder.mutation({
+    deleteCourse: builder.mutation<unknown, string>({
       query: (id) => ({
         url: `delete-course/${id}`,
         method: "DELETE",
@@ -27,7 +36,10 @@ export const coursesApi = apiSlice.injectEndpoints({
       }),
     }),
 
-    editCourse: builder.mutation({
+    editCourse: builder.mutation<
+      unknown,
+      { id: string; data: IEditCoursePayload }
+    >({
       query: ({ id, data }) => ({
         url: `edit-course/${id}`,
         method: "PUT",
@@ -36,7 +48,10 @@ export const coursesApi = apiSlice.injectEndpoints({
       }),
     }),
 
-    getUsersAllCourses: builder.query({
+    getUsersAllCourses: builder.query<
+      { success: boolean; courses: ICourse[] },
+      unknown
+    >({
       query: () => ({
         url: "get-all-courses",
         method: "GET",
@@ -44,15 +59,21 @@ export const coursesApi = apiSlice.injectEndpoints({
       }),
     }),
 
-    getCourseDetails: builder.query({
-      query: (id: any) => ({
+    getCourseDetails: builder.query<
+      { success: boolean; course: ICourse },
+      string
+    >({
+      query: (id) => ({
         url: `get-single-course/${id}`,
         method: "GET",
         credentials: "include" as const,
       }),
     }),
 
-    getCourseContent: builder.query({
+    getCourseContent: builder.query<
+      { success: boolean; content: ICourseDataItem[] },
+      string
+    >({
       query: (id) => ({
         url: `get-course-content/${id}`,
         method: "GET",
@@ -60,7 +81,10 @@ export const coursesApi = apiSlice.injectEndpoints({
       }),
     }),
 
-    addNewQuestion: builder.mutation({
+    addNewQuestion: builder.mutation<
+      unknown,
+      { question: string; courseId: string; contentId: string }
+    >({
       query: ({ question, courseId, contentId }) => ({
         url: "add-question",
         body: {
@@ -73,7 +97,15 @@ export const coursesApi = apiSlice.injectEndpoints({
       }),
     }),
 
-    addAnswerInQuestion: builder.mutation({
+    addAnswerInQuestion: builder.mutation<
+      unknown,
+      {
+        answer: string;
+        courseId: string;
+        contentId: string;
+        questionId: string;
+      }
+    >({
       query: ({ answer, courseId, contentId, questionId }) => ({
         url: "add-answer",
         body: {
@@ -87,8 +119,11 @@ export const coursesApi = apiSlice.injectEndpoints({
       }),
     }),
 
-    addReviewInCourse: builder.mutation({
-      query: ({ review, rating, courseId }: any) => ({
+    addReviewInCourse: builder.mutation<
+      unknown,
+      { review: string; rating: number; courseId: string }
+    >({
+      query: ({ review, rating, courseId }) => ({
         url: `add-review/${courseId}`,
         body: {
           review,
@@ -99,8 +134,11 @@ export const coursesApi = apiSlice.injectEndpoints({
       }),
     }),
 
-    addReplyInReview: builder.mutation({
-      query: ({ comment, courseId, reviewId }: any) => ({
+    addReplyInReview: builder.mutation<
+      unknown,
+      { comment: string; courseId: string; reviewId: string }
+    >({
+      query: ({ comment, courseId, reviewId }) => ({
         url: `add-reply-to-review`,
         body: {
           comment,

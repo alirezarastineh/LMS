@@ -1,17 +1,16 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useGetUsersAllCoursesQuery } from "@/redux/features/courses/coursesApi";
 import { useGetHeroDataQuery } from "@/redux/features/layout/layoutApi";
+import type { ICategoryItem, ICourse } from "@/app/types/lms";
 import Loader from "../components/Loader/Loader";
 import Header from "../components/Header";
 import Heading from "../utils/Heading";
 import { styles } from "../styles/styles";
 import CourseCard from "../components/Course/CourseCard";
 import Footer from "../components/Footer";
-
-type PageProps = {};
 
 const CoursesContent = () => {
   const searchParams = useSearchParams();
@@ -22,31 +21,25 @@ const CoursesContent = () => {
 
   const { data: categoriesData } = useGetHeroDataQuery("Categories", {});
 
-  const [courses, setCourses] = useState([]);
-
   const [category, setCategory] = useState("All");
 
-  useEffect(() => {
-    if (category === "All") {
-      setCourses(data?.courses);
+  const courses = useMemo<ICourse[]>(() => {
+    const allCourses: ICourse[] = data?.courses ?? [];
+
+    if (search) {
+      return allCourses.filter((item) =>
+        item.name.toLowerCase().includes(search.toLowerCase()),
+      );
     }
 
     if (category !== "All") {
-      setCourses(
-        data?.courses.filter((item: any) => item.categories === category)
-      );
+      return allCourses.filter((item) => item.categories === category);
     }
 
-    if (search) {
-      setCourses(
-        data?.courses.filter((item: any) =>
-          item.name.toLowerCase().includes(search.toLowerCase())
-        )
-      );
-    }
-  }, [data, category, search]);
+    return allCourses;
+  }, [data?.courses, category, search]);
 
-  const categories = categoriesData?.layout.categories;
+  const categories: ICategoryItem[] = categoriesData?.layout?.categories ?? [];
 
   return (
     <div>
@@ -64,30 +57,32 @@ const CoursesContent = () => {
             />
             <br />
             <div className="w-full flex items-center flex-wrap">
-              <div
-                className={`h-[35px] ${
+              <button
+                type="button"
+                className={`h-8.75 border-0 text-white ${
                   category === "All" ? "bg-[crimson]" : "bg-[#5050cb]"
                 } m-3 px-3 rounded-[30px] flex items-center justify-center font-Poppins cursor-pointer`}
                 onClick={() => setCategory("All")}
               >
                 All
-              </div>
+              </button>
 
-              {categories?.map((item: any, index: number) => (
-                <div key={index}>
-                  <div
-                    className={`h-[35px] ${
+              {categories.map((item, index) => (
+                <div key={item._id ?? index}>
+                  <button
+                    type="button"
+                    className={`h-8.75 border-0 text-white ${
                       category === item.title ? "bg-[crimson]" : "bg-[#5050cb]"
                     } m-3 px-3 rounded-[30px] flex items-center justify-center font-Poppins cursor-pointer`}
                     onClick={() => setCategory(item.title)}
                   >
                     {item.title}
-                  </div>
+                  </button>
                 </div>
               ))}
             </div>
 
-            {courses && courses.length === 0 && (
+            {courses.length === 0 && (
               <p
                 className={`${styles.label} justify-center min-h-[50vh] flex items-center`}
               >
@@ -98,9 +93,9 @@ const CoursesContent = () => {
             )}
             <br />
             <br />
-            <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-3 lg:gap-[25px] 1500px:grid-cols-4 1500px:gap-[35px] mb-12 border-0">
-              {courses?.map((item: any, index: number) => (
-                <CourseCard item={item} key={index} />
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6.25 lg:grid-cols-3 lg:gap-6.25 1500px:grid-cols-4 1500px:gap-8.75 mb-12 border-0">
+              {courses.map((item, index) => (
+                <CourseCard item={item} key={item._id ?? index} />
               ))}
             </div>
           </div>
@@ -112,7 +107,7 @@ const CoursesContent = () => {
   );
 };
 
-const Page = ({}: PageProps) => {
+const Page = () => {
   const [route, setRoute] = useState("Login");
   const [open, setOpen] = useState(false);
 

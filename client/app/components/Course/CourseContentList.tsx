@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { BsChevronDown, BsChevronUp } from "react-icons/bs";
 import { MdOutlineOndemandVideo } from "react-icons/md";
+import type { ICourseDataItem } from "@/app/types/lms";
 
 type CourseContentListProps = {
-  data: any;
+  data: ICourseDataItem[];
   activeVideo?: number;
-  setActiveVideo?: any;
+  setActiveVideo?: (index: number) => void;
   isDemo?: boolean;
 };
 
@@ -20,10 +21,10 @@ const CourseContentList = ({
   );
 
   const videoSections: string[] = [
-    ...new Set<string>(data?.map((item: any) => item.videoSection)),
+    ...new Set<string>(data?.map((item) => item.videoSection) ?? []),
   ];
 
-  let totalCount: number = 0;
+  let totalCount = 0;
 
   const toggleSection = (section: string) => {
     const newVisibleSections = new Set(visibleSections);
@@ -39,20 +40,21 @@ const CourseContentList = ({
 
   return (
     <div
-      className={`mt-[15px] w-full ${
-        !isDemo && "ml-[-30px] min-h-screen sticky top-24 left-0 z-30"
+      className={`mt-3.75 w-full ${
+        !isDemo && "-ml-7.5 min-h-screen sticky top-24 left-0 z-30"
       }`}
     >
-      {videoSections.map((section: string, sectionIndex: number) => {
+      {videoSections.map((section: string) => {
         const isSectionVisible = visibleSections.has(section);
 
-        const sectionVideos: any[] = data.filter(
-          (item: any) => item.videoSection === section
+        const sectionVideos: ICourseDataItem[] = data.filter(
+          (item) => item.videoSection === section
         );
 
         const sectionVideoCount: number = sectionVideos.length;
         const sectionVideoLength: number = sectionVideos.reduce(
-          (totalLength: number, item: any) => totalLength + item.videoLength,
+          (totalLength: number, item) =>
+            totalLength + Number(item.videoLength ?? 0),
           0
         );
         const sectionStartIndex: number = totalCount;
@@ -74,6 +76,7 @@ const CourseContentList = ({
                   {section}
                 </h2>
                 <button
+                  type="button"
                   className="mr-4 cursor-pointer text-black dark:text-white"
                   onClick={() => toggleSection(section)}
                 >
@@ -95,17 +98,20 @@ const CourseContentList = ({
             <br />
             {isSectionVisible && (
               <div className="w-full">
-                {sectionVideos.map((item: any, index: number) => {
+                {sectionVideos.map((item, index: number) => {
                   const videoIndex: number = sectionStartIndex + index;
-                  const contentLength: number = item.videoLength / 60;
+                  const videoLengthNum = Number(item.videoLength ?? 0);
+                  const contentLength: number = videoLengthNum / 60;
                   return (
-                    <div
-                      className={`w-full ${
-                        videoIndex === activeVideo ? "bg-slate-800" : ""
+                    <button
+                      type="button"
+                      disabled={isDemo}
+                      className={`w-full text-left border-0 ${
+                        videoIndex === activeVideo ? "bg-slate-800" : "bg-transparent"
                       } cursor-pointer transition-all p-2`}
-                      key={item._id}
-                      onClick={() =>
-                        isDemo ? null : setActiveVideo(videoIndex)
+                      key={item._id ?? index}
+                      onClick={
+                        isDemo ? undefined : () => setActiveVideo?.(videoIndex)
                       }
                     >
                       <div className="flex items-start">
@@ -121,12 +127,12 @@ const CourseContentList = ({
                         </h1>
                       </div>
                       <h5 className="pl-8 text-black dark:text-white">
-                        {item.videoLength > 60
+                        {videoLengthNum > 60
                           ? contentLength.toFixed(2)
-                          : item.videoLength}{" "}
-                        {item.videoLength > 60 ? "hours" : "minutes"}
+                          : videoLengthNum}{" "}
+                        {videoLengthNum > 60 ? "hours" : "minutes"}
                       </h5>
-                    </div>
+                    </button>
                   );
                 })}
               </div>

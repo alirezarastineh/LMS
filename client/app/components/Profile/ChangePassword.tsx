@@ -1,38 +1,31 @@
-import { useEffect, useState } from "react";
+import { useState, type SubmitEvent } from "react";
 import toast from "react-hot-toast";
 import { styles } from "@/app/styles/styles";
+import { getApiErrorMessage } from "@/app/types/lms";
 import { useUpdatePasswordMutation } from "@/redux/features/user/userApi";
 
-type ChangePasswordProps = {};
-
-const ChangePassword = ({}: ChangePasswordProps) => {
+const ChangePassword = () => {
   const [oldPassword, setOldPassword] = useState("");
 
   const [newPassword, setNewPassword] = useState("");
 
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const [updatePassword, { isSuccess, error }] = useUpdatePasswordMutation();
+  const [updatePassword] = useUpdatePasswordMutation();
 
-  const passwordChangeHandler = async (e: any) => {
+  const passwordChangeHandler = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (newPassword === confirmPassword) {
-      await updatePassword({ oldPassword, newPassword });
+      try {
+        await updatePassword({ oldPassword, newPassword }).unwrap();
+        toast.success("Password changed successfully");
+      } catch (error: unknown) {
+        toast.error(getApiErrorMessage(error));
+      }
     } else {
       toast.error("Passwords do not match");
     }
   };
-
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success("Password changed successfully");
-    }
-
-    if (error && "data" in error) {
-      const errorData = error as any;
-      toast.error(errorData.data.message);
-    }
-  }, [isSuccess, error]);
 
   return (
     <div className="w-full pl-7 px-2 800px:px-5 800px:pl-0">
@@ -42,15 +35,21 @@ const ChangePassword = ({}: ChangePasswordProps) => {
 
       <div className="w-full">
         <form
-          onSubmit={passwordChangeHandler}
+          onSubmit={(e) => {
+            void passwordChangeHandler(e);
+          }}
           className="flex flex-col items-center"
         >
-          <div className=" w-full 800px:w-[60%] mt-5">
-            <label className="block pb-2 text-black dark:text-white">
+          <div className="w-full 800px:w-[60%] mt-5">
+            <label
+              htmlFor="old-password"
+              className="block pb-2 text-black dark:text-white"
+            >
               Enter your old password
             </label>
 
             <input
+              id="old-password"
               aria-required="true"
               type="password"
               className={`${styles.input} w-[95%]! mb-4 800px:mb-0 text-black dark:text-white`}
@@ -60,12 +59,16 @@ const ChangePassword = ({}: ChangePasswordProps) => {
             />
           </div>
 
-          <div className=" w-full 800px:w-[60%] mt-2">
-            <label className="block pb-2 text-black dark:text-white">
+          <div className="w-full 800px:w-[60%] mt-2">
+            <label
+              htmlFor="new-password"
+              className="block pb-2 text-black dark:text-white"
+            >
               Enter your new password
             </label>
 
             <input
+              id="new-password"
               aria-required="true"
               type="password"
               className={`${styles.input} w-[95%]! mb-4 800px:mb-0 text-black dark:text-white`}
@@ -75,12 +78,16 @@ const ChangePassword = ({}: ChangePasswordProps) => {
             />
           </div>
 
-          <div className=" w-full 800px:w-[60%] mt-2">
-            <label className="block pb-2 text-black dark:text-white">
+          <div className="w-full 800px:w-[60%] mt-2">
+            <label
+              htmlFor="confirm-password"
+              className="block pb-2 text-black dark:text-white"
+            >
               Enter your confirm password
             </label>
 
             <input
+              id="confirm-password"
               aria-required="true"
               type="password"
               className={`${styles.input} w-[95%]! mb-4 800px:mb-0 text-black dark:text-white`}
@@ -90,7 +97,7 @@ const ChangePassword = ({}: ChangePasswordProps) => {
             />
 
             <input
-              className={`w-[95%] h-[40px] border border-[#37a39a] text-center text-black dark:text-white rounded-[3px] mt-8 cursor-pointer`}
+              className={`w-[95%] h-10 border border-[#37a39a] text-center text-black dark:text-white rounded-[3px] mt-8 cursor-pointer`}
               required
               value="Update"
               type="submit"

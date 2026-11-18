@@ -4,14 +4,12 @@ import { useState } from "react";
 import Heading from "../utils/Heading";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import FAQ from "../components/FAQ/FAQ";
+import Faq from "../components/FAQ/FAQ";
 
-type PageProps = {};
-
-const Page = ({}: PageProps) => {
+const Page = () => {
   const [open, setOpen] = useState(false);
 
-  const [activeItem, setActiveItem] = useState(4);
+  const activeItem = 4;
 
   const [route, setRoute] = useState("Login");
 
@@ -30,7 +28,7 @@ const Page = ({}: PageProps) => {
         setRoute={setRoute}
       />
       <br />
-      <FAQ />
+      <Faq />
       <Footer />
     </div>
   );

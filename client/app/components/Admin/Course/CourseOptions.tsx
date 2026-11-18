@@ -2,10 +2,9 @@ import { IoMdCheckmark } from "react-icons/io";
 
 type CourseOptionsProps = {
   active: number;
-  setActive: (active: number) => void;
 };
 
-const CourseOptions = ({ active, setActive }: CourseOptionsProps) => {
+const CourseOptions = ({ active }: CourseOptionsProps) => {
   const options = [
     "Course Information",
     "Course Options",
@@ -15,10 +14,10 @@ const CourseOptions = ({ active, setActive }: CourseOptionsProps) => {
 
   return (
     <div>
-      {options.map((option: any, index: number) => (
-        <div key={index} className={`w-full flex py-5`}>
+      {options.map((option, index) => (
+        <div key={option} className={`w-full flex py-5`}>
           <div
-            className={`w-[35px] h-[35px] rounded-full flex items-center justify-center ${
+            className={`size-8.75 rounded-full flex items-center justify-center ${
               active + 1 > index ? "bg-blue-500" : "bg-[#384766]"
             } relative`}
           >
@@ -26,7 +25,7 @@ const CourseOptions = ({ active, setActive }: CourseOptionsProps) => {
 
             {index !== options.length - 1 && (
               <div
-                className={`absolute h-[30px] w-1 ${
+                className={`absolute h-7.5 w-1 ${
                   active + 1 > index ? "bg-blue-500" : "bg-[#384766]"
                 } -bottom-full`}
               />

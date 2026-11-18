@@ -1,3 +1,4 @@
+import type { IUser } from "@/app/types/lms";
 import { apiSlice } from "../api/apiSlice";
 import { userLoggedIn, userLoggedOut, userRegistration } from "./authSlice";
 
@@ -6,7 +7,16 @@ type RegistrationResponse = {
   activationToken: string;
 };
 
-type RegistrationData = {};
+type RegistrationData = {
+  name: string;
+  email: string;
+  password: string;
+};
+
+type AuthResponse = {
+  accessToken: string;
+  user: IUser;
+};
 
 export const authApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -25,13 +35,16 @@ export const authApi = apiSlice.injectEndpoints({
               token: result.data.activationToken,
             })
           );
-        } catch (error: any) {
+        } catch (error: unknown) {
           console.error(error);
         }
       },
     }),
 
-    activation: builder.mutation({
+    activation: builder.mutation<
+      unknown,
+      { activation_token: string; activation_code: string }
+    >({
       query: ({ activation_token, activation_code }) => ({
         url: "activate-user",
         method: "POST",
@@ -42,7 +55,7 @@ export const authApi = apiSlice.injectEndpoints({
       }),
     }),
 
-    login: builder.mutation({
+    login: builder.mutation<AuthResponse, { email: string; password: string }>({
       query: ({ email, password }) => ({
         url: "login",
         method: "POST",
@@ -61,13 +74,16 @@ export const authApi = apiSlice.injectEndpoints({
               user: result.data.user,
             })
           );
-        } catch (error: any) {
+        } catch (error: unknown) {
           console.error(error);
         }
       },
     }),
 
-    socialAuth: builder.mutation({
+    socialAuth: builder.mutation<
+      AuthResponse,
+      { email?: string | null; name?: string | null; avatar?: string | null }
+    >({
       query: ({ email, name, avatar }) => ({
         url: "social-auth",
         method: "POST",
@@ -87,22 +103,22 @@ export const authApi = apiSlice.injectEndpoints({
               user: result.data.user,
             })
           );
-        } catch (error: any) {
+        } catch (error: unknown) {
           console.error(error);
         }
       },
     }),
 
-    logOut: builder.query({
+    logOut: builder.query<unknown, unknown>({
       query: () => ({
         url: "logout",
         method: "GET",
         credentials: "include" as const,
       }),
-      async onQueryStarted(arg, { queryFulfilled, dispatch }) {
+      onQueryStarted(_arg, { dispatch }) {
         try {
           dispatch(userLoggedOut());
-        } catch (error: any) {
+        } catch (error: unknown) {
           console.error(error);
         }
       },

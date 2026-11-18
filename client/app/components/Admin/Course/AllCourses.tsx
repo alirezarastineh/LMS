@@ -1,5 +1,9 @@
-import { useEffect, useState } from "react";
-import { DataGrid } from "@mui/x-data-grid";
+import { useState } from "react";
+import {
+  DataGrid,
+  type GridColDef,
+  type GridRenderCellParams,
+} from "@mui/x-data-grid";
 import { Box, Button, Modal } from "@mui/material";
 import { AiOutlineDelete } from "react-icons/ai";
 import { useTheme } from "next-themes";
@@ -12,13 +16,21 @@ import {
   useDeleteCourseMutation,
   useGetAllCoursesQuery,
 } from "@/redux/features/courses/coursesApi";
+import { getApiErrorMessage, type ICourse } from "@/app/types/lms";
 import Loader from "../../Loader/Loader";
 import { styles } from "@/app/styles/styles";
+import { getDataGridContainerSx } from "@/app/utils/dataGridStyles";
 
-type AllCoursesProps = {};
+interface CourseRow {
+  id: string;
+  title: string;
+  ratings: number;
+  purchased: number;
+  created_at: string;
+}
 
-const AllCourses = ({}: AllCoursesProps) => {
-  const { theme, setTheme } = useTheme();
+const AllCourses = () => {
+  const { theme } = useTheme();
 
   const [open, setOpen] = useState(false);
 
@@ -26,12 +38,12 @@ const AllCourses = ({}: AllCoursesProps) => {
 
   const { isLoading, data, refetch } = useGetAllCoursesQuery(
     {},
-    { refetchOnMountOrArgChange: true }
+    { refetchOnMountOrArgChange: true },
   );
 
-  const [deleteCourse, { isSuccess, error }] = useDeleteCourseMutation({});
+  const [deleteCourse] = useDeleteCourseMutation({});
 
-  const columns = [
+  const columns: GridColDef<CourseRow>[] = [
     { field: "id", headerName: "ID", flex: 0.5 },
     { field: "title", headerName: "Course Title", flex: 1 },
     { field: "ratings", headerName: "Ratings", flex: 0.5 },
@@ -41,7 +53,7 @@ const AllCourses = ({}: AllCoursesProps) => {
       field: "  ",
       headerName: "Edit",
       flex: 0.2,
-      renderCell: (params: any) => {
+      renderCell: (params: GridRenderCellParams<CourseRow>) => {
         return (
           <Link href={`/admin/edit-course/${params.row.id}`}>
             <FiEdit2 className="dark:text-white text-black" size={20} />
@@ -53,7 +65,7 @@ const AllCourses = ({}: AllCoursesProps) => {
       field: " ",
       headerName: "Delete",
       flex: 0.2,
-      renderCell: (params: any) => {
+      renderCell: (params: GridRenderCellParams<CourseRow>) => {
         return (
           <Button
             onClick={() => {
@@ -68,94 +80,32 @@ const AllCourses = ({}: AllCoursesProps) => {
     },
   ];
 
-  const rows: any = [];
-
-  {
-    data?.courses.forEach((item: any) => {
-      rows.push({
-        id: item._id,
-        title: item.name,
-        ratings: item.ratings,
-        purchased: item.purchased,
-        created_at: format(item.createdAt),
-      });
-    });
-  }
-
-  useEffect(() => {
-    if (isSuccess) {
-      setOpen(false);
-      refetch();
-      toast.success("Course Deleted Successfully");
-    }
-    if (error && "data" in error) {
-      const errorMessage = error as any;
-      toast.error(errorMessage.data.message);
-    }
-  }, [isSuccess, error, refetch]);
+  const rows: CourseRow[] = (data?.courses ?? []).map((item: ICourse) => ({
+    id: item._id,
+    title: item.name,
+    ratings: item.ratings ?? 0,
+    purchased: item.purchased ?? 0,
+    created_at: item.createdAt ? format(item.createdAt) : "",
+  }));
 
   const handleDelete = async () => {
-    await deleteCourse(courseId);
+    try {
+      await deleteCourse(courseId).unwrap();
+      setOpen(false);
+      void refetch();
+      toast.success("Course Deleted Successfully");
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error));
+    }
   };
 
   return (
-    <div className="mt-[120px]">
+    <div className="mt-30">
       {isLoading ? (
         <Loader />
       ) : (
-        <Box m="20px">
-          <Box
-            m="40px 0 0 0"
-            height="80vh"
-            sx={{
-              "& .MuiDataGrid-root": {
-                border: "none",
-                outline: "none",
-              },
-              "& .css-pqjvzy-MuiSvgIcon-root-MuiSelect-icon": {
-                color: theme === "dark" ? "#fff" : "#000",
-              },
-              "& .MuiDataGrid-sortIcon": {
-                color: theme === "dark" ? "#fff" : "#000",
-              },
-              "& .MuiDataGrid-row": {
-                color: theme === "dark" ? "#fff" : "#000",
-                borderBottom:
-                  theme === "dark"
-                    ? "1px solid #ffffff30!important"
-                    : "1px solid #ccc!important",
-              },
-              "& .MuiTablePagination-root": {
-                color: theme === "dark" ? "#fff" : "#000",
-              },
-              "& .MuiDataGrid-cell": {
-                borderBottom: "none!important",
-              },
-              "& .name-column--cell": {
-                color: theme === "dark" ? "#fff" : "#000",
-              },
-              "& .MuiDataGrid-columnHeaders": {
-                backgroundColor: theme === "dark" ? "#3e4396" : "#A4A9FC",
-                borderBottom: "none",
-                color: theme === "dark" ? "#fff" : "#000",
-              },
-              "& .MuiDataGrid-virtualScroller": {
-                backgroundColor: theme === "dark" ? "#1F2A40" : "#F2F0F0",
-              },
-              "& .MuiDataGrid-footerContainer": {
-                color: theme === "dark" ? "#fff" : "#000",
-                borderTop: "none",
-                backgroundColor: theme === "dark" ? "#3e4396" : "#A4A9FC",
-              },
-              "& .MuiCheckbox-root": {
-                color:
-                  theme === "dark" ? `#b7ebde !important` : `#000 !important`,
-              },
-              "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
-                color: `#fff !important`,
-              },
-            }}
-          >
+        <Box sx={{ m: "20px" }}>
+          <Box sx={getDataGridContainerSx(theme)}>
             <DataGrid checkboxSelection rows={rows} columns={columns} />
           </Box>
           {open && (
@@ -165,23 +115,27 @@ const AllCourses = ({}: AllCoursesProps) => {
               aria-labelledby="modal-modal-title"
               aria-describedby="modal-modal-description"
             >
-              <Box className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[450px] bg-white dark:bg-slate-900 rounded-[8px] shadow-sm p-4 outline-hidden">
+              <Box className="absolute top-[50%] left-[50%] -translate-1/2 w-112.5 bg-white dark:bg-slate-900 rounded-lg shadow-sm p-4 outline-hidden">
                 <h1 className={`${styles.title}`}>
                   Are you sure you want to delete this course?
                 </h1>
                 <div className="flex w-full items-center justify-between mb-6 mt-4">
-                  <div
-                    className={`${styles.button} w-[120px]! h-[30px] bg-[#47d097]`}
+                  <button
+                    type="button"
+                    className={`${styles.button} w-30! h-7.5 bg-[#47d097] border-0`}
                     onClick={() => setOpen(!open)}
                   >
                     Cancel
-                  </div>
-                  <div
-                    className={`${styles.button} w-[120px]! h-[30px] bg-[#d63f3f]`}
-                    onClick={handleDelete}
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.button} w-30! h-7.5 bg-[#d63f3f] border-0`}
+                    onClick={() => {
+                      void handleDelete();
+                    }}
                   >
                     Delete
-                  </div>
+                  </button>
                 </div>
               </Box>
             </Modal>

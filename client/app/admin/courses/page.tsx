@@ -6,9 +6,7 @@ import Heading from "@/app/utils/Heading";
 import AdminSidebar from "../../components/Admin/Sidebar/AdminSidebar";
 import AllCourses from "../../components/Admin/Course/AllCourses";
 
-type pageProps = {};
-
-const page = ({}: pageProps) => {
+const Page = () => {
   return (
     <div>
       <AdminProtected>
@@ -31,4 +29,4 @@ const page = ({}: pageProps) => {
   );
 };
 
-export default page;
+export default Page;

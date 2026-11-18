@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { useGetCourseDetailsQuery } from "@/redux/features/courses/coursesApi";
 import Loader from "../Loader/Loader";
@@ -11,6 +11,7 @@ import {
   useGetStripePublishablekeyQuery,
 } from "@/redux/features/orders/ordersApi";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
+import type { ICourse } from "@/app/types/lms";
 
 type CourseDetailsPageProps = {
   id: string;
@@ -30,61 +31,62 @@ const CourseDetailsPage = ({ id }: CourseDetailsPageProps) => {
 
   const { data: userData } = useLoadUserQuery(undefined, {});
 
-  const [stripePromise, setStripePromise] = useState<any>(null);
+  const course = (data as { course?: ICourse } | undefined)?.course;
+  const publishablekey = (
+    config as { publishablekey?: string } | undefined
+  )?.publishablekey;
 
-  const [clientSecret, setClientSecret] = useState("");
+  const stripePromise = useMemo(
+    () => (publishablekey ? loadStripe(publishablekey) : null),
+    [publishablekey]
+  );
 
-  useEffect(() => {
-    if (config) {
-      const publishablekey = config?.publishablekey;
-      setStripePromise(loadStripe(publishablekey));
-    }
-
-    if (data && userData?.user) {
-      const amount = Math.round(data.course.price * 100);
-      createPaymentIntent(amount);
-    }
-  }, [config, createPaymentIntent, data, userData]);
+  const clientSecret =
+    (paymentIntentData as { client_secret?: string } | undefined)
+      ?.client_secret ?? "";
 
   useEffect(() => {
-    if (paymentIntentData) {
-      setClientSecret(paymentIntentData?.client_secret);
+    if (course && userData?.user) {
+      const amount = Math.round(course.price * 100);
+      void createPaymentIntent(amount);
     }
-  }, [paymentIntentData]);
+  }, [createPaymentIntent, course, userData]);
+
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  if (!course) {
+    return null;
+  }
 
   return (
-    <>
-      {isLoading ? (
-        <Loader />
-      ) : (
-        <div>
-          <Heading
-            title={`${data.course.name} - E-Learning`}
-            description={
-              "E-Learning is a programming community which is developed by Alireza Rastineh for helping programmers"
-            }
-            keywords={data?.course?.tags}
-          />
-          <Header
-            route={route}
-            setRoute={setRoute}
-            open={open}
-            setOpen={setOpen}
-            activeItem={1}
-          />
-          {stripePromise && (
-            <CourseDetails
-              data={data.course}
-              stripePromise={stripePromise}
-              clientSecret={clientSecret}
-              setRoute={setRoute}
-              setOpen={setOpen}
-            />
-          )}
-          <Footer />
-        </div>
+    <div>
+      <Heading
+        title={`${course.name} - E-Learning`}
+        description={
+          "E-Learning is a programming community which is developed by Alireza Rastineh for helping programmers"
+        }
+        keywords={course.tags}
+      />
+      <Header
+        route={route}
+        setRoute={setRoute}
+        open={open}
+        setOpen={setOpen}
+        activeItem={1}
+      />
+      {stripePromise && (
+        <CourseDetails
+          data={course}
+          stripePromise={stripePromise}
+          clientSecret={clientSecret}
+          setRoute={setRoute}
+          setOpen={setOpen}
+        />
       )}
-    </>
+      <Footer />
+    </div>
   );
 };
 

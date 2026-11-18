@@ -6,9 +6,7 @@ import Heading from "@/app/utils/Heading";
 import AdminSidebar from "../../components/Admin/Sidebar/AdminSidebar";
 import EditFaq from "../../components/Admin/Customization/EditFaq";
 
-type pageProps = {};
-
-const page = ({}: pageProps) => {
+const Page = () => {
   return (
     <div>
       <AdminProtected>
@@ -32,4 +30,4 @@ const page = ({}: pageProps) => {
   );
 };
 
-export default page;
+export default Page;

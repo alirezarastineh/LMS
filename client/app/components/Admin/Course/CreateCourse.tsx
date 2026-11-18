@@ -1,35 +1,29 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import CourseInformation from "./CourseInformation";
 import toast from "react-hot-toast";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import CourseOptions from "./CourseOptions";
 import CourseData from "./CourseData";
 import CourseContent from "./CourseContent";
 import CoursePreview from "./CoursePreview";
 import { useCreateCourseMutation } from "../../../../redux/features/courses/coursesApi";
+import {
+  getApiErrorMessage,
+  type ICourseDataItem,
+  type ICourseFormInfo,
+  type ICoursePayload,
+  type ICourseTextItem,
+} from "@/app/types/lms";
 
-type CreateCourseProps = {};
-
-const CreateCourse = ({}: CreateCourseProps) => {
-  const [createCourse, { isLoading, isSuccess, error }] =
-    useCreateCourseMutation();
-
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success("Course created successfully");
-      redirect("/admin/courses");
-    }
-    if (error && "data" in error) {
-      const errorMessage = error as any;
-      toast.error(errorMessage.data.message);
-    }
-  }, [isSuccess, error]);
+const CreateCourse = () => {
+  const router = useRouter();
+  const [createCourse, { isLoading }] = useCreateCourseMutation();
 
   const [active, setActive] = useState(0);
 
-  const [courseInfo, setCourseInfo] = useState({
+  const [courseInfo, setCourseInfo] = useState<ICourseFormInfo>({
     name: "",
     description: "",
     price: "",
@@ -41,30 +35,38 @@ const CreateCourse = ({}: CreateCourseProps) => {
     thumbnail: "",
   });
 
-  const [benefits, setBenefits] = useState([{ title: "" }]);
-
-  const [prerequisites, setPrerequisites] = useState([{ title: "" }]);
-
-  const [courseContentData, setCourseContentData] = useState([
-    {
-      videoUrl: "",
-      title: "",
-      description: "",
-      videoSection: "Untitled Section",
-      videoLength: "",
-      links: [
-        {
-          title: "",
-          url: "",
-        },
-      ],
-      suggestion: "",
-    },
+  const [benefits, setBenefits] = useState<ICourseTextItem[]>([
+    { clientId: "benefit-0", title: "" },
   ]);
 
-  const [courseData, setCourseData] = useState({});
+  const [prerequisites, setPrerequisites] = useState<ICourseTextItem[]>([
+    { clientId: "prereq-0", title: "" },
+  ]);
 
-  const handleSubmit = async () => {
+  const [courseContentData, setCourseContentData] = useState<ICourseDataItem[]>(
+    [
+      {
+        clientId: "content-0",
+        videoUrl: "",
+        title: "",
+        description: "",
+        videoSection: "Untitled Section",
+        videoLength: "",
+        links: [
+          {
+            clientId: "link-0",
+            title: "",
+            url: "",
+          },
+        ],
+        suggestion: "",
+      },
+    ]
+  );
+
+  const [courseData, setCourseData] = useState<ICoursePayload | null>(null);
+
+  const handleSubmit = () => {
     const formattedBenefits = benefits.map((benefit) => ({
       title: benefit.title,
     }));
@@ -88,7 +90,7 @@ const CreateCourse = ({}: CreateCourseProps) => {
       })
     );
 
-    const data = {
+    const data: ICoursePayload = {
       name: courseInfo.name,
       description: courseInfo.description,
       categories: courseInfo.categories,
@@ -106,9 +108,15 @@ const CreateCourse = ({}: CreateCourseProps) => {
     setCourseData(data);
   };
 
-  const handleCourseCreate = async (e: any) => {
-    if (!isLoading) {
-      await createCourse(courseData);
+  const handleCourseCreate = async () => {
+    if (!isLoading && courseData) {
+      try {
+        await createCourse(courseData).unwrap();
+        toast.success("Course created successfully");
+        router.push("/admin/courses");
+      } catch (error) {
+        toast.error(getApiErrorMessage(error));
+      }
     }
   };
 
@@ -154,8 +162,8 @@ const CreateCourse = ({}: CreateCourseProps) => {
           />
         )}
       </div>
-      <div className="w-[20%] mt-[100px] h-screen fixed z-[-1] top-18 right-0">
-        <CourseOptions active={active} setActive={setActive} />
+      <div className="w-[20%] mt-25 h-screen fixed z-[-1] top-18 right-0">
+        <CourseOptions active={active} />
       </div>
     </div>
   );

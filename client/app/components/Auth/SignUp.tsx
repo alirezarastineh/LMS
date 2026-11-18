@@ -12,11 +12,9 @@ import { FcGoogle } from "react-icons/fc";
 import toast from "react-hot-toast";
 import { signIn } from "next-auth/react";
 import { styles } from "@/app/styles/styles";
+import { getApiErrorMessage } from "@/app/types/lms";
+import type { CustomModalContentProps } from "@/app/utils/CustomModal";
 import { useRegisterMutation } from "@/redux/features/auth/authApi";
-
-type SignupProps = {
-  setRoute: (route: string) => void;
-};
 
 const schema = Yup.object().shape({
   name: Yup.string().required("Please enter your name!"),
@@ -26,20 +24,19 @@ const schema = Yup.object().shape({
   password: Yup.string().required("Please enter your password!").min(6),
 });
 
-const Signup = ({ setRoute }: SignupProps) => {
+const Signup = ({ setRoute }: CustomModalContentProps) => {
   const [show, setShow] = useState(false);
 
   const [register, { data, error, isSuccess }] = useRegisterMutation();
 
   useEffect(() => {
     if (isSuccess) {
-      const message = data?.message || "Registration successful";
+      const message = data?.message ?? "Registration successful";
       toast.success(message);
-      setRoute("Verification");
+      setRoute?.("Verification");
     }
-    if (error && "data" in error) {
-      const errorData = error as any;
-      toast.error(errorData.data.message);
+    if (error) {
+      toast.error(getApiErrorMessage(error));
     }
   }, [isSuccess, error, data?.message, setRoute]);
 
@@ -47,12 +44,12 @@ const Signup = ({ setRoute }: SignupProps) => {
     initialValues: { name: "", email: "", password: "" },
     validationSchema: schema,
     onSubmit: async ({ name, email, password }) => {
-      const data = {
+      const userData = {
         name,
         email,
         password,
       };
-      await register(data);
+      await register(userData);
     },
   });
 
@@ -153,24 +150,29 @@ const Signup = ({ setRoute }: SignupProps) => {
           <FcGoogle
             size={30}
             className="cursor-pointer mr-2"
-            onClick={() => signIn("google")}
+            onClick={() => {
+              void signIn("google");
+            }}
           />
 
           <AiFillGithub
             size={30}
             className="cursor-pointer ml-2"
-            onClick={() => signIn("github")}
+            onClick={() => {
+              void signIn("github");
+            }}
           />
         </div>
 
         <h5 className="text-center pt-4 font-Poppins text-[14px]">
           Already have an account?{" "}
-          <span
-            className="text-[#2190ff] pl-1 cursor-pointer"
-            onClick={() => setRoute("Login")}
+          <button
+            type="button"
+            className="text-[#2190ff] pl-1 cursor-pointer bg-transparent border-0 p-0"
+            onClick={() => setRoute?.("Login")}
           >
             Sign in
-          </span>
+          </button>
         </h5>
       </form>
 

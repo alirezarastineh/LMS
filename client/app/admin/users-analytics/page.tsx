@@ -5,9 +5,7 @@ import Heading from "../../utils/Heading";
 import DashboardHeader from "../../components/Admin/DashboardHeader";
 import UserAnalytics from "../../../app/components/Admin/Analytics/UserAnalytics";
 
-type pageProps = {};
-
-const page = ({}: pageProps) => {
+const Page = () => {
   return (
     <div>
       <Heading
@@ -28,4 +26,4 @@ const page = ({}: pageProps) => {
   );
 };
 
-export default page;
+export default Page;

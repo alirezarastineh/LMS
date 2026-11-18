@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import UserAnalytics from "../Analytics/UserAnalytics";
 import { BiBorderLeft } from "react-icons/bi";
 import { PiUsersFourLight } from "react-icons/pi";
 import { Box, CircularProgress } from "@mui/material";
 import OrdersAnalytics from "../Analytics/OrdersAnalytics";
 import AllInvoices from "../Order/AllInvoices";
+import type { IAnalyticsPoint } from "@/app/types/lms";
 import {
   useGetOrdersAnalyticsQuery,
   useGetUsersAnalyticsQuery,
@@ -12,10 +13,23 @@ import {
 
 type DashboardProps = {
   open?: boolean;
+};
+
+type CircularProgressWithLabelProps = {
+  open?: boolean;
   value?: number;
 };
 
-const CircularProgressWithLabel = ({ open, value }: DashboardProps) => {
+interface ComparePercentage {
+  currentMonth: number;
+  previousMonth: number;
+  percentChange: number;
+}
+
+const CircularProgressWithLabel = ({
+  open,
+  value,
+}: CircularProgressWithLabelProps) => {
   return (
     <Box sx={{ position: "relative", display: "inline-flex" }}>
       <CircularProgress
@@ -43,74 +57,63 @@ const CircularProgressWithLabel = ({ open, value }: DashboardProps) => {
   );
 };
 
+const computeComparePercentage = (
+  points: IAnalyticsPoint[]
+): ComparePercentage | undefined => {
+  const lastTwoMonths = points.slice(-2);
+  if (lastTwoMonths.length !== 2) {
+    return undefined;
+  }
+
+  const currentMonth = lastTwoMonths[1].count;
+  const previousMonth = lastTwoMonths[0].count;
+  const percentChange =
+    previousMonth === 0
+      ? 100
+      : ((currentMonth - previousMonth) / previousMonth) * 100;
+
+  return { currentMonth, previousMonth, percentChange };
+};
+
 const DashboardWidgets = ({ open }: DashboardProps) => {
-  const [ordersComparePercentage, setOrdersComparePercentage] = useState<any>();
-
-  const [userComparePercentage, setuserComparePercentage] = useState<any>();
-
   const { data, isLoading } = useGetUsersAnalyticsQuery({});
 
   const { data: ordersData, isLoading: ordersLoading } =
     useGetOrdersAnalyticsQuery({});
 
-  useEffect(() => {
+  const { ordersComparePercentage, userComparePercentage } = useMemo(() => {
     if (isLoading && ordersLoading) {
-      return;
+      return {
+        ordersComparePercentage: undefined,
+        userComparePercentage: undefined,
+      };
     }
 
-    if (!(data && ordersData)) {
-      return;
+    if (!data?.users?.last12Months || !ordersData?.orders?.last12Months) {
+      return {
+        ordersComparePercentage: undefined,
+        userComparePercentage: undefined,
+      };
     }
 
-    const usersLastTwoMonths = data.users.last12Months.slice(-2);
-
-    const ordersLastTwoMonths = ordersData.orders.last12Months.slice(-2);
-
-    if (
-      !(usersLastTwoMonths.length === 2 && ordersLastTwoMonths.length === 2)
-    ) {
-      return;
-    }
-    const usersCurrentMonth = usersLastTwoMonths[1].count;
-
-    const usersPreviousMonth = usersLastTwoMonths[0].count;
-
-    const ordersCurrentMonth = ordersLastTwoMonths[1].count;
-
-    const ordersPreviousMonth = ordersLastTwoMonths[0].count;
-
-    const usersPercentChange =
-      usersPreviousMonth === 0
-        ? 100
-        : ((usersCurrentMonth - usersPreviousMonth) / usersPreviousMonth) * 100;
-
-    const ordersPercentChange =
-      ordersPreviousMonth === 0
-        ? 100
-        : ((ordersCurrentMonth - ordersPreviousMonth) / ordersPreviousMonth) *
-          100;
-
-    setuserComparePercentage({
-      currentMonth: usersCurrentMonth,
-      previousMonth: usersPreviousMonth,
-      percentChange: usersPercentChange,
-    });
-
-    setOrdersComparePercentage({
-      currentMonth: ordersCurrentMonth,
-      previousMonth: ordersPreviousMonth,
-      percentChange: ordersPercentChange,
-    });
+    return {
+      userComparePercentage: computeComparePercentage(
+        data.users.last12Months
+      ),
+      ordersComparePercentage: computeComparePercentage(
+        ordersData.orders.last12Months
+      ),
+    };
   }, [isLoading, ordersLoading, data, ordersData]);
 
   return (
-    <div className="mt-[30px] min-h-screen">
+    <div className="mt-7.5 min-h-screen">
       <div className="grid grid-cols-[75%_25%]">
-        <div className="p-8 ">
+        <div className="p-8">
           <UserAnalytics isDashboard={true} />
         </div>
 
-        <div className="pt-[80px] pr-8">
+        <div className="pt-20 pr-8">
           <div className="w-full dark:bg-[#111C43] rounded-xs shadow-sm">
             <div className="flex items-center p-5 justify-between">
               <div className="">
@@ -124,13 +127,15 @@ const DashboardWidgets = ({ open }: DashboardProps) => {
               </div>
               <div>
                 <CircularProgressWithLabel
-                  value={ordersComparePercentage?.percentChange > 0 ? 100 : 0}
+                  value={
+                    (ordersComparePercentage?.percentChange ?? 0) > 0 ? 100 : 0
+                  }
                   open={open}
                 />
                 <h5 className="text-center pt-4">
-                  {ordersComparePercentage?.percentChange > 0
-                    ? `+${ordersComparePercentage?.percentChange.toFixed(2)}`
-                    : `-${ordersComparePercentage?.percentChange.toFixed(2)}`}
+                  {(ordersComparePercentage?.percentChange ?? 0) > 0
+                    ? `+${(ordersComparePercentage?.percentChange ?? 0).toFixed(2)}`
+                    : `-${(ordersComparePercentage?.percentChange ?? 0).toFixed(2)}`}
                   %
                 </h5>
               </div>
@@ -150,13 +155,15 @@ const DashboardWidgets = ({ open }: DashboardProps) => {
               </div>
               <div>
                 <CircularProgressWithLabel
-                  value={userComparePercentage?.percentChange > 0 ? 100 : 0}
+                  value={
+                    (userComparePercentage?.percentChange ?? 0) > 0 ? 100 : 0
+                  }
                   open={open}
                 />
                 <h5 className="text-center pt-4">
-                  {userComparePercentage?.percentChange > 0
-                    ? `+${userComparePercentage?.percentChange.toFixed(2)}`
-                    : `-${userComparePercentage?.percentChange.toFixed(2)}`}
+                  {(userComparePercentage?.percentChange ?? 0) > 0
+                    ? `+${(userComparePercentage?.percentChange ?? 0).toFixed(2)}`
+                    : `-${(userComparePercentage?.percentChange ?? 0).toFixed(2)}`}
                   %
                 </h5>
               </div>
@@ -165,8 +172,8 @@ const DashboardWidgets = ({ open }: DashboardProps) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-[65%_35%] mt-[-20px]">
-        <div className="dark:bg-[#111c43] w-[94%] mt-[30px] h-[40vh] shadow-xs m-auto">
+      <div className="grid grid-cols-[65%_35%] -mt-5">
+        <div className="dark:bg-[#111c43] w-[94%] mt-7.5 h-[40vh] shadow-xs m-auto">
           <OrdersAnalytics isDashboard={true} />
         </div>
         <div className="p-5">

@@ -1,8 +1,7 @@
+import "dotenv/config";
 import { Response } from "express";
 import { IUser } from "../models/user.model";
 import { redis } from "./redis";
-
-require("dotenv").config();
 
 interface ITokenOptions {
   expires: Date;
@@ -12,9 +11,9 @@ interface ITokenOptions {
   secure?: boolean;
 }
 
-const accessTokenExpire = parseInt(
-  process.env.ACCESS_TOKEN_EXPIRE || "300",
-  10
+const accessTokenExpire = Number.parseInt(
+  process.env.ACCESS_TOKEN_EXPIRE ?? "300",
+  10,
 );
 
 export const accessTokenOptions: ITokenOptions = {
@@ -25,9 +24,9 @@ export const accessTokenOptions: ITokenOptions = {
   secure: true,
 };
 
-const refreshTokenExpire = parseInt(
-  process.env.REFRESH_TOKEN_EXPIRE || "1200",
-  10
+const refreshTokenExpire = Number.parseInt(
+  process.env.REFRESH_TOKEN_EXPIRE ?? "1200",
+  10,
 );
 
 export const refreshTokenOptions: ITokenOptions = {
@@ -38,12 +37,16 @@ export const refreshTokenOptions: ITokenOptions = {
   secure: true,
 };
 
-export const sendToken = (user: IUser, statusCode: number, res: Response) => {
+export const sendToken = async (
+  user: IUser,
+  statusCode: number,
+  res: Response,
+) => {
   const accessToken = user.SignAccessToken();
 
   const refreshToken = user.SignRefreshToken();
 
-  redis.set(user._id, JSON.stringify(user) as any);
+  await redis.set(user._id.toString(), JSON.stringify(user));
 
   res.cookie("access_token", accessToken, accessTokenOptions);
   res.cookie("refresh_token", refreshToken, refreshTokenOptions);

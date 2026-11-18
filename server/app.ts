@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -9,10 +10,11 @@ import notificationRouter from "./routes/notification.route";
 import analyticsRouter from "./routes/analytics.route";
 import layoutRouter from "./routes/layout.route";
 import rateLimit from "express-rate-limit";
-
-require("dotenv").config();
+import ErrorHandler from "./utils/ErrorHandler";
 
 export const app = express();
+
+app.disable("x-powered-by");
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -27,7 +29,7 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: process.env.ORIGIN || process.env.ORIGIN_DEPLOYED,
+    origin: process.env.ORIGIN ?? process.env.ORIGIN_DEPLOYED,
     credentials: true,
   })
 );
@@ -42,7 +44,7 @@ app.use(
   layoutRouter
 );
 
-app.get("/test", (req: Request, res: Response, next: NextFunction) => {
+app.get("/test", (req: Request, res: Response) => {
   res.status(200).json({
     success: true,
     message: "API is working",
@@ -50,9 +52,7 @@ app.get("/test", (req: Request, res: Response, next: NextFunction) => {
 });
 
 app.all("*", (req: Request, res: Response, next: NextFunction) => {
-  const err = new Error(`Route ${req.originalUrl} not found`) as any;
-  err.statusCode = 404;
-  next(err);
+  next(new ErrorHandler(`Route ${req.originalUrl} not found`, 404));
 });
 
 app.use(limiter);

@@ -20,7 +20,7 @@ const NavItems = ({ activeItem, isMobile }: NavItemsProps) => {
     <>
       <div className="hidden 800px:flex">
         {navItemsData?.map((i, index) => (
-          <Link href={i.url} key={index} passHref>
+          <Link href={i.url} key={i.name} passHref>
             <span
               className={`${
                 activeItem === index
@@ -47,7 +47,7 @@ const NavItems = ({ activeItem, isMobile }: NavItemsProps) => {
           </div>
 
           {navItemsData?.map((i, index) => (
-            <Link href="/" passHref key={index}>
+            <Link href="/" passHref key={i.name}>
               <span
                 className={`${
                   activeItem === index
